@@ -1,0 +1,116 @@
+<Vevacious_defaults>
+
+<!--
+#  VevaciousInitialization.xml
+#
+#  Created on: Oct 8, 2012
+#      Author: Ben O'Leary (benjamin.oleary@gmail.com)
+#      Copyright 2012 Ben O'Leary
+#
+#      This file is part of Vevacious, released under the
+#      GNU General Public License. Please see the accompanying
+#      README.Vevacious.txt file for a full list of files, brief documentation
+#      on how to use these classes, and further details on the license.
+#
+ -->
+
+  <!-- hom4ps2_dir is where the executable hom4ps2 is. -->
+  <hom4ps2_dir>
+  /path/to/HOM4PS2/
+  </hom4ps2_dir>
+
+  <!-- homotopy_type is 1 for polyhedral homotopy or 2 for linear homotopy. -->
+  <homotopy_type>
+  1
+  </homotopy_type>
+
+  <!-- imaginary_tolerance is the tolerance for imaginary parts of VEVs found
+       as solutions to the tree-level tadpole equations, since it is possible
+       that a numerical precision error could lead to what should be an exact
+       cancellation leaving behind a small imaginary part. it is in units of
+       GeV, as the other dimensionful values are assumed so since that is how
+       they are in the SLHA standard. -->
+  <imaginary_tolerance>
+  0.000001
+  </imaginary_tolerance>
+
+  <!-- model_file is where the loop-corrected potential stuff as written by
+       SARAH is. -->
+  <model_file>
+  ../MSSM/Vevacious.in.realStauVevs_MSSM
+  </model_file>
+
+  <!-- slha_file is where the Lagrangian parameters in SLHA format are. -->
+  <slha_file>
+  ../MSSM/SPheno.spc.MSSM.SPS1ap
+  </slha_file>
+
+  <!-- output is where the loop-corrected minimum, as found by PyMinuit
+       starting from the HOM4PS2 extrema, should be written. -->
+  <result_file>
+  ./VevaciousResult.xml.realStauVevs_MSSM
+  </result_file>
+
+  <!-- max_saddle_splits is the maximum number of times PyMinuit should be
+       pushed off any saddle points it has come to rest at. -->
+  <max_saddle_nudges>
+  2
+  </max_saddle_nudges>
+
+  <!-- ct_path is the path to where pathDeformation.py & tunneling1D.py are
+       found. -->
+  <ct_path>
+  /path/to/CosmoTransitions/
+  </ct_path>
+
+  <!-- roll_tolerance is the tolerance for whether extrema are identified with
+       each other. If roll_tolerance is for example 0.05, then extrema A and B
+       are considered to be both at the same extremum within numerical errors
+       if the length of the vector of VEV differences is less than 0.05 * the
+       length of the longer of the 2 vectors of VEVs. E.g. if A is
+       vd = 24.42, vu = 245.0 and B is vd = 24.39, vu = 242.7, the length of A
+       is 246.2140, the length of B is 243.9225, so the longer length is
+       246.2140; the length of their difference is 2.300196 which is less than
+       0.05 * 246.2140, so A & B are considered to be the same extremum. (This
+       is important to avoid attempting calculating the tunneling time from the
+       input VEVs to what should be exactly the same point, that was just not
+       found exactly due to numerical issues.) -->
+  <roll_tolerance>
+  0.1
+  </roll_tolerance>
+ 
+  <!-- quartic_time, direct_time, deformed_time: the fraction of the age of the
+       Universe (taken to be 10^41/GeV) which is considered to be long enough
+       that the calculation just performed is sufficient for determining the
+       stability of the parameter point's input vacuum. these are only relevant
+       if the input minimum was not the deepest minimum found.
+
+       1st the quartic_time calculation is performed, and if the upper bound on
+       the lifetime is above the given value for quartic_time, then the
+       direct_time calculation is performed, and if the upper bound on the
+       lifetime is above the given value for direct_time, then the
+       deformed_time calculation is performed. For example, if the upper bound
+       on the lifetime from the quartic calculation was
+       0.0000143 * (10^41/GeV), and quartic_time was 0.2, since 0.0000143 is
+       less than 0.2, the slower, fuller calculations of the lifetime are
+       skipped.  -->
+
+  <!-- quartic_time: if positive, a quartic polynomial is fitted to a straight
+       line in VEV space between the true and false vacua and the thin-wall
+       approximation by Sidney Coleman is used to get an upper bound on the
+       lifetime. -->
+  <!-- Actually, this is not working very well at the moment, so it is
+       recommended to be left off, indicated by a negative value. -->
+  <quartic_time> -1.0 </quartic_time>
+  <!-- direct_time: if positive, CosmoTransitions is used on a straight line
+       in VEV space between the true and false vacua to get an upper bound on
+       the lifetime. -->
+  <direct_time> 0.1 </direct_time>
+  <!-- deformed_time: if positive, CosmoTransitions is used, allowing it to
+       find the most efficient deformed path in VEV space between the true and
+       false vacua to get an estimate of the lifetime (not an upper bound in
+       this case). -->
+  <deformed_time> 0.1 </deformed_time>
+
+</Vevacious_defaults>
+
