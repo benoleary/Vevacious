@@ -93,7 +93,8 @@ namespace Vevacious
     // killing the Python subprocess after deformationPatience seconds if it
     // takes that long. it returns true if the subprocess finished without
     // having to be killed, false if the subprocess took too long.
-    void appendResultsToSlha( std::string const& slhaFilename ) const;
+    void appendResultsToSlha( std::string const& slhaFilename,
+                   bool const properFormatRatherThanSspReadable = true ) const;
     // this takes the XML-format results from the file called resultsFilename,
     // & appends the results & warnings in custom SLHA blocks to the end of the
     // file name slhaFilename.

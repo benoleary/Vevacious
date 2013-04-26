@@ -274,8 +274,8 @@ namespace Vevacious
     outputFile.close();
   }
 
-  void VevaciousRunner::appendResultsToSlha(
-                                        std::string const& slhaFilename ) const
+  void VevaciousRunner::appendResultsToSlha( std::string const& slhaFilename,
+                          bool const properFormatRatherThanSspReadable ) const
   // this takes the XML-format results from the file called resultsFilename,
   // & appends the results & warnings in custom SLHA blocks to the end of the
   // file name slhaFilename.
@@ -365,9 +365,19 @@ namespace Vevacious
       // of '\n' characters ending the file.
       outputFile << "\n"
       << "BLOCK VEVACIOUSRESULTS # results from Vevacious\n"
-      << "    0   0    " << slhaDoubleMaker.doubleToString( stabiltyResult )
+      << "    0   0    " << slhaDoubleMaker.doubleToString( stabiltyResult );
+      if( !properFormatRatherThanSspReadable )
+      {
+        outputFile << " # ";
+      }
+      outputFile
       << "    " << stabilityVerdict << "    # stability of input\n"
-      << "    0   1    " << lifetimeBound << "    " << actionCalculation
+      << "    0   1    " << lifetimeBound;
+      if( !properFormatRatherThanSspReadable )
+      {
+        outputFile << " # ";
+      }
+      outputFile << "    " << actionCalculation
       << "    # tunneling time in Universe ages / calculation type\n";
       int vevNumber( -1 );
       for( std::map< std::string, std::string >::const_iterator
@@ -377,7 +387,12 @@ namespace Vevacious
       {
         outputFile
         << "    1 " << slhaIndexMaker.intToString( ++vevNumber ) << "    "
-        << slhaDoubleFromQuotedString( whichVev->second ) << "    "
+        << slhaDoubleFromQuotedString( whichVev->second );
+        if( !properFormatRatherThanSspReadable )
+        {
+          outputFile << " # ";
+        }
+        outputFile << "    "
         << whichVev->first;
         if( inputMinimumDepthAndVevs.begin() == whichVev )
         {
@@ -399,7 +414,12 @@ namespace Vevacious
       {
         outputFile
         << "    2 " << slhaIndexMaker.intToString( ++vevNumber ) << "    "
-        << slhaDoubleFromQuotedString( whichVev->second ) << "    "
+        << slhaDoubleFromQuotedString( whichVev->second );
+        if( !properFormatRatherThanSspReadable )
+        {
+          outputFile << " # ";
+        }
+        outputFile << "    "
         << whichVev->first;
         if( globalMinimumDepthAndVevs.begin() == whichVev )
         {
@@ -413,7 +433,9 @@ namespace Vevacious
           << "    # global minimum VEV\n";
         }
       }
-      if( !(warningBlock.empty()) )
+      if( properFormatRatherThanSspReadable
+          &&
+          !(warningBlock.empty()) )
       {
         outputFile
         << "BLOCK VEVACIOUSWARNINGS # warnings from Vevacious\n"

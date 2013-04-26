@@ -172,7 +172,13 @@ int main( int argumentCount,
   std::cout << std::endl;
 
   // append the results to the SLHA file in custom blocks:
-  vevaciousRunner.appendResultsToSlha( slhaFilename );
+  std::string howToAppendSlhaBlock( argumentParser.fromTag( "appendToSlha",
+                                                            "normal" ) );
+  if( !(howToAppendSlhaBlock.empty()) )
+  {
+    vevaciousRunner.appendResultsToSlha( slhaFilename,
+                              ( 0 != howToAppendSlhaBlock.compare( "SSP" ) ) );
+  }
 
   std::cout
   << std::endl
