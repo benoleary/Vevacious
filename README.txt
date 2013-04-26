@@ -134,6 +134,13 @@
 
 
 CHANGELOG:
+ * 26th April 2013: version 0.2.8
+ - Publicly available on GitHub, but still not officially released!
+ - added optional bool argument to VevaciousRunner::appendResultsToSlha
+   which inserts '#' after the doubles of the VEVACIOUSRESULTS block so that
+   SSP can read it without problems, & added argument option to Vevacious.exe
+   so that this can be used by default.
+   
  * 17th April 2013: version 0.2.7
  - Still not even released!
  - Oops, fixed a bug from an undocumented change which was designed to prevent
