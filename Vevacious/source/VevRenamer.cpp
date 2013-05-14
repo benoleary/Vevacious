@@ -44,7 +44,7 @@ namespace Vevacious
     {
       std::cout
       << std::endl
-      << "Error! Due to PyMinuit's silly function variable name restrictions,"
+      << "Error! Due to some unfortunate function variable name restrictions,"
       << " Vevacious cannot deal with more than "
       << possibleInternalVevNames.size() << " possible non-zero VEVs. ("
       << inputVevs.size() << " VEVs were given.)";

@@ -44,22 +44,23 @@ namespace Vevacious
     void setImaginaryPartTolerance( std::string const& imaginaryTolerance )
     { this->imaginaryTolerance
       = BOL::StringParser::stringToDouble( imaginaryTolerance ); }
+    void
+    setMinuitNudgesOffSaddlePoints( std::vector< double > saddleNudgeList )
+    { this->saddleNudgeList = saddleNudgeList; }
+    void setMinuitNudgesOffSaddlePoints(
+                               std::string const& nudgesAsCommaSeparatedList );
     void setMaximumMinuitNudgesOffSaddlePoints( int maximumSaddleSplits )
-    { this->maximumSaddleSplits = maximumSaddleSplits; }
+    { saddleNudgeList.resize( maximumSaddleSplits,
+                              saddleNudgeList.back() ); }
     void setMaximumMinuitNudgesOffSaddlePoints(
                                        std::string const& maximumSaddleSplits )
-    { this->maximumSaddleSplits
-      = BOL::StringParser::stringToInt( maximumSaddleSplits ); }
+    { setMaximumMinuitNudgesOffSaddlePoints(
+                     BOL::StringParser::stringToInt( maximumSaddleSplits ) ); }
     void setMinuitRollingTolerance( double rollingTolerance )
     { this->rollingTolerance = rollingTolerance; }
     void setMinuitRollingTolerance( std::string const& rollingTolerance )
     { this->rollingTolerance
       = BOL::StringParser::stringToDouble( rollingTolerance ); }
-    void setLifetimeForQuarticGuess( double quarticLifetimeBound )
-    { quarticActionBound = actionFromLifetime( quarticLifetimeBound ); }
-    void setLifetimeForQuarticGuess( std::string const& quarticLifetimeBound )
-    { setLifetimeForQuarticGuess(
-                 BOL::StringParser::stringToDouble( quarticLifetimeBound ) ); }
     void setPathToCosmotransitions( std::string const& pathToCosmotransitions )
     { this->pathToCosmotransitions.assign( pathToCosmotransitions ); }
     void setLifetimeForDirectPath( double directLifetimeBound )
@@ -104,7 +105,7 @@ namespace Vevacious
     static double const lifetimeFactor;
     static std::string const pointsToTry;
     static std::string const resultsFilenameVariableName;
-    static std::string const maximumSaddleSplitsVariableName;
+    static std::string const saddleSplitNudges;
     static std::string const rollingToleranceVariableName;
     static std::string const quarticActionBoundVariableName;
     static std::string const pathToCosmotransitionsVariableName;
@@ -125,9 +126,8 @@ namespace Vevacious
     bool firstWriteOfExtrema;
     std::string resultsFilename;
     double imaginaryTolerance;
-    int maximumSaddleSplits;
+    std::vector< double > saddleNudgeList;
     double rollingTolerance;
-    double quarticActionBound;
     std::string pathToCosmotransitions;
     double directActionBound;
     double deformedActionBound;
@@ -142,6 +142,28 @@ namespace Vevacious
 
 
 
+
+  inline void VevaciousRunner::setMinuitNudgesOffSaddlePoints(
+                                std::string const& nudgesAsCommaSeparatedList )
+  {
+    saddleNudgeList.clear();
+    std::string spaceSeparatedString( BOL::StringParser::trimFromFrontAndBack(
+                                                    nudgesAsCommaSeparatedList,
+                    ( BOL::StringParser::whitespaceAndNewlineChars + "," ) ) );
+    BOL::StringParser::substituteCharacterWith( spaceSeparatedString,
+                                                ',',
+                                                ' ' );
+    if( !(spaceSeparatedString.empty()) )
+    {
+      std::stringstream streamToParse( spaceSeparatedString );
+      double parsedIntAsDouble;
+      while( streamToParse.good() )
+      {
+        streamToParse >> parsedIntAsDouble;
+        saddleNudgeList.push_back( parsedIntAsDouble );
+      }
+    }
+  }
 
   inline void
   VevaciousRunner::appendTreeLevelExtrema( std::string const& slhaFilename,

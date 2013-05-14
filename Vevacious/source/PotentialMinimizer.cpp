@@ -126,8 +126,9 @@ namespace Vevacious
     pythonCode.clear();
     pythonCode.str( "" );
     pythonCode <<
-"# Unfortunately PyMinuit is stupidly restricted to single-character\n"
-"# variable names, so Vevacious internally renames the VEVs:\n"
+"# Unfortunately due to UTF32 issues, PyMinuit is restricted to\n"
+"# single-character variable names, so Vevacious internally renames the\n"
+"# VEVs:\n"
 "# " << sarahInterpreter.getHumanReadableVevNameMap() << "\n"
 << namesOfVevs << " = [ "
 <<             sarahInterpreter.getInternalVevNamesAsQuotedCharList() << " ]\n"
@@ -148,12 +149,13 @@ namespace Vevacious
 << vevsTakenPositive << " = " << sarahInterpreter.getPositiveInternalVevs()
 <<                                                                         "\n"
 "\n"
-<< energyScale << " = " << sarahInterpreter.getSlhaScale() << "\n"
 << energyScaleFourth << " = ( " << energyScale << " * " << energyScale << " * "
 <<                                energyScale << " * " << energyScale << " )\n"
 << inverseScaleSquared << " = ( 1.0 / ( " << energyScale << " * "
 <<                                                      energyScale << " ) )\n"
 << inverseScaleFourthed << " = ( 1.0 / " << energyScaleFourth << " )\n"
+"\n"
+"\n"
 "\n"
 "def " << userVevsAsMathematica << "( vevDictionary ):\n"
 "    return \"{ ";

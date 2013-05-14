@@ -51,11 +51,12 @@
   ./VevaciousResult.xml.realStauVevs_MSSM
   </result_file>
 
-  <!-- max_saddle_splits is the maximum number of times PyMinuit should be
-       pushed off any saddle points it has come to rest at. -->
-  <max_saddle_nudges>
-  2
-  </max_saddle_nudges>
+  <!-- saddle_splits is the comma-separated list of nudges in GeV that should
+       be used to nudge PyMinuit off any saddle points where it has come to
+       rest. -->
+  <saddle_nudges>
+  1.0, 5.0, 20.0
+  </saddle_nudges>
 
   <!-- ct_path is the path to where pathDeformation.py & tunneling1D.py are
        found. -->

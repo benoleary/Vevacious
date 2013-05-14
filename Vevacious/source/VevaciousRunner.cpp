@@ -29,7 +29,7 @@ namespace Vevacious
   std::string const
   VevaciousRunner::resultsFilenameVariableName( "outputFile" );
   std::string const
-  VevaciousRunner::maximumSaddleSplitsVariableName( "maximumSaddleSplits" );
+  VevaciousRunner::saddleSplitNudges( "saddleSplitNudges" );
   std::string const
   VevaciousRunner::rollingToleranceVariableName( "rollingTolerance" );
   std::string const
@@ -64,12 +64,12 @@ namespace Vevacious
     firstWriteOfExtrema( true ),
     resultsFilename( "VevaciousResult.xml" ),
     imaginaryTolerance( 0.000001 ),
-    maximumSaddleSplits( 2 ),
+    saddleNudgeList( 2,
+                     1.0 ),
     rollingTolerance( 0.2 ),
-    quarticActionBound( actionFromLifetime( 0.1 ) ),
     pathToCosmotransitions( "./" ),
-    directActionBound( quarticActionBound ),
-    deformedActionBound( quarticActionBound )
+    directActionBound( 0.1 ),
+    deformedActionBound( directActionBound )
   {
     BOL::AsciiXmlParser xmlParser;
     bool xmlOpened( xmlParser.openRootElementOfFile( modelFilename ) );
@@ -131,15 +131,11 @@ namespace Vevacious
     imaginaryTolerance( BOL::StringParser::stringToDouble(
                                  argumentParser.fromTag( "imaginary_tolerance",
                                                          "0.0000001" ) ) ),
-    maximumSaddleSplits( BOL::StringParser::stringToInt(
-                                   argumentParser.fromTag( "max_saddle_nudges",
-                                                           "3" ) ) ),
+    saddleNudgeList( 2,
+                     1.0 ),
     rollingTolerance( BOL::StringParser::stringToDouble(
                                       argumentParser.fromTag( "roll_tolerance",
                                                               "0.1" ) ) ),
-    quarticActionBound( actionFromLifetime( BOL::StringParser::stringToDouble(
-                                        argumentParser.fromTag( "quartic_time",
-                                                                "-0.1" ) ) ) ),
     pathToCosmotransitions( argumentParser.fromTag( "ct_path",
                                                     "./CosmoTransitions/" ) ),
     directActionBound( actionFromLifetime( BOL::StringParser::stringToDouble(
@@ -149,6 +145,15 @@ namespace Vevacious
                                        argumentParser.fromTag( "deformed_time",
                                                                "0.1" ) ) ) )
   {
+    setMinuitNudgesOffSaddlePoints( argumentParser.fromTag( "saddle_nudges",
+                                                            "1.0, 1.0" ) );
+    std::string
+    inputMaximumSaddleNudges( argumentParser.fromTag( "max_saddle_nudges",
+                                                      "" ) );
+    if( !(inputMaximumSaddleNudges.empty()) )
+    {
+      setMaximumMinuitNudgesOffSaddlePoints( inputMaximumSaddleNudges );
+    }
     BOL::AsciiXmlParser xmlParser;
     std::string modelFilename( argumentParser.fromTag( "model_file",
                                         "./Vevacious.in.realStauVevs_MSSM" ) );
@@ -262,12 +267,30 @@ namespace Vevacious
 "from __future__ import division\n"
 "import math\n"
 "import numpy.linalg\n"
+"\n"
 << resultsFilenameVariableName << " = \"" << resultsFilename << "\"\n"
-<< maximumSaddleSplitsVariableName << " = " << maximumSaddleSplits << "\n"
+"\n"
+<< PotentialMinimizer::energyScale << " = " << sarahInterpreter.getSlhaScale()
+<<                                                                         "\n"
+<< saddleSplitNudges << " = [ ";
+    for( std::vector< double >::iterator
+         whichNudge( saddleNudgeList.begin() );
+         saddleNudgeList.end() > whichNudge;
+         ++whichNudge )
+    {
+      if( saddleNudgeList.begin() != whichNudge )
+      {
+        outputFile << ", ";
+      }
+      outputFile
+      << "( " << *whichNudge << " / " << PotentialMinimizer::energyScale
+      <<                                                                  " )";
+    }
+    outputFile << " ]\n"
+"\n"
 << rollingToleranceVariableName << " = " << rollingTolerance << "\n"
-<< quarticActionBoundVariableName << " = " << quarticActionBound << "\n"
 << pathToCosmotransitionsVariableName << " = \"" << pathToCosmotransitions
-<< "\"\n"
+<<                                                                       "\"\n"
 << directActionBoundVariableName << " = " << directActionBound << "\n"
 << deformedActionBoundVariableName << " = " << deformedActionBound << "\n"
 << potentialMinimizer.prepareParameterDependentPython( sarahInterpreter );
@@ -527,10 +550,18 @@ namespace Vevacious
 "stepSize = ( 1.0 / VPD." << PotentialMinimizer::energyScale << " )\n"
 "rollingToleranceSquared = ( VPD." << rollingToleranceVariableName << " * VPD."
 << rollingToleranceVariableName << " )\n"
+"\n"
+"effectivePotentialFunction = VPD."
+<<                           PotentialMinimizer::loopCorrectedPotential << "\n"
+"# one could replace VPD." << PotentialMinimizer::loopCorrectedPotential
+<<                                                                         "\n"
+"# with VPD." << PotentialMinimizer::treeLevelPotential << " for a\n"
+"# tree-level analysis, for example.\n"
+"\n"
 "potentialAtVevOrigin = ( VPD." << PotentialMinimizer::energyScaleFourth
 <<                                                                         "\n"
 "                         * VPD." << PotentialMinimizer::functionFromDictionary
-<<              "( VPD." << PotentialMinimizer::loopCorrectedPotential << ",\n"
+<<                                            "( effectivePotentialFunction,\n"
 "                            VPD." << PotentialMinimizer::vevOrigin << " ) )\n"
 "\n"
 "# MINUIT\'s hesse() function assumes that it is already at a\n"
@@ -577,8 +608,7 @@ namespace Vevacious
 "foundMinima = []\n"
 "foundSaddles = []\n"
 "\n"
-"minuitObject = minuit.Minuit( VPD."
-<<                         PotentialMinimizer::loopCorrectedPotential << " )\n"
+"minuitObject = minuit.Minuit( effectivePotentialFunction )\n"
 "# There is a possibility of MINUIT trying to roll off to infinity but\n"
 "# generating an overflow error in calculating the potential before throwing\n"
 "# an exception. Here limits are set on the VEVs of one thousand times\n"
@@ -600,8 +630,7 @@ namespace Vevacious
 "\n"
 "def SteepestDescent( vevValues ):\n"
 "    eigensystemOfHessian = numpy.linalg.eigh( NumericalHessian(\n"
-"                                                VPD."
-<<                          PotentialMinimizer::loopCorrectedPotential << ",\n"
+"                                                effectivePotentialFunction,\n"
 "                                                              vevValues ) )\n"
 "    mostNegativeEigenvalueValue = 0.0\n"
 "    mostNegativeEigenvalueIndex = 0\n"
@@ -672,7 +701,7 @@ namespace Vevacious
 "    if ( VevsHaveCorrectSigns( vevValueSet ) ):\n"
 "        TryToMinimize( vevValueSet )\n"
 "\n"
-"for saddleSplit in range( VPD." << maximumSaddleSplitsVariableName << " ):\n"
+"for saddleSplitNudge in VPD." << saddleSplitNudges << ":\n"
 "    if ( 0 < len( foundSaddles ) ):\n"
 "        print( \"PyMinuit had to be nudged off \"\n"
 "               + str( len( foundSaddles ) ) + \" saddle point(s).\" )\n"
@@ -681,11 +710,11 @@ namespace Vevacious
 "            " << pointsToTry << ".append( DisplacePoint(\n"
 "                                         saddlePoint[ 0 ][ \'vevValues\' ],\n"
 "                                                       saddlePoint[ 1 ], \n"
-"                                                       stepSize ) )\n"
+"                                                       saddleSplitNudge ) )\n"
 "            " << pointsToTry << ".append( DisplacePoint(\n"
 "                                         saddlePoint[ 0 ][ \'vevValues\' ],\n"
 "                                                       saddlePoint[ 1 ], \n"
-"                                                       -stepSize ) )\n"
+"                                                      -saddleSplitNudge ) )\n"
 "        foundSaddles = []\n"
 "        for vevValueSet in " << pointsToTry << ":\n"
 "            if ( VevsHaveCorrectSigns( vevValueSet ) ):\n"
@@ -864,38 +893,6 @@ namespace Vevacious
 "    actionType = \"unnecessary\"\n"
 "    actionNeedsToBeCalculated = False\n"
 "\n"
-"if ( actionNeedsToBeCalculated\n"
-"     and ( 0.0 < VPD." << quarticActionBoundVariableName << " )\n"
-"     and ( actionValue > VPD." << quarticActionBoundVariableName << " ) ):\n"
-"# These numbers come from fitting a quartic polynomial to have its minima\n"
-"# at the (rolled) input VEVs and the global minimum, also having the\n"
-"# correct value half-way between them. then the cubic term is thrown away,\n"
-"# so the quartic now sits atop the full potential, snugly at the input\n"
-"# minimum, and the coefficients matched to those given by Sidney Coleman in\n"
-"# PRD vol.15, num.10, 15th May 1977 (i.e. {\\mu}^{2}, here muSquared, and\n"
-"# \\lambda, here lambdaValue. Then Coleman\'s epsilon, here epsilonValue,\n"
-"# is identified as the difference in depths at the minima. This should give\n"
-"# a very conservative upper bound on the tunneling time.\n"
-"    halfwayPoint = ( ( globalMinimumPointAsArray\n"
-"                       + rolledInputAsArray ) * 0.5 )\n"
-"    halfwayDepth = VPD." << PotentialMinimizer::functionFromArray << "( VPD."
-<<                          PotentialMinimizer::loopCorrectedPotential << ",\n"
-"                                          halfwayPoint )\n"
-"    muSquared = ( ( 2.0 * ( 16.0 * halfwayDepth\n"
-"                            - 11.0 * rolledInputDepth\n"
-"                            - 5.0 * globalMinimumDepthValue ) )\n"
-"                  / distanceSquaredFromInputToGlobalMinimum )\n"
-"    lambdaValue = ( ( 8.0 * ( 2.0 * halfwayDepth - rolledInputDepth\n"
-"                              - globalMinimumDepthValue ) )\n"
-"                    / distanceSquaredFromInputToGlobalMinimum**2 )\n"
-"    epsilonValue = ( rolledInputDepth - globalMinimumDepthValue )\n"
-"    actionValue = ( ( math.pi * math.pi * muSquared**6 )\n"
-"                    / ( 6.0 * lambdaValue**4 * epsilonValue**3 ) )\n"
-"    actionType = \"quartic_bound\"\n"
-"    if ( actionValue < VPD." << quarticActionBoundVariableName << " ):\n"
-"        stabilityVerdict = \"unstable\"\n"
-"        actionNeedsToBeCalculated = False\n"
-"\n"
 "# The resolution of the tunneling path needs to be set\n"
 "# (low-ish by default for speed):\n"
 "tunnelingResolution = 20\n"
@@ -908,8 +905,8 @@ namespace Vevacious
 "                       + ( globalMinimumPointAsArray\n"
 "                           * ( 1.0 / tunnelingResolution ) ) )\n"
 "    firstStepDepth = VPD." << PotentialMinimizer::functionFromArray
-<<              "( VPD." << PotentialMinimizer::loopCorrectedPotential << ",\n"
-"                                            firstStepPoint )\n"
+<<                                            "( effectivePotentialFunction,\n"
+"                                                firstStepPoint )\n"
 "    if ( rolledInputDepth >= firstStepDepth ):\n"
 "        actionType = \"barrier_smaller_than_resolution\"\n"
 "        actionValue = 0.0\n"
@@ -933,8 +930,8 @@ namespace Vevacious
 "                                   rolledInputAsArray.copy() ] )\n"
 "\n"
 "    def PotentialFromArray( pointAsArray ):\n"
-"        return VPD." << PotentialMinimizer::functionFromArray << "( VPD."
-<<                          PotentialMinimizer::loopCorrectedPotential << ",\n"
+"        return VPD." << PotentialMinimizer::functionFromArray
+<<                                            "( effectivePotentialFunction,\n"
 "                                                             pointAsArray )\n"
 "\n"
 "    def PotentialFromMatrix( arrayOfArrays ):\n"
@@ -980,9 +977,8 @@ namespace Vevacious
 "        quickTunneler = CPD.fullTunneling( V = PotentialFromMatrix,\n"
 "                                           dV = GradientFromMatrix,\n"
 "                                           phi = arrayOfArrays,\n"
-"                                           quickTunneling = True,\n"
+"                                           quickTunneling = False,\n"
 "                                           npoints = tunnelingResolution )\n"
-"        quickTunneler.doQuickTunnel()\n"
 "        quickTunneler.tunnel1D( xtol = 1e-4, phitol = 1e-6 )\n"
 "        actionValue = quickTunneler.findAction()\n"
 "        actionType = \"direct_path_bound\"\n"
@@ -997,9 +993,13 @@ namespace Vevacious
 "        fullTunneler = CPD.fullTunneling( V = PotentialFromMatrix,\n"
 "                                          dV = GradientFromMatrix,\n"
 "                                          phi = arrayOfArrays,\n"
-"                                          quickTunneling = True,\n"
+"                                          quickTunneling = False,\n"
 "                                          npoints = tunnelingResolution )\n"
-"        fullTunneler.run()\n"
+"# setting a maximum of 2 path deformation iterations before giving up on\n"
+"# finding the optimal path may seem defeatist, but I have rarely seen it\n"
+"# converge if it hasn't within the first few iterations. an action is still\n"
+"# calculated, though it may not be the minimum action possible.\n"
+"        fullTunneler.run( maxiter = 2 )\n"
 "        actionValue = fullTunneler.findAction()\n"
 "        actionType = \"full_deformed_path\"\n"
 "        if ( actionValue < VPD." << deformedActionBoundVariableName << " ):\n"
@@ -1032,7 +1032,7 @@ namespace Vevacious
 "        tunnelingTime = 1000000.0\n"
 "# The tunneling time is capped at a million times the current age of the\n"
 "# known Universe.\n"
-"# This code assumes that the age of the Universe is 10^(44)/TeV, and that\n"
+"# This code assumes that the age of the Universe is (10^(44))/TeV, and that\n"
 "# the solitonic solution factor (Sidney Coleman\'s \"A\") is (0.1 TeV)^4.\n"
 "outputFile.write( \"\\n  <lifetime  action_calculation=\\\"\" + actionType\n"
 "                  + \"\\\" > \" + str( tunnelingTime ) + \" </lifetime>\" )\n"

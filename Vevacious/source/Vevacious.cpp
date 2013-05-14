@@ -68,15 +68,15 @@ int main( int argumentCount,
   vevaciousRunner.setImaginaryPartTolerance( argumentParser.fromTag(
                                                          "imaginary_tolerance",
                                                                "0.0000001" ) );
+  vevaciousRunner.setMinuitNudgesOffSaddlePoints(
+                                       argumentParser.fromTag( "saddle_nudges",
+                                                               "1.0, 2.0" ) );
   vevaciousRunner.setMaximumMinuitNudgesOffSaddlePoints(
                                    argumentParser.fromTag( "max_saddle_nudges",
-                                                         "3" ) );
+                                                         "2" ) );
   vevaciousRunner.setMinuitRollingTolerance( argumentParser.fromTag(
                                                               "roll_tolerance",
                                                                      "0.1" ) );
-  vevaciousRunner.setLifetimeForQuarticGuess( argumentParser.fromTag(
-                                                                "quartic_time",
-                                                                    "-1.0" ) );
   vevaciousRunner.setLifetimeForDirectPath( argumentParser.fromTag(
                                                                  "direct_time",
                                                                      "0.1" ) );
@@ -84,9 +84,8 @@ int main( int argumentCount,
                                                                "deformed_time",
                                                                      "0.1" ) );
   // negative arguments (as doubles or std::strings representing doubles) for
-  // setLifetimeForQuarticGuess, setLifetimeForDirectPath, or
-  // setLifetimeForDeformedPath means that the relevant tunneling time
-  // calculation will be skipped.
+  // setLifetimeForDirectPath, or setLifetimeForDeformedPath means that the
+  // relevant tunneling time calculation will be skipped.
 
   double setupFinishTime( secondsSince( startTimeval ) );
   std::cout

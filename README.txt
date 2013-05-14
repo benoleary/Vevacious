@@ -92,36 +92,36 @@
  should allow a successful installation:
  1) Download SARAH. The files are available at
     http://sarah.hepforge.org/
-    (link last checked 2012-10-08). The installation is as simple as unpacking
+    (link last checked 2013-05-14). The installation is as simple as unpacking
     the gzipped tarball.
  2) Download HOM4PS2. The files are available at
     http://www.math.nsysu.edu.tw/~leetsung/works/HOM4PS_soft_files/HOM4PS_Linux.htm
-    (link last checked 2013-02-15). The installation is as simple as unpacking
+    (link last checked 2013-05-14). The installation is as simple as unpacking
     the gzipped tarball.
  3) Ensure that Python is installed. PyMinuit requires at least version 2.4 or
     later. I shouldn't have to get into any specifics of how to install Python
     here... Internet search engines are your friends.
  4) Download and install PyMinuit. The instructions are available at
     http://code.google.com/p/pyminuit/wiki/HowToInstall
-    (link last checked 2012-10-08). The installation involves downloading and
+    (link last checked 2013-05-14). The installation involves downloading and
     compiling one of the C++ implementations of MINUIT (such as the standalone
     version 1.7.9 or the CERN ROOT version, both available from
     http://lcgapp.cern.ch/project/cls/work-packages/mathlibs/minuit/
-    (link last checked 2012-10-08)), then running the PyMinuit setup script
+    (link last checked 2013-05-14)), then running the PyMinuit setup script
     (giving the path where the C++ MINUIT code was _built_, *not* installed -
     it needs the .o object files rather than the .a library file...). The
     LD_LIBRARY_PATH and PYTHONPATH environment variables then need to be set.
  5) Download and compile the LesHouchesParserClasses (LHPC) C++ library. The
     files are available at
     http://www.hepforge.org/downloads/lhpc
-    (link last checked 2013-03-10) or
+    (link last checked 2013-05-14) or
     https://github.com/benoleary/LesHouchesParserClasses_CPP
-    (link last checked 2012-10-08). The installation should just be
+    (link last checked 2013-05-14). The installation should just be
     downloading, unzipping, and then running make.
  6) Compile Vevacious. The Makefile should be edited to have the correct paths
     to the header files and library file of LHPC (these are
     /path/to/unzipped/LHPC/include/ and /path/to/unzipped/LHPC/lib/ by
-    default). LHPC version 0.8.2 or higher is required.
+    default). LHPC version 0.8.4 or higher is required.
 
  Once Vevacious is installed, it can be run as is. Various parameters for each
  execution can be specified: for the list, see the
@@ -134,6 +134,19 @@
 
 
 CHANGELOG:
+ * 14th May 2013: version 1.0.0
+ - First release!
+ - Slight changes to code calling CosmoTransitions to no longer use
+   quickTunneling = True, on advice from the author of CosmoTransitions, Max
+   Wainwright.
+ - saddle_nudges input argument added, to give a list of floating point numbers
+   to be used as the set of nudge sizes for the displacement of MINUIT off
+   saddle points.
+ - Default Vevacious.py cleaned up a bit to make it easier to substitute in the
+   tree-level potential as the function to be used for the analysis. PyMinuit
+   also has limits of a thousand times the energy scale for the VEVs now, to
+   avoid it rolling off to infinity.
+   
  * 26th April 2013: version 0.2.8
  - Publicly available on GitHub, but still not officially released!
  - added optional bool argument to VevaciousRunner::appendResultsToSlha

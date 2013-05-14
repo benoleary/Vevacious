@@ -25,8 +25,14 @@ namesOfVevs = VPD.namesOfVevs
 numberOfVevs = len( namesOfVevs )
 stepSize = ( 1.0 / VPD.energyScale )
 rollingToleranceSquared = ( VPD.rollingTolerance * VPD.rollingTolerance )
+
+effectivePotentialFunction = VPD.LoopCorrectedPotential
+# one could replace VPD.LoopCorrectedPotential
+# with VPD.TreeLevelPotential for a
+# tree-level analysis, for example.
+
 potentialAtVevOrigin = ( VPD.energyScaleFourth
-                         * VPD.FunctionFromDictionary( VPD.LoopCorrectedPotential,
+                         * VPD.FunctionFromDictionary( effectivePotentialFunction,
                             VPD.vevOrigin ) )
 
 # MINUIT's hesse() function assumes that it is already at a
@@ -69,7 +75,8 @@ if ( 0 >= len( pointsToTry ) ):
 foundMinima = []
 foundSaddles = []
 
-minuitObject = minuit.Minuit( VPD.LoopCorrectedPotential )
+
+minuitObject = minuit.Minuit( effectivePotentialFunction )
 # There is a possibility of MINUIT trying to roll off to infinity but
 # generating an overflow error in calculating the potential before throwing
 # an exception. Here limits are set on the VEVs of one thousand times
@@ -90,7 +97,7 @@ def VevsHaveCorrectSigns( vevValues ):
 
 def SteepestDescent( vevValues ):
     eigensystemOfHessian = numpy.linalg.eigh( NumericalHessian(
-                                                VPD.LoopCorrectedPotential,
+                                                effectivePotentialFunction,
                                                               vevValues ) )
     mostNegativeEigenvalueValue = 0.0
     mostNegativeEigenvalueIndex = 0
@@ -154,7 +161,7 @@ for vevValueSet in pointsToTry:
     if ( VevsHaveCorrectSigns( vevValueSet ) ):
         TryToMinimize( vevValueSet )
 
-for saddleSplit in range( VPD.maximumSaddleSplits ):
+for saddleSplitNudge in VPD.saddleSplitNudges:
     if ( 0 < len( foundSaddles ) ):
         print( "PyMinuit had to be nudged off "
                + str( len( foundSaddles ) ) + " saddle point(s)." )
@@ -163,11 +170,11 @@ for saddleSplit in range( VPD.maximumSaddleSplits ):
             pointsToTry.append( DisplacePoint(
                                          saddlePoint[ 0 ][ 'vevValues' ],
                                                        saddlePoint[ 1 ], 
-                                                       stepSize ) )
+                                                       saddleSplitNudge ) )
             pointsToTry.append( DisplacePoint(
                                          saddlePoint[ 0 ][ 'vevValues' ],
                                                        saddlePoint[ 1 ], 
-                                                       -stepSize ) )
+                                                      -saddleSplitNudge ) )
         foundSaddles = []
         for vevValueSet in pointsToTry:
             if ( VevsHaveCorrectSigns( vevValueSet ) ):
@@ -330,37 +337,6 @@ if ( ( rollingToleranceSquared * rolledInputLengthSquared )
     actionType = "unnecessary"
     actionNeedsToBeCalculated = False
 
-if ( actionNeedsToBeCalculated
-     and ( 0.0 < VPD.quarticActionBound )
-     and ( actionValue > VPD.quarticActionBound ) ):
-# These numbers come from fitting a quartic polynomial to have its minima
-# at the (rolled) input VEVs and the global minimum, also having the
-# correct value half-way between them. then the cubic term is thrown away,
-# so the quartic now sits atop the full potential, snugly at the input
-# minimum, and the coefficients matched to those given by Sidney Coleman in
-# PRD vol.15, num.10, 15th May 1977 (i.e. {\mu}^{2}, here muSquared, and
-# \lambda, here lambdaValue. Then Coleman's epsilon, here epsilonValue,
-# is identified as the difference in depths at the minima. This should give
-# a very conservative upper bound on the tunneling time.
-    halfwayPoint = ( ( globalMinimumPointAsArray
-                       + rolledInputAsArray ) * 0.5 )
-    halfwayDepth = VPD.FunctionFromArray( VPD.LoopCorrectedPotential,
-                                          halfwayPoint )
-    muSquared = ( ( 2.0 * ( 16.0 * halfwayDepth
-                            - 11.0 * rolledInputDepth
-                            - 5.0 * globalMinimumDepthValue ) )
-                  / distanceSquaredFromInputToGlobalMinimum )
-    lambdaValue = ( ( 8.0 * ( 2.0 * halfwayDepth - rolledInputDepth
-                              - globalMinimumDepthValue ) )
-                    / distanceSquaredFromInputToGlobalMinimum**2 )
-    epsilonValue = ( rolledInputDepth - globalMinimumDepthValue )
-    actionValue = ( ( math.pi * math.pi * muSquared**6 )
-                    / ( 6.0 * lambdaValue**4 * epsilonValue**3 ) )
-    actionType = "quartic_bound"
-    if ( actionValue < VPD.quarticActionBound ):
-        stabilityVerdict = "unstable"
-        actionNeedsToBeCalculated = False
-
 # The resolution of the tunneling path needs to be set
 # (low-ish by default for speed):
 tunnelingResolution = 20
@@ -372,9 +348,9 @@ if ( actionNeedsToBeCalculated
                          * ( 1.0 - ( 1.0 / tunnelingResolution ) ) )
                        + ( globalMinimumPointAsArray
                            * ( 1.0 / tunnelingResolution ) ) )
-    firstStepDepth = VPD.FunctionFromArray( VPD.LoopCorrectedPotential,
-                                            firstStepPoint )
-    if ( 0.0 <= firstStepDepth ):
+    firstStepDepth = VPD.FunctionFromArray( effectivePotentialFunction,
+                                                firstStepPoint )
+    if ( rolledInputDepth >= firstStepDepth ):
         actionType = "barrier_smaller_than_resolution"
         actionValue = 0.0
         tunnelingTime = 0.0
@@ -397,7 +373,7 @@ if ( actionNeedsToBeCalculated
                                    rolledInputAsArray.copy() ] )
 
     def PotentialFromArray( pointAsArray ):
-        return VPD.FunctionFromArray( VPD.LoopCorrectedPotential,
+        return VPD.FunctionFromArray( effectivePotentialFunction,
                                                              pointAsArray )
 
     def PotentialFromMatrix( arrayOfArrays ):
@@ -442,9 +418,8 @@ if ( actionNeedsToBeCalculated
         quickTunneler = CPD.fullTunneling( V = PotentialFromMatrix,
                                            dV = GradientFromMatrix,
                                            phi = arrayOfArrays,
-                                           quickTunneling = True,
+                                           quickTunneling = False,
                                            npoints = tunnelingResolution )
-        quickTunneler.doQuickTunnel()
         quickTunneler.tunnel1D( xtol = 1e-4, phitol = 1e-6 )
         actionValue = quickTunneler.findAction()
         actionType = "direct_path_bound"
@@ -458,9 +433,13 @@ if ( actionNeedsToBeCalculated
         fullTunneler = CPD.fullTunneling( V = PotentialFromMatrix,
                                           dV = GradientFromMatrix,
                                           phi = arrayOfArrays,
-                                          quickTunneling = True,
+                                          quickTunneling = False,
                                           npoints = tunnelingResolution )
-        fullTunneler.run()
+# setting a maximum of 2 path deformation iterations before giving up on
+# finding the optimal path may seem defeatist, but I have rarely seen it
+# converge if it hasn't within the first few iterations. an action is still
+# calculated, though it may not be the minimum action possible.
+        fullTunneler.run( maxiter = 2 )
         actionValue = fullTunneler.findAction()
         actionType = "full_deformed_path"
         if ( actionValue < VPD.deformedActionBound ):
