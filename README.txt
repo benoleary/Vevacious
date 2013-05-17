@@ -134,8 +134,13 @@
 
 
 CHANGELOG:
- * 14th May 2013: version 1.0.0
- - First release!
+ * 17th May 2013: version 0.3.0
+ - Vevacious now prints its version and the documentation citation in the
+   results file and also SLHA block.
+ - Added NMSSM example model files and a single, metastable example spectrum.
+
+ * 14th May 2013: version 0.2.9
+ - First version publicly available, but not officially released yet.
  - Slight changes to code calling CosmoTransitions to no longer use
    quickTunneling = True, on advice from the author of CosmoTransitions, Max
    Wainwright.

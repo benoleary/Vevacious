@@ -31,6 +31,10 @@ namespace Vevacious
   class VevaciousRunner
   {
   public:
+    static std::string const vevaciousVersionString;
+    static std::string const vevaciousVersionName;
+    static std::string const vevaciousDocumentation;
+
     VevaciousRunner( std::string const& modelFilename,
                      std::string const& hom4ps2Directory,
                      std::string const& homotopyType );
@@ -209,12 +213,6 @@ namespace Vevacious
   // the default file with name given by defaultPythonFilename is written &
   // run.
   {
-    // debugging:
-    /**/std::cout << std::endl << "debugging:"
-    << std::endl
-    << "VevaciousRunner::runPython( \"" << pythonFilename << "\" ) called.";
-    std::cout << std::endl;/**/
-
     BOL::UsefulStuff::runSystemCommand(
                                  prepareToRunPythonCommand( pythonFilename ) );
   }

@@ -15,6 +15,12 @@
 
 namespace Vevacious
 {
+  std::string const VevaciousRunner::vevaciousVersionString( "0.3.0" );
+  std::string const
+  VevaciousRunner::vevaciousVersionName( "vevaciousVersion" );
+  std::string const
+  VevaciousRunner::vevaciousDocumentation( "[still unpublished]" );
+  // VevaciousRunner::vevaciousDocumentation( "arXiv:1305.????" );
   double const VevaciousRunner::lifetimeFactor( ( 4.0 * 44.0 * log( 10.0 ) )
                                                 + log( 0.0001 ) );
   // The age of the Universe is pretty close to 10^(44)/TeV. The equation used
@@ -268,6 +274,7 @@ namespace Vevacious
 "import math\n"
 "import numpy.linalg\n"
 "\n"
+<< vevaciousVersionName << " = \"" << vevaciousVersionString << "\"\n"
 << resultsFilenameVariableName << " = \"" << resultsFilename << "\"\n"
 "\n"
 << PotentialMinimizer::energyScale << " = " << sarahInterpreter.getSlhaScale()
@@ -387,7 +394,9 @@ namespace Vevacious
       // the put pointer is now about to overwrite the 1st '\n' of the sequence
       // of '\n' characters ending the file.
       outputFile << "\n"
-      << "BLOCK VEVACIOUSRESULTS # results from Vevacious\n"
+      << "BLOCK VEVACIOUSRESULTS # results from Vevacious version "
+      << vevaciousVersionString << ", documented in " << vevaciousDocumentation
+      << "\n"
       << "    0   0    " << slhaDoubleMaker.doubleToString( stabiltyResult );
       if( !properFormatRatherThanSspReadable )
       {
@@ -995,11 +1004,11 @@ namespace Vevacious
 "                                          phi = arrayOfArrays,\n"
 "                                          quickTunneling = False,\n"
 "                                          npoints = tunnelingResolution )\n"
-"# setting a maximum of 2 path deformation iterations before giving up on\n"
+"# setting a maximum of 20 path deformation iterations before giving up on\n"
 "# finding the optimal path may seem defeatist, but I have rarely seen it\n"
 "# converge if it hasn't within the first few iterations. an action is still\n"
 "# calculated, though it may not be the minimum action possible.\n"
-"        fullTunneler.run( maxiter = 2 )\n"
+"        fullTunneler.run( maxiter = 20 )\n"
 "        actionValue = fullTunneler.findAction()\n"
 "        actionType = \"full_deformed_path\"\n"
 "        if ( actionValue < VPD." << deformedActionBoundVariableName << " ):\n"
@@ -1008,9 +1017,11 @@ namespace Vevacious
 "\n"
 "# No matter if there were serious errors or not, an output file is written:\n"
 "outputFile = open( VPD." << resultsFilenameVariableName << ", \"w\" )\n"
-"outputFile.write( \"<Vevacious_result>\\n  <stability> \"\n"
-"                      + stabilityVerdict\n"
-"              + \" </stability>\\n  <global_minimum   relative_depth=\\\"\"\n"
+"outputFile.write( \"<Vevacious_result>\\n\"\n"
+"                  + \" <reference version=\\\"" << vevaciousVersionString
+<<           "\\\" citation=\\\"" << vevaciousDocumentation << "\\\" />\\n\"\n"
+"              + \" <stability> \" + stabilityVerdict + \" </stability>\\n\"\n"
+"                  + \" <global_minimum   relative_depth=\\\"\"\n"
 "                      + str( ( globalMinimumDepthValue * VPD."
 <<                                        PotentialMinimizer::energyScaleFourth
 <<                                  " ) - potentialAtVevOrigin ) + \"\\\" \"\n"
