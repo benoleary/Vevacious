@@ -84,7 +84,7 @@ int main( int argumentCount,
                                                                "deformed_time",
                                                                      "0.1" ) );
   // negative arguments (as doubles or std::strings representing doubles) for
-  // setLifetimeForDirectPath, or setLifetimeForDeformedPath means that the
+  // setLifetimeForDirectPath or setLifetimeForDeformedPath means that the
   // relevant tunneling time calculation will be skipped.
 
   double setupFinishTime( secondsSince( startTimeval ) );
@@ -106,7 +106,7 @@ int main( int argumentCount,
   // solve tadpoles for specific SLHA, adding results to given (/default) file.
   std::string slhaFilename( argumentParser.fromTag( "slha_file",
                                                     "./SPheno.spc.MSSM" ) );
-  vevaciousRunner.overwriteTreeLevelExtrema( slhaFilename );
+  vevaciousRunner.findTreeLevelExtrema( slhaFilename );
 
   // this step is not necessary, but the tree-level extrema are printed out for
   // reference in a Mathematica-friendly format.

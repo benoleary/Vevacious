@@ -134,6 +134,16 @@
 
 
 CHANGELOG:
+ * 5th June 2013: version 0.3.1
+ - Added VevaciousRunner::findTreeLevelExtrema(...) as a synonym for
+   VevaciousRunner::overwriteTreeLevelExtrema(...).
+ - Changed verdict of results from "unstable" for tunneling times below the
+   threshold to "short-lived" and from "metastable" to "long-lived" for those
+   over the threshold.
+ - Added example model files in Vevacious/MSSM/ that use purely the SLHA1
+   conventions without requiring the extra HMIX data lines that are assumed by
+   SARAH.
+
  * 17th May 2013: version 0.3.0
  - Vevacious now prints its version and the documentation citation in the
    results file and also SLHA block.

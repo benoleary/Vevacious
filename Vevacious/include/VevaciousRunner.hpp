@@ -80,6 +80,11 @@ namespace Vevacious
     void appendTreeLevelExtrema( std::string const& slhaFilename,
                                  std::string const solutionsFilename
                                  = "VevaciousTreeLevelExtrema.py" );
+    void findTreeLevelExtrema( std::string const& slhaFilename,
+                               std::string const solutionsFilename
+                               = "VevaciousTreeLevelExtrema.py" )
+    { overwriteTreeLevelExtrema( slhaFilename,
+                                 solutionsFilename ); }
     void overwriteTreeLevelExtrema( std::string const& slhaFilename,
                                     std::string const solutionsFilename
                                     = "VevaciousTreeLevelExtrema.py" );

@@ -333,11 +333,11 @@ namespace Vevacious
           {
             stabiltyResult = 1.0;
           }
-          else if( 0 == stabilityVerdict.compare( "metastable" ) )
+          else if( 0 == stabilityVerdict.compare( "long-lived" ) )
           {
             stabiltyResult = 0.0;
           }
-          else if( 0 == stabilityVerdict.compare( "unstable" ) )
+          else if( 0 == stabilityVerdict.compare( "short-lived" ) )
           {
             stabiltyResult = -1.0;
           }
@@ -761,8 +761,8 @@ namespace Vevacious
 "    warningMessages.append( warningMessage )\n"
 "    print( warningMessage )\n"
 "\n"
-"# The result is assumed metastable unless found otherwise.\n"
-"stabilityVerdict = \"metastable\"\n"
+"# The result is assumed long-lived metastable unless found otherwise.\n"
+"stabilityVerdict = \"long-lived\"\n"
 "givenInputAsArray = VPD." << PotentialMinimizer::vevDictionaryToArray
 <<                     "( VPD." << PotentialMinimizer::inputVevsPoint << " )\n"
 "minuitObject.values = VPD." << PotentialMinimizer::inputVevsPoint
@@ -920,7 +920,7 @@ namespace Vevacious
 "        actionType = \"barrier_smaller_than_resolution\"\n"
 "        actionValue = 0.0\n"
 "        tunnelingTime = 0.0\n"
-"        stabilityVerdict = \"unstable\"\n"
+"        stabilityVerdict = \"short-lived\"\n"
 "        actionNeedsToBeCalculated = False\n"
 "        warningMessage = ( \"Energy barrier from input VEVs to global\"\n"
 "                           + \" minimum less than resolution of tunneling\"\n"
@@ -992,7 +992,7 @@ namespace Vevacious
 "        actionValue = quickTunneler.findAction()\n"
 "        actionType = \"direct_path_bound\"\n"
 "        if( actionValue < VPD." << directActionBoundVariableName << " ):\n"
-"            stabilityVerdict = \"unstable\"\n"
+"            stabilityVerdict = \"short-lived\"\n"
 "            actionNeedsToBeCalculated = False\n"
 "\n"
 "    if ( actionNeedsToBeCalculated\n"
@@ -1012,7 +1012,7 @@ namespace Vevacious
 "        actionValue = fullTunneler.findAction()\n"
 "        actionType = \"full_deformed_path\"\n"
 "        if ( actionValue < VPD." << deformedActionBoundVariableName << " ):\n"
-"            stabilityVerdict = \"unstable\"\n"
+"            stabilityVerdict = \"short-lived\"\n"
 "            actionNeedsToBeCalculated = False\n"
 "\n"
 "# No matter if there were serious errors or not, an output file is written:\n"
