@@ -16,6 +16,7 @@
 
 #include <string>
 #include <set>
+#include <stdexcept>
 #include "SLHA.hpp"
 #include "VevRenamer.hpp"
 
@@ -55,6 +56,7 @@ namespace Vevacious
     std::string searchString;
     std::string slhaString;
     std::string returnString;
+    double gaugeScale;
   };
 
 
@@ -62,7 +64,7 @@ namespace Vevacious
 
   inline double SarahSlhaConverter::getScale() const
   {
-    return slhaValues.getLowestScale( "GAUGE" );
+    return gaugeScale;
   }
 
 } /* namespace Vevacious */

@@ -14,9 +14,10 @@
 #
  -->
 
-  <!-- hom4ps2_dir is where the executable hom4ps2 is. -->
+  <!-- hom4ps2_dir is where the executable hom4ps2 is. absolute paths such as
+       /home/hom4ps2/ can be used. -->
   <hom4ps2_dir>
-  /path/to/HOM4PS2/
+  ./HOM4PS2/
   </hom4ps2_dir>
 
   <!-- homotopy_type is 1 for polyhedral homotopy or 2 for linear homotopy. -->
@@ -35,23 +36,27 @@
   </imaginary_tolerance>
 
   <!-- model_file is where the loop-corrected potential stuff as written by
-       SARAH is. -->
+       SARAH is. absolute paths such as /home/vevacious/MyModel/MyModel.vin can
+       be used. -->
   <model_file>
-  ../MSSM/Vevacious.in.realStauVevs_MSSM
+  ./MyModel.vin
   </model_file>
 
-  <!-- slha_file is where the Lagrangian parameters in SLHA format are. -->
+  <!-- slha_file is where the Lagrangian parameters in SLHA format are.
+       absolute paths such as /home/spheno/MyModel/SPheno.spc.MyModel can be
+       used. -->
   <slha_file>
-  ../MSSM/SPheno.spc.MSSM.SPS1ap
+  ./MyParameters.slha.out
   </slha_file>
 
   <!-- output is where the loop-corrected minimum, as found by PyMinuit
-       starting from the HOM4PS2 extrema, should be written. -->
+       starting from the HOM4PS2 extrema, should be written. absolute paths
+       such as /home/vevacious/MyModel/MyResult.vout can be used. -->
   <result_file>
-  ./VevaciousResult.xml.realStauVevs_MSSM
+  ./MyResult.vout
   </result_file>
 
-  <!-- saddle_splits is the comma-separated list of nudges in GeV that should
+  <!-- saddle_nudges is the comma-separated list of nudges in GeV that should
        be used to nudge PyMinuit off any saddle points where it has come to
        rest. -->
   <saddle_nudges>
@@ -59,9 +64,9 @@
   </saddle_nudges>
 
   <!-- ct_path is the path to where pathDeformation.py & tunneling1D.py are
-       found. -->
+       found. absolute paths such as /home/cosmotransitions/ can be used. -->
   <ct_path>
-  /path/to/CosmoTransitions/
+  ./CosmoTransitions/
   </ct_path>
 
   <!-- roll_tolerance is the tolerance for whether extrema are identified with
@@ -80,29 +85,19 @@
   0.1
   </roll_tolerance>
  
-  <!-- quartic_time, direct_time, deformed_time: the fraction of the age of the
+  <!-- direct_time, deformed_time: the fraction of the age of the
        Universe (taken to be 10^41/GeV) which is considered to be long enough
        that the calculation just performed is sufficient for determining the
        stability of the parameter point's input vacuum. these are only relevant
        if the input minimum was not the deepest minimum found.
 
-       1st the quartic_time calculation is performed, and if the upper bound on
-       the lifetime is above the given value for quartic_time, then the
-       direct_time calculation is performed, and if the upper bound on the
-       lifetime is above the given value for direct_time, then the
+       1st the direct_time calculation is performed, and if the upper bound
+       the lifetime is above the given value for direct_time, then the
        deformed_time calculation is performed. For example, if the upper bound
-       on the lifetime from the quartic calculation was
-       0.0000143 * (10^41/GeV), and quartic_time was 0.2, since 0.0000143 is
-       less than 0.2, the slower, fuller calculations of the lifetime are
+       on the lifetime from the direct calculation was
+       0.0000143 * (10^41/GeV), and direct_time was 0.2, since 0.0000143 is
+       less than 0.2, the slower, fuller calculation of the lifetime are
        skipped.  -->
-
-  <!-- quartic_time: if positive, a quartic polynomial is fitted to a straight
-       line in VEV space between the true and false vacua and the thin-wall
-       approximation by Sidney Coleman is used to get an upper bound on the
-       lifetime. -->
-  <!-- Actually, this is not working very well at the moment, so it is
-       recommended to be left off, indicated by a negative value. -->
-  <quartic_time> -1.0 </quartic_time>
   <!-- direct_time: if positive, CosmoTransitions is used on a straight line
        in VEV space between the true and false vacua to get an upper bound on
        the lifetime. -->

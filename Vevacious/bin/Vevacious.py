@@ -75,7 +75,6 @@ if ( 0 >= len( pointsToTry ) ):
 foundMinima = []
 foundSaddles = []
 
-
 minuitObject = minuit.Minuit( effectivePotentialFunction )
 # There is a possibility of MINUIT trying to roll off to infinity but
 # generating an overflow error in calculating the potential before throwing
@@ -211,8 +210,8 @@ if ( 0 >= len( globalMinimumCandidates ) ):
     warningMessages.append( warningMessage )
     print( warningMessage )
 
-# The result is assumed metastable unless found otherwise.
-stabilityVerdict = "metastable"
+# The result is assumed long-lived metastable unless found otherwise.
+stabilityVerdict = "long-lived"
 givenInputAsArray = VPD.VevDictionaryToArray( VPD.inputVevsPoint )
 minuitObject.values = VPD.inputVevsPoint.copy()
 foundSaddles = []
@@ -354,10 +353,10 @@ if ( actionNeedsToBeCalculated
         actionType = "barrier_smaller_than_resolution"
         actionValue = 0.0
         tunnelingTime = 0.0
-        stabilityVerdict = "unstable"
+        stabilityVerdict = "short-lived"
         actionNeedsToBeCalculated = False
         warningMessage = ( "Energy barrier from input VEVs to global"
-                           + " minimum less than resolution of tunneling"
+                        + " minimum thinner than resolution of tunneling"
                            + " path!" )
         warningMessages.append( warningMessage )
         print( warningMessage )
@@ -424,7 +423,7 @@ if ( actionNeedsToBeCalculated
         actionValue = quickTunneler.findAction()
         actionType = "direct_path_bound"
         if( actionValue < VPD.directActionBound ):
-            stabilityVerdict = "unstable"
+            stabilityVerdict = "short-lived"
             actionNeedsToBeCalculated = False
 
     if ( actionNeedsToBeCalculated
@@ -435,22 +434,23 @@ if ( actionNeedsToBeCalculated
                                           phi = arrayOfArrays,
                                           quickTunneling = False,
                                           npoints = tunnelingResolution )
-# setting a maximum of 2 path deformation iterations before giving up on
+# setting a maximum of 20 path deformation iterations before giving up on
 # finding the optimal path may seem defeatist, but I have rarely seen it
 # converge if it hasn't within the first few iterations. an action is still
 # calculated, though it may not be the minimum action possible.
-        fullTunneler.run( maxiter = 2 )
+        fullTunneler.run( maxiter = 20 )
         actionValue = fullTunneler.findAction()
         actionType = "full_deformed_path"
         if ( actionValue < VPD.deformedActionBound ):
-            stabilityVerdict = "unstable"
+            stabilityVerdict = "short-lived"
             actionNeedsToBeCalculated = False
 
 # No matter if there were serious errors or not, an output file is written:
 outputFile = open( VPD.outputFile, "w" )
-outputFile.write( "<Vevacious_result>\n  <stability> "
-                      + stabilityVerdict
-              + " </stability>\n  <global_minimum   relative_depth=\""
+outputFile.write( "<Vevacious_result>\n"
+                  + "  <reference version=\"0.3.0\" citation=\"[still unpublished]\" />\n"
+             + "  <stability> " + stabilityVerdict + " </stability>\n"
+                  + "  <global_minimum   relative_depth=\""
                       + str( ( globalMinimumDepthValue * VPD.energyScaleFourth ) - potentialAtVevOrigin ) + "\" "
                       + VPD.UserVevsAsXml( globalMinimumPointAsDictionary )
                       + " />\n  <input_minimum   relative_depth=\""
@@ -466,7 +466,7 @@ if ( 0.0 <= actionValue ):
         tunnelingTime = 1000000.0
 # The tunneling time is capped at a million times the current age of the
 # known Universe.
-# This code assumes that the age of the Universe is 10^(44)/TeV, and that
+# This code assumes that the age of the Universe is (10^(44))/TeV, and that
 # the solitonic solution factor (Sidney Coleman's "A") is (0.1 TeV)^4.
 outputFile.write( "\n  <lifetime  action_calculation=\"" + actionType
                   + "\" > " + str( tunnelingTime ) + " </lifetime>" )

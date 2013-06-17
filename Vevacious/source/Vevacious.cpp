@@ -15,6 +15,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
+#include <stdexcept>
 #include <sys/time.h>
 #include "BOLlib/include/ArgumentParser.hpp"
 #include "BOLlib/include/StringParser.hpp"
@@ -49,7 +50,7 @@ int main( int argumentCount,
   // set up runner for specific model
   Vevacious::VevaciousRunner
   vevaciousRunner( argumentParser.fromTag( "model_file",
-                                          "./Vevacious.in.realStauVevs_MSSM" ),
+                                          "./MyModel.vin" ),
                    argumentParser.fromTag( "hom4ps2_dir",
                                            "./HOM4PS2/" ),
                    argumentParser.fromTag( "homotopy_type",
@@ -62,7 +63,7 @@ int main( int argumentCount,
   // the other settings have "reasonable" defaults, but one might want to
   // change them here:
   std::string resultsFilename( argumentParser.fromTag( "result_file",
-                                "./VevaciousResults.xml.realStauVevs_MSSM" ) );
+                                                       "./MyResult.vout" ) );
   vevaciousRunner.setResultsFilename( resultsFilename );
   BOL::UsefulStuff::runSystemCommand( "rm " + resultsFilename );
   vevaciousRunner.setImaginaryPartTolerance( argumentParser.fromTag(
@@ -105,13 +106,27 @@ int main( int argumentCount,
 
   // solve tadpoles for specific SLHA, adding results to given (/default) file.
   std::string slhaFilename( argumentParser.fromTag( "slha_file",
-                                                    "./SPheno.spc.MSSM" ) );
-  vevaciousRunner.findTreeLevelExtrema( slhaFilename );
+                                                 "./MyParameters.slha.out" ) );
+  try
+  {
+    vevaciousRunner.findTreeLevelExtrema( slhaFilename );
+  }
+  catch( std::invalid_argument& invalidSlha )
+  {
+    std::cout
+    << std::endl
+    << "Unfortunately the SLHA file was not acceptable ("
+    << invalidSlha.what() << "), hence the calculation has been aborted.";
+    std::cout << std::endl;
+
+    return EXIT_FAILURE;
+  }
 
   // this step is not necessary, but the tree-level extrema are printed out for
   // reference in a Mathematica-friendly format.
   BOL::UsefulStuff::runSystemCommand(
                                      "rm ./Vevacious_tree-level_extrema.txt" );
+
   vevaciousRunner.writeCalculatedTreeLevelExtrema(
                                         "./Vevacious_tree-level_extrema.txt" );
 
@@ -126,7 +141,20 @@ int main( int argumentCount,
   // was a reason to think that those extrema might help PyMinuit...
 
   // prepare potential for Vevacious.py (/given other Python program).
-  vevaciousRunner.prepareParameterDependentPython( slhaFilename );
+  try
+  {
+    vevaciousRunner.prepareParameterDependentPython( slhaFilename );
+  }
+  catch( std::invalid_argument& invalidSlha )
+  {
+    std::cout
+    << std::endl
+    << "Unfortunately the SLHA file was not acceptable ("
+    << invalidSlha.what() << "), hence the calculation has been aborted.";
+    std::cout << std::endl;
+
+    return EXIT_FAILURE;
+  }
 
   // run Vevacious.py (/given other Python program).
   std::string mainPythonFilename( argumentParser.fromTag( "python_main",

@@ -80,7 +80,8 @@
  beyond the number of minima that the tree-level potential has. By default,
  Vevacious will move the MINUIT object off saddle points in the steepest
  direction and its mirror, so will find minima that develop when a tree-level
- minimum becomes a one-loop-level saddle point (such as the origin for SPS1a').
+ minimum becomes a one-loop-level saddle point (such as the origin for SPS1a'
+ in a certain renormalization scheme).
  There is also no guarantee that the MINUIT minimization starting from the
  tree-level extrema will find as many minima as the tree-level potential has,
  regardless of whether the loop corrections introduce more minima. The user
@@ -134,6 +135,12 @@
 
 
 CHANGELOG:
+ * 17th June 2013: version 1.0.0
+ - Release version!
+ - Added consistency check that all used SLHA BLOCK scales must be the same,
+   otherwise the program prints an error message and returns EXIT_FAILURE.
+ - Updated examples.
+   
  * 5th June 2013: version 0.3.1
  - Added VevaciousRunner::findTreeLevelExtrema(...) as a synonym for
    VevaciousRunner::overwriteTreeLevelExtrema(...).

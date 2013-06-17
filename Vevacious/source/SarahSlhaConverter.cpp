@@ -26,9 +26,10 @@ namespace Vevacious
     blockEnd( 0 ),
     searchString( "" ),
     slhaString( "" ),
-    returnString( "" )
+    returnString( "" ),
+    gaugeScale( -1.0 )
   {
-    // just an initialization list.
+    gaugeScale = slhaValues.getLowestScale( "GAUGE" );
   }
 
   SarahSlhaConverter::~SarahSlhaConverter()
@@ -74,10 +75,12 @@ namespace Vevacious
       // blockEnd is now the position of the last char of the SLHA block
       // keyword to replace.
       if( std::string::npos == blockEnd )
-        // if the string had a malformed SLHA block keyword, a reference to
-        // emptyString is returned.
+        // if the string had a malformed SLHA block keyword, an exception is
+        // thrown.
       {
-        return VevRenamer::emptyString;
+        throw std::invalid_argument( "Error! Malformed SLHA block keyword: \""
+                    + inputString.substr( blockStart - blockKeyword.size() )
+                                     + "\"" );
       }
       searchString.assign( prefixString + inputString.substr( blockStart,
                                                  ( blockEnd - blockStart ) ) );
@@ -90,8 +93,29 @@ namespace Vevacious
       slhaString.assign( slhaValues.withMap( searchString ) );
       if( slhaString.empty() )
       {
-        slhaString.assign( slhaValues.withMap( inputString.substr( blockStart,
-                                               ( blockEnd - blockStart ) ) ) );
+        searchString.assign( inputString.substr( blockStart,
+                                                 ( blockEnd - blockStart ) ) );
+        slhaString.assign( slhaValues.withMap( searchString ) );
+      }
+
+      // the following consistency check on the SLHA BLOCK scales was hacked in
+      // well after the structure of Vevacious was finalized, unfortunately, so
+      // it's a horrible hack.
+      if( !(slhaString.empty())
+          &&
+          ( gaugeScale != slhaValues.getLowestScale(
+             searchString.substr( 0,
+                                  searchString.find( blockIndexOpener ) ) ) ) )
+      {
+        std::string badBlockName( searchString.substr( 0,
+                                     searchString.find( blockIndexOpener ) ) );
+        std::stringstream errorBuilder;
+        errorBuilder
+        << "Error! SLHA BLOCK scales inconsistent (GAUGE given at "
+        << gaugeScale << ", "
+        << badBlockName << " given at "
+        << slhaValues.getLowestScale( badBlockName ) << ")!";
+        throw std::invalid_argument( errorBuilder.str() );
       }
       if( zeroesReturnEmptyString
           &&

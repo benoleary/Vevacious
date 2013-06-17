@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersionString( "0.3.0" );
+  std::string const VevaciousRunner::vevaciousVersionString( "1.0.0" );
   std::string const
   VevaciousRunner::vevaciousVersionName( "vevaciousVersion" );
   std::string const
@@ -68,7 +68,7 @@ namespace Vevacious
     potentialMinimizer(),
     treeLevelExtrema(),
     firstWriteOfExtrema( true ),
-    resultsFilename( "VevaciousResult.xml" ),
+    resultsFilename( "MyResult.vout" ),
     imaginaryTolerance( 0.000001 ),
     saddleNudgeList( 2,
                      1.0 ),
@@ -133,7 +133,7 @@ namespace Vevacious
     treeLevelExtrema(),
     firstWriteOfExtrema( true ),
     resultsFilename( argumentParser.fromTag( "result_file",
-                                "./VevaciousResults.xml.realStauVevs_MSSM" ) ),
+                                             "./MyResult.vout" ) ),
     imaginaryTolerance( BOL::StringParser::stringToDouble(
                                  argumentParser.fromTag( "imaginary_tolerance",
                                                          "0.0000001" ) ) ),
@@ -162,7 +162,7 @@ namespace Vevacious
     }
     BOL::AsciiXmlParser xmlParser;
     std::string modelFilename( argumentParser.fromTag( "model_file",
-                                        "./Vevacious.in.realStauVevs_MSSM" ) );
+                                                       "./MyModel.vin" ) );
     bool xmlOpened( xmlParser.openRootElementOfFile( modelFilename ) );
     if( !xmlOpened )
     {
@@ -923,7 +923,7 @@ namespace Vevacious
 "        stabilityVerdict = \"short-lived\"\n"
 "        actionNeedsToBeCalculated = False\n"
 "        warningMessage = ( \"Energy barrier from input VEVs to global\"\n"
-"                           + \" minimum less than resolution of tunneling\"\n"
+"                        + \" minimum thinner than resolution of tunneling\"\n"
 "                           + \" path!\" )\n"
 "        warningMessages.append( warningMessage )\n"
 "        print( warningMessage )\n"
@@ -1018,10 +1018,10 @@ namespace Vevacious
 "# No matter if there were serious errors or not, an output file is written:\n"
 "outputFile = open( VPD." << resultsFilenameVariableName << ", \"w\" )\n"
 "outputFile.write( \"<Vevacious_result>\\n\"\n"
-"                  + \" <reference version=\\\"" << vevaciousVersionString
+"                  + \"  <reference version=\\\"" << vevaciousVersionString
 <<           "\\\" citation=\\\"" << vevaciousDocumentation << "\\\" />\\n\"\n"
-"              + \" <stability> \" + stabilityVerdict + \" </stability>\\n\"\n"
-"                  + \" <global_minimum   relative_depth=\\\"\"\n"
+"             + \"  <stability> \" + stabilityVerdict + \" </stability>\\n\"\n"
+"                  + \"  <global_minimum   relative_depth=\\\"\"\n"
 "                      + str( ( globalMinimumDepthValue * VPD."
 <<                                        PotentialMinimizer::energyScaleFourth
 <<                                  " ) - potentialAtVevOrigin ) + \"\\\" \"\n"

@@ -577,52 +577,22 @@ Block SPhenoLowEnergy # low energy observables
     5121    0.00000000E+00  # BRBsMuE
     5220    3.30332514E-09  # BRBsMuMuSM
     5221    3.45428885E-09  # BRBsMuMu
-BLOCK VEVACIOUSRESULTS # results from Vevacious
-    0   0    +0.00000000E+000    metastable    # stability of input
-    0   1    +1.00000000E+006    full_deformed_path    # tunneling time in Universe ages / calculation type
-    1   0    -1.06082204E+014    relative_depth    # input potential energy density difference from all VEVs = 0.0
-    1   1    +0.00000000E+000    vE3    # input VEV
-    1   2    +0.00000000E+000    vL3    # input VEV
-    1   3    +1.36889979E+004    vS    # input VEV
-    1   4    +2.42324149E+001    vdR    # input VEV
-    1   5    +2.41866240E+002    vuR    # input VEV
-    2   0    -3.18828572E+014    relative_depth    # global minimum potential energy density difference from all VEVs = 0.0
-    2   1    +6.40801458E-001    vE3    # global minimum VEV
-    2   2    -5.96541430E-001    vL3    # global minimum VEV
-    2   3    -1.79079284E+004    vS    # global minimum VEV
-    2   4    +1.79113990E+004    vdR    # global minimum VEV
-    2   5    +1.86915525E+004    vuR    # global minimum VEV
-BLOCK VEVACIOUSWARNINGS # warnings from Vevacious
-   1    4 extremum/a with at least one descending or flat direction remained after all nudging: { vdR -> ( 0.0494830934485 ), vE3 -> ( -1.66323843587e-07 ), vL3 -> ( -1.51430867845e-07 ), vuR -> ( 0.796491124333 ), vS -> ( 13689.7607341 ) } { vdR -> ( -0.0503911926444 ), vE3 -> ( -3.24462234857e-07 ), vL3 -> ( -2.86604517896e-07 ), vuR -> ( -0.813275528458 ), vS -> ( 13689.7602507 ) } { vdR -> ( 0.0527675749709 ), vE3 -> ( -2.2305357561e-07 ), vL3 -> ( -1.00840225059e-07 ), vuR -> ( 0.849343030382 ), vS -> ( 13689.7632243 ) } { vdR -> ( -0.0533191597469 ), vE3 -> ( -2.59888111032e-07 ), vL3 -> ( -2.34422259382e-07 ), vuR -> ( -0.862570697564 ), vS -> ( 13689.7632623 ) }
-BLOCK VEVACIOUSRESULTS # results from Vevacious
-    0   0    +0.00000000E+000    metastable    # stability of input
-    0   1    +1.00000000E+006    full_deformed_path    # tunneling time in Universe ages / calculation type
-    1   0    -1.06082204E+014    relative_depth    # input potential energy density difference from all VEVs = 0.0
-    1   1    +0.00000000E+000    vE3    # input VEV
-    1   2    +0.00000000E+000    vL3    # input VEV
-    1   3    +1.36889979E+004    vS    # input VEV
-    1   4    +2.42324149E+001    vdR    # input VEV
-    1   5    +2.41866240E+002    vuR    # input VEV
-    2   0    -3.18828572E+014    relative_depth    # global minimum potential energy density difference from all VEVs = 0.0
-    2   1    +6.40801458E-001    vE3    # global minimum VEV
-    2   2    -5.96541430E-001    vL3    # global minimum VEV
-    2   3    -1.79079284E+004    vS    # global minimum VEV
-    2   4    +1.79113990E+004    vdR    # global minimum VEV
-    2   5    +1.86915525E+004    vuR    # global minimum VEV
-BLOCK VEVACIOUSWARNINGS # warnings from Vevacious
-   1    4 extremum/a with at least one descending or flat direction remained after all nudging: { vdR -> ( 0.0494830934485 ), vE3 -> ( -1.66323843587e-07 ), vL3 -> ( -1.51430867845e-07 ), vuR -> ( 0.796491124333 ), vS -> ( 13689.7607341 ) } { vdR -> ( -0.0503911926444 ), vE3 -> ( -3.24462234857e-07 ), vL3 -> ( -2.86604517896e-07 ), vuR -> ( -0.813275528458 ), vS -> ( 13689.7602507 ) } { vdR -> ( 0.0527675749709 ), vE3 -> ( -2.2305357561e-07 ), vL3 -> ( -1.00840225059e-07 ), vuR -> ( 0.849343030382 ), vS -> ( 13689.7632243 ) } { vdR -> ( -0.0533191597469 ), vE3 -> ( -2.59888111032e-07 ), vL3 -> ( -2.34422259382e-07 ), vuR -> ( -0.862570697564 ), vS -> ( 13689.7632623 ) }
 BLOCK VEVACIOUSRESULTS # results from Vevacious version 0.3.0, documented in [still unpublished]
-    0   0    +0.00000000E+000    metastable    # stability of input
+    0   0    +0.00000000E+000    long-lived    # stability of input
     0   1    +1.00000000E+006    full_deformed_path    # tunneling time in Universe ages / calculation type
     1   0    -1.06082204E+014    relative_depth    # input potential energy density difference from all VEVs = 0.0
     1   1    +0.00000000E+000    vE3    # input VEV
     1   2    +0.00000000E+000    vL3    # input VEV
-    1   3    +1.36889979E+004    vS    # input VEV
-    1   4    +2.42324150E+001    vdR    # input VEV
-    1   5    +2.41866242E+002    vuR    # input VEV
+    1   3    +0.00000000E+000    vQ3    # input VEV
+    1   4    +1.36889979E+004    vS    # input VEV
+    1   5    +0.00000000E+000    vT3    # input VEV
+    1   6    +2.42324151E+001    vdR    # input VEV
+    1   7    +2.41866241E+002    vuR    # input VEV
     2   0    -3.18828572E+014    relative_depth    # global minimum potential energy density difference from all VEVs = 0.0
-    2   1    +6.40027275E-001    vE3    # global minimum VEV
-    2   2    -5.97364938E-001    vL3    # global minimum VEV
-    2   3    -1.79079311E+004    vS    # global minimum VEV
-    2   4    +1.79113994E+004    vdR    # global minimum VEV
-    2   5    +1.86915528E+004    vuR    # global minimum VEV
+    2   1    +1.56029838E-002    vE3    # global minimum VEV
+    2   2    -1.69589864E-002    vL3    # global minimum VEV
+    2   3    -1.91593062E-003    vQ3    # global minimum VEV
+    2   4    -1.79079357E+004    vS    # global minimum VEV
+    2   5    +2.19142294E-004    vT3    # global minimum VEV
+    2   6    +1.79113690E+004    vdR    # global minimum VEV
+    2   7    +1.86915174E+004    vuR    # global minimum VEV
