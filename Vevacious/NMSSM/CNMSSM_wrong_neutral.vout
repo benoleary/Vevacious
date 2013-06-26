@@ -1,7 +1,0 @@
-<Vevacious_result>
-  <reference version="0.3.0" citation="[still unpublished]" />
-  <stability> long-lived </stability>
-  <global_minimum   relative_depth="-3.18828572144e+14" vdR="17911.3689725" vE3="0.0156029838081" vL3="-0.0169589864072" vQ3="-0.00191593062482" vT3="0.000219142293645" vuR="18691.5174129" vS="-17907.9356776" />
-  <input_minimum   relative_depth="-1.06082204286e+14" vdR="24.232415097" vE3="0.0" vL3="0.0" vQ3="0.0" vT3="0.0" vuR="241.866241268" vS="13688.9978814" />
-  <lifetime  action_calculation="full_deformed_path" > 1000000.0 </lifetime>
-</Vevacious_result>

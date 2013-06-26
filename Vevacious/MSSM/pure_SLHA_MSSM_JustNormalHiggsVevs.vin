@@ -1,25 +1,71 @@
 <Vevacious_stuff> 
 
-<input_vevs vdR="( SLHA::HMIX[3] / math.sqrt( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )" vuR= "( ( SLHA::HMIX[3] * SLHA::HMIX[2] ) / math.sqrt( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )"  >
-  <taken_positive> vdR </taken_positive>
+<!--
+This model file for the MSSM allowing non-zero VEVs for
+ - the real parts of the neutral components for the Higgs doublets
+   (vd for H_d and vu for H_u)
+ is an edited version of MSSM_JustNormalHiggsVevs.vin, which was
+ produced automatically by SARAH4 by Florian Staub. These edits were made by
+ Ben O'Leary.
+
+This edited version complies with using the Lagrangian parameters extracted
+ purely from the SLHA2 (http://arxiv.org/abs/0801.0045) official BLOCKs. (It is
+ still the user's responsibility to provide an SLHA file where the SLHA2 BLOCKs
+ exist and have the correct values.)
+
+Due to the limitations of Vevacious and Ben's programming skills, the tadpole
+ equations must appear as a series of bracketed terms where each term that
+ appears in brackets _must_ be just a product of constant numbers, SLHA::BLOCK
+ values, and VEVs. Vevacious is not smart enough to expand brackets, or cope
+ with division. (The reason is that HOM4PS2 is picky about its input, and
+ crashes if it gets fractions (as opposed to decimals) or zero as
+ coefficients.) Unfortunately the SLHA has the annoying convention that the
+ parameter m^2_3 (a.k.a. B_mu) is not directly expressed, rather through
+ m^2_A = m^2_3 / (sin(beta) cos(beta)),
+ so m^2_3 should appear as
+ sin(beta) * cos(beta) * m^2_A
+ = ( ( tan(beta) * m^2_A ) / ( tan(beta)^2 + 1 ) ),
+ so as
+ ( ( SLHA::HMIX[2] * SLHA::HMIX[4] )
+   / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) ).
+ Because of this combined with the way Vevacious needs to read the tadpoles, in
+ this particular model file, the tadpoles for vd and vu have been multiplied
+ through by ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) and expanded out.
+-->
+
+<input_vevs vd="( SLHA::HMIX[3] / math.sqrt( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )" vu="( ( SLHA::HMIX[3] * SLHA::HMIX[2] ) / math.sqrt( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )"  >
+  <taken_positive> vd </taken_positive>
 </input_vevs> 
 
 <tadpoles> 
-{ 
-(0.125*vd^3*SLHA::GAUGE[1.]^2) 
+{  
+(0.125*vd^3*SLHA::GAUGE[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(0.125*vd^3*SLHA::GAUGE[1.]^2) 
++(-0.125*vd*vu^2*SLHA::GAUGE[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
 +(-0.125*vd*vu^2*SLHA::GAUGE[1.]^2) 
++(0.125*vd^3*SLHA::GAUGE[2.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
 +(0.125*vd^3*SLHA::GAUGE[2.]^2) 
++(-0.125*vd*vu^2*SLHA::GAUGE[2.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
 +(-0.125*vd*vu^2*SLHA::GAUGE[2.]^2) 
++(vd*SLHA::HMIX[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
 +(vd*SLHA::HMIX[1.]^2) 
-+(-1.*vu*( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )) 
++(-1.*vu*SLHA::HMIX[4]*SLHA::HMIX[2])
++(vd*SLHA::MSOFT[21.]*SLHA::HMIX[2]*SLHA::HMIX[2])
 +(vd*SLHA::MSOFT[21.]) 
 ; 
-(-0.125*vd^2*vu*SLHA::GAUGE[1.]^2) 
+
+(-0.125*vd^2*vu*SLHA::GAUGE[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(-0.125*vd^2*vu*SLHA::GAUGE[1.]^2) 
++(0.125*vu^3*SLHA::GAUGE[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
 +(0.125*vu^3*SLHA::GAUGE[1.]^2) 
++(-0.125*vd^2*vu*SLHA::GAUGE[2.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
 +(-0.125*vd^2*vu*SLHA::GAUGE[2.]^2) 
++(0.125*vu^3*SLHA::GAUGE[2.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
 +(0.125*vu^3*SLHA::GAUGE[2.]^2) 
++(vu*SLHA::HMIX[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(-1.*vd*SLHA::HMIX[4]*SLHA::HMIX[2])
 +(vu*SLHA::HMIX[1.]^2) 
-+(-1.*vd*( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )) 
++(vu*SLHA::MSOFT[22.]*SLHA::HMIX[2]*SLHA::HMIX[2]) 
 +(vu*SLHA::MSOFT[22.]) 
 ; 
 } 

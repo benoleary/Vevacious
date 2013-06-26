@@ -135,6 +135,10 @@
 
 
 CHANGELOG:
+ * 26th June 2013: version 1.0.1
+ - Fixed "pure SLHA" example model files.
+ - Updated NMSSM_wrong_neutral example point.
+ 
  * 17th June 2013: version 1.0.0
  - Release version!
  - Added consistency check that all used SLHA BLOCK scales must be the same,
