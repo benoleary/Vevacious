@@ -1,239 +1,275 @@
 <Vevacious_stuff> 
 
- <taken_positive> vdR, vE3 </taken_positive>
+<!--
+This model file for the MSSM allowing non-zero VEVs for
+ - the real parts of the neutral components for the Higgs doublets
+   (vd for H_d and vu for H_u), and
+ - the real parts of the staus (vL3 for stau_L, vE3 for stau_R)
+ is an edited version of MSSM_RealHiggsAndStauVevs.vin, which was
+ produced automatically by SARAH4 by Florian Staub. These edits were made by
+ Ben O'Leary.
+
+This edited version complies with using the Lagrangian parameters extracted
+ purely from the SLHA2 (http://arxiv.org/abs/0801.0045) official BLOCKs. (It is
+ still the user's responsibility to provide an SLHA file where the SLHA2 BLOCKs
+ exist and have the correct values.)
+
+Due to the limitations of Vevacious and Ben's programming skills, the tadpole
+ equations must appear as a series of bracketed terms where each term that
+ appears in brackets _must_ be just a product of constant numbers, SLHA::BLOCK
+ values, and VEVs. Vevacious is not smart enough to expand brackets, or cope
+ with division. (The reason is that HOM4PS2 is picky about its input, and
+ crashes if it gets fractions (as opposed to decimals) or zero as
+ coefficients.) Unfortunately the SLHA has the annoying convention that the
+ parameter m^2_3 (a.k.a. B_mu) is not directly expressed, rather through
+ m^2_A = m^2_3 / (sin(beta) cos(beta)),
+ so m^2_3 should appear as
+ sin(beta) * cos(beta) * m^2_A
+ = ( ( tan(beta) * m^2_A ) / ( tan(beta)^2 + 1 ) ),
+ so as
+ ( ( SLHA::HMIX[2] * SLHA::HMIX[4] )
+   / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) ).
+ Because of this combined with the way Vevacious needs to read the tadpoles, in
+ this particular model file, the tadpoles for vd and vu have been multiplied
+ through by ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) and expanded out.
+ 
+A further issue of this particular model file is that the tadpole equations for
+ selectron and smuon VEVs have been removed, even though they are strictly
+ necessary if there is slepton mixing. It is assumed that points with non-zero
+ stau VEVs are close enough to the proper points which would have non-zero stau
+ VEVs _and_ *small* but non-zero selectron and smuon VEVs that the stability of
+ the input vacuum can still be judged accurately enough.
+-->
+
+<input_vevs vd="( SLHA::HMIX[3] / math.sqrt( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )" vu="( ( SLHA::HMIX[3] * SLHA::HMIX[2] ) / math.sqrt( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )" vL3 ="0" vE3 = "0" >
+ <taken_positive> vd, vE3 </taken_positive>
 </input_vevs> 
 
 <tadpoles> 
 { 
-(0.125*vdR^3*SLHA::GAUGE[1.]^2) 
-+(-0.25*vdR*vE3^2*SLHA::GAUGE[1.]^2) 
-+(0.125*vdR*vL3^2*SLHA::GAUGE[1.]^2) 
-+(-0.125*vdR*vuR^2*SLHA::GAUGE[1.]^2) 
-+(0.125*vdR^3*SLHA::GAUGE[2.]^2) 
-+(-0.125*vdR*vL3^2*SLHA::GAUGE[2.]^2) 
-+(-0.125*vdR*vuR^2*SLHA::GAUGE[2.]^2) 
-+(vdR*SLHA::HMIX[1.]^2) 
-+(-1.*vuR*( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )) 
-+(vdR*SLHA::MSOFT[21.]) 
+<!-- vd -->
+(0.125*vd^3*SLHA::GAUGE[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(0.125*vd^3*SLHA::GAUGE[1.]^2) 
++(-0.25*vd*vE3^2*SLHA::GAUGE[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(-0.25*vd*vE3^2*SLHA::GAUGE[1.]^2) 
++(0.125*vd*vL3^2*SLHA::GAUGE[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(0.125*vd*vL3^2*SLHA::GAUGE[1.]^2) 
++(-0.125*vd*vu^2*SLHA::GAUGE[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(-0.125*vd*vu^2*SLHA::GAUGE[1.]^2) 
++(0.125*vd^3*SLHA::GAUGE[2.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(0.125*vd^3*SLHA::GAUGE[2.]^2) 
++(-0.125*vd*vL3^2*SLHA::GAUGE[2.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(-0.125*vd*vL3^2*SLHA::GAUGE[2.]^2) 
++(-0.125*vd*vu^2*SLHA::GAUGE[2.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(-0.125*vd*vu^2*SLHA::GAUGE[2.]^2) 
++(vd*SLHA::HMIX[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(vd*SLHA::HMIX[1.]^2) 
++(-1.*vu*SLHA::HMIX[4]*SLHA::HMIX[2])
++(vd*SLHA::MSOFT[21.]*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(vd*SLHA::MSOFT[21.]) 
++(0.7071067811865475*vE3*vL3*SLHA::TE[3., 3.]*SLHA::HMIX[2]*SLHA::HMIX[2]) 
 +(0.7071067811865475*vE3*vL3*SLHA::TE[3., 3.]) 
-+(0.5*vdR*vL3^2*SLHA::YE[1., 3.]^2) 
-+(0.5*vdR*vL3^2*SLHA::YE[2., 3.]^2) 
-+(0.5*vdR*vE3^2*SLHA::YE[3., 1.]^2) 
-+(0.5*vdR*vE3^2*SLHA::YE[3., 2.]^2) 
-+(0.5*vdR*vE3^2*SLHA::YE[3., 3.]^2) 
-+(0.5*vdR*vL3^2*SLHA::YE[3., 3.]^2) 
++(0.5*vd*vL3^2*SLHA::YE[1., 3.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(0.5*vd*vL3^2*SLHA::YE[1., 3.]^2) 
++(0.5*vd*vL3^2*SLHA::YE[2., 3.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(0.5*vd*vL3^2*SLHA::YE[2., 3.]^2) 
++(0.5*vd*vE3^2*SLHA::YE[3., 1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(0.5*vd*vE3^2*SLHA::YE[3., 1.]^2) 
++(0.5*vd*vE3^2*SLHA::YE[3., 2.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(0.5*vd*vE3^2*SLHA::YE[3., 2.]^2) 
++(0.5*vd*vE3^2*SLHA::YE[3., 3.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(0.5*vd*vE3^2*SLHA::YE[3., 3.]^2) 
++(0.5*vd*vL3^2*SLHA::YE[3., 3.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(0.5*vd*vL3^2*SLHA::YE[3., 3.]^2) 
 ; 
-(-0.125*vdR^2*vuR*SLHA::GAUGE[1.]^2) 
-+(0.25*vE3^2*vuR*SLHA::GAUGE[1.]^2) 
-+(-0.125*vL3^2*vuR*SLHA::GAUGE[1.]^2) 
-+(0.125*vuR^3*SLHA::GAUGE[1.]^2) 
-+(-0.125*vdR^2*vuR*SLHA::GAUGE[2.]^2) 
-+(0.125*vL3^2*vuR*SLHA::GAUGE[2.]^2) 
-+(0.125*vuR^3*SLHA::GAUGE[2.]^2) 
-+(vuR*SLHA::HMIX[1.]^2) 
-+(-1.*vdR*( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )) 
-+(vuR*SLHA::MSOFT[22.]) 
+<!-- vu -->
+(-0.125*vd^2*vu*SLHA::GAUGE[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(-0.125*vd^2*vu*SLHA::GAUGE[1.]^2) 
++(0.25*vE3^2*vu*SLHA::GAUGE[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(0.25*vE3^2*vu*SLHA::GAUGE[1.]^2) 
++(-0.125*vL3^2*vu*SLHA::GAUGE[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(-0.125*vL3^2*vu*SLHA::GAUGE[1.]^2) 
++(0.125*vu^3*SLHA::GAUGE[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(0.125*vu^3*SLHA::GAUGE[1.]^2) 
++(-0.125*vd^2*vu*SLHA::GAUGE[2.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(-0.125*vd^2*vu*SLHA::GAUGE[2.]^2) 
++(0.125*vL3^2*vu*SLHA::GAUGE[2.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(0.125*vL3^2*vu*SLHA::GAUGE[2.]^2) 
++(0.125*vu^3*SLHA::GAUGE[2.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(0.125*vu^3*SLHA::GAUGE[2.]^2) 
++(vu*SLHA::HMIX[1.]^2*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(vu*SLHA::HMIX[1.]^2) 
++(-1.*vd*SLHA::HMIX[4]*SLHA::HMIX[2])
++(vu*SLHA::MSOFT[22.]*SLHA::HMIX[2]*SLHA::HMIX[2]) 
++(vu*SLHA::MSOFT[22.]) 
++(-0.7071067811865475*vE3*vL3*SLHA::HMIX[1.]*SLHA::YE[3., 3.]*SLHA::HMIX[2]*SLHA::HMIX[2]) 
 +(-0.7071067811865475*vE3*vL3*SLHA::HMIX[1.]*SLHA::YE[3., 3.]) 
 ; 
-(0.5*vL3*SLHA::MSL2[1., 3.]) 
-+(0.5*vL3*SLHA::MSL2[3., 1.]) 
-+(0.7071067811865475*vdR*vE3*SLHA::TE[3., 1.]) 
-+(0.5*vdR^2*vL3*SLHA::YE[1., 1.]*SLHA::YE[1., 3.]) 
-+(0.5*vdR^2*vL3*SLHA::YE[2., 1.]*SLHA::YE[2., 3.]) 
-+(-0.7071067811865475*vE3*vuR*SLHA::HMIX[1.]*SLHA::YE[3., 1.]) 
-+(0.5*vdR^2*vL3*SLHA::YE[3., 1.]*SLHA::YE[3., 3.]) 
-+(0.5*vE3^2*vL3*SLHA::YE[3., 1.]*SLHA::YE[3., 3.]) 
-; 
-(0.5*vL3*SLHA::MSL2[2., 3.]) 
-+(0.5*vL3*SLHA::MSL2[3., 2.]) 
-+(0.7071067811865475*vdR*vE3*SLHA::TE[3., 2.]) 
-+(0.5*vdR^2*vL3*SLHA::YE[1., 2.]*SLHA::YE[1., 3.]) 
-+(0.5*vdR^2*vL3*SLHA::YE[2., 2.]*SLHA::YE[2., 3.]) 
-+(-0.7071067811865475*vE3*vuR*SLHA::HMIX[1.]*SLHA::YE[3., 2.]) 
-+(0.5*vdR^2*vL3*SLHA::YE[3., 2.]*SLHA::YE[3., 3.]) 
-+(0.5*vE3^2*vL3*SLHA::YE[3., 2.]*SLHA::YE[3., 3.]) 
-; 
-(0.125*vdR^2*vL3*SLHA::GAUGE[1.]^2) 
+<!-- vL3 -->
+(0.125*vd^2*vL3*SLHA::GAUGE[1.]^2) 
 +(-0.25*vE3^2*vL3*SLHA::GAUGE[1.]^2) 
 +(0.125*vL3^3*SLHA::GAUGE[1.]^2) 
-+(-0.125*vL3*vuR^2*SLHA::GAUGE[1.]^2) 
-+(-0.125*vdR^2*vL3*SLHA::GAUGE[2.]^2) 
++(-0.125*vL3*vu^2*SLHA::GAUGE[1.]^2) 
++(-0.125*vd^2*vL3*SLHA::GAUGE[2.]^2) 
 +(0.125*vL3^3*SLHA::GAUGE[2.]^2) 
-+(0.125*vL3*vuR^2*SLHA::GAUGE[2.]^2) 
++(0.125*vL3*vu^2*SLHA::GAUGE[2.]^2) 
 +(vL3*SLHA::MSL2[3., 3.]) 
-+(0.7071067811865475*vdR*vE3*SLHA::TE[3., 3.]) 
-+(0.5*vdR^2*vL3*SLHA::YE[1., 3.]^2) 
-+(0.5*vdR^2*vL3*SLHA::YE[2., 3.]^2) 
-+(-0.7071067811865475*vE3*vuR*SLHA::HMIX[1.]*SLHA::YE[3., 3.]) 
-+(0.5*vdR^2*vL3*SLHA::YE[3., 3.]^2) 
++(0.7071067811865475*vd*vE3*SLHA::TE[3., 3.]) 
++(0.5*vd^2*vL3*SLHA::YE[1., 3.]^2) 
++(0.5*vd^2*vL3*SLHA::YE[2., 3.]^2) 
++(-0.7071067811865475*vE3*vu*SLHA::HMIX[1.]*SLHA::YE[3., 3.]) 
++(0.5*vd^2*vL3*SLHA::YE[3., 3.]^2) 
 +(0.5*vE3^2*vL3*SLHA::YE[3., 3.]^2) 
 ; 
-(0.5*vE3*SLHA::MSE2[1., 3.]) 
-+(0.5*vE3*SLHA::MSE2[3., 1.]) 
-+(0.7071067811865475*vdR*vL3*SLHA::TE[1., 3.]) 
-+(-0.7071067811865475*vL3*vuR*SLHA::HMIX[1.]*SLHA::YE[1., 3.]) 
-+(0.5*vdR^2*vE3*SLHA::YE[1., 1.]*SLHA::YE[3., 1.]) 
-+(0.5*vdR^2*vE3*SLHA::YE[1., 2.]*SLHA::YE[3., 2.]) 
-+(0.5*vdR^2*vE3*SLHA::YE[1., 3.]*SLHA::YE[3., 3.]) 
-+(0.5*vE3*vL3^2*SLHA::YE[1., 3.]*SLHA::YE[3., 3.]) 
-; 
-(0.5*vE3*SLHA::MSE2[2., 3.]) 
-+(0.5*vE3*SLHA::MSE2[3., 2.]) 
-+(0.7071067811865475*vdR*vL3*SLHA::TE[2., 3.]) 
-+(-0.7071067811865475*vL3*vuR*SLHA::HMIX[1.]*SLHA::YE[2., 3.]) 
-+(0.5*vdR^2*vE3*SLHA::YE[2., 1.]*SLHA::YE[3., 1.]) 
-+(0.5*vdR^2*vE3*SLHA::YE[2., 2.]*SLHA::YE[3., 2.]) 
-+(0.5*vdR^2*vE3*SLHA::YE[2., 3.]*SLHA::YE[3., 3.]) 
-+(0.5*vE3*vL3^2*SLHA::YE[2., 3.]*SLHA::YE[3., 3.]) 
-; 
-(-0.25*vdR^2*vE3*SLHA::GAUGE[1.]^2) 
+<!-- vE3 -->
+(-0.25*vd^2*vE3*SLHA::GAUGE[1.]^2) 
 +(0.5*vE3^3*SLHA::GAUGE[1.]^2) 
 +(-0.25*vE3*vL3^2*SLHA::GAUGE[1.]^2) 
-+(0.25*vE3*vuR^2*SLHA::GAUGE[1.]^2) 
++(0.25*vE3*vu^2*SLHA::GAUGE[1.]^2) 
 +(vE3*SLHA::MSE2[3., 3.]) 
-+(0.7071067811865475*vdR*vL3*SLHA::TE[3., 3.]) 
-+(0.5*vdR^2*vE3*SLHA::YE[3., 1.]^2) 
-+(0.5*vdR^2*vE3*SLHA::YE[3., 2.]^2) 
-+(-0.7071067811865475*vL3*vuR*SLHA::HMIX[1.]*SLHA::YE[3., 3.]) 
-+(0.5*vdR^2*vE3*SLHA::YE[3., 3.]^2) 
++(0.7071067811865475*vd*vL3*SLHA::TE[3., 3.]) 
++(0.5*vd^2*vE3*SLHA::YE[3., 1.]^2) 
++(0.5*vd^2*vE3*SLHA::YE[3., 2.]^2) 
++(-0.7071067811865475*vL3*vu*SLHA::HMIX[1.]*SLHA::YE[3., 3.]) 
++(0.5*vd^2*vE3*SLHA::YE[3., 3.]^2) 
 +(0.5*vE3*vL3^2*SLHA::YE[3., 3.]^2) 
 ; 
 } 
 </tadpoles> 
 
 <polynomial_part> 
-(0.03125*vdR^4*SLHA::GAUGE[1.]^2) 
-  + (-0.125*vdR^2*vE3^2*SLHA::GAUGE[1.]^2) 
+(0.03125*vd^4*SLHA::GAUGE[1.]^2) 
+  + (-0.125*vd^2*vE3^2*SLHA::GAUGE[1.]^2) 
   + (0.125*vE3^4*SLHA::GAUGE[1.]^2) 
-  + (0.0625*vdR^2*vL3^2*SLHA::GAUGE[1.]^2) 
+  + (0.0625*vd^2*vL3^2*SLHA::GAUGE[1.]^2) 
   + (-0.125*vE3^2*vL3^2*SLHA::GAUGE[1.]^2) 
   + (0.03125*vL3^4*SLHA::GAUGE[1.]^2) 
-  + (-0.0625*vdR^2*vuR^2*SLHA::GAUGE[1.]^2) 
-  + (0.125*vE3^2*vuR^2*SLHA::GAUGE[1.]^2) 
-  + (-0.0625*vL3^2*vuR^2*SLHA::GAUGE[1.]^2) 
-  + (0.03125*vuR^4*SLHA::GAUGE[1.]^2) 
-  + (0.03125*vdR^4*SLHA::GAUGE[2.]^2) 
-  + (-0.0625*vdR^2*vL3^2*SLHA::GAUGE[2.]^2) 
+  + (-0.0625*vd^2*vu^2*SLHA::GAUGE[1.]^2) 
+  + (0.125*vE3^2*vu^2*SLHA::GAUGE[1.]^2) 
+  + (-0.0625*vL3^2*vu^2*SLHA::GAUGE[1.]^2) 
+  + (0.03125*vu^4*SLHA::GAUGE[1.]^2) 
+  + (0.03125*vd^4*SLHA::GAUGE[2.]^2) 
+  + (-0.0625*vd^2*vL3^2*SLHA::GAUGE[2.]^2) 
   + (0.03125*vL3^4*SLHA::GAUGE[2.]^2) 
-  + (-0.0625*vdR^2*vuR^2*SLHA::GAUGE[2.]^2) 
-  + (0.0625*vL3^2*vuR^2*SLHA::GAUGE[2.]^2) 
-  + (0.03125*vuR^4*SLHA::GAUGE[2.]^2) 
-  + (0.5*vdR^2*SLHA::HMIX[1.]^2) 
-  + (0.5*vuR^2*SLHA::HMIX[1.]^2) 
-  + (-1.*vdR*vuR*( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )) 
+  + (-0.0625*vd^2*vu^2*SLHA::GAUGE[2.]^2) 
+  + (0.0625*vL3^2*vu^2*SLHA::GAUGE[2.]^2) 
+  + (0.03125*vu^4*SLHA::GAUGE[2.]^2) 
+  + (0.5*vd^2*SLHA::HMIX[1.]^2) 
+  + (0.5*vu^2*SLHA::HMIX[1.]^2) 
+  + (-1.*vd*vu*( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )) 
   + (0.5*vE3^2*SLHA::MSE2[3., 3.]) 
   + (0.5*vL3^2*SLHA::MSL2[3., 3.]) 
-  + (0.5*vdR^2*SLHA::MSOFT[21.]) 
-  + (0.5*vuR^2*SLHA::MSOFT[22.]) 
-  + (0.7071067811865475*vdR*vE3*vL3*SLHA::TE[3., 3.]) 
-  + (0.25*vdR^2*vL3^2*SLHA::YE[1., 3.]^2) 
-  + (0.25*vdR^2*vL3^2*SLHA::YE[2., 3.]^2) 
-  + (0.25*vdR^2*vE3^2*SLHA::YE[3., 1.]^2) 
-  + (0.25*vdR^2*vE3^2*SLHA::YE[3., 2.]^2) 
-  + (-0.7071067811865475*vE3*vL3*vuR*SLHA::HMIX[1.]*SLHA::YE[3., 3.]) 
-  + (0.25*vdR^2*vE3^2*SLHA::YE[3., 3.]^2) 
-  + (0.25*vdR^2*vL3^2*SLHA::YE[3., 3.]^2) 
+  + (0.5*vd^2*SLHA::MSOFT[21.]) 
+  + (0.5*vu^2*SLHA::MSOFT[22.]) 
+  + (0.7071067811865475*vd*vE3*vL3*SLHA::TE[3., 3.]) 
+  + (0.25*vd^2*vL3^2*SLHA::YE[1., 3.]^2) 
+  + (0.25*vd^2*vL3^2*SLHA::YE[2., 3.]^2) 
+  + (0.25*vd^2*vE3^2*SLHA::YE[3., 1.]^2) 
+  + (0.25*vd^2*vE3^2*SLHA::YE[3., 2.]^2) 
+  + (-0.7071067811865475*vE3*vL3*vu*SLHA::HMIX[1.]*SLHA::YE[3., 3.]) 
+  + (0.25*vd^2*vE3^2*SLHA::YE[3., 3.]^2) 
+  + (0.25*vd^2*vL3^2*SLHA::YE[3., 3.]^2) 
   + (0.25*vE3^2*vL3^2*SLHA::YE[3., 3.]^2) 
  
 </polynomial_part>
 
 <mass-squared_matrix 
 particle="Sd"  rotationmatrix="ZD"  factor="6" >     
-(-0.041666666666666664*vdR^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vE3^2*SLHA::GAUGE[1.]^2-0.041666666666666664*vL3^2*SLHA::GAUGE[1.]^2+0.041666666666666664*vuR^2*SLHA::GAUGE[1.]^2-0.125*vdR^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSQ2[1.,1.]+0.5*vdR^2*SLHA::YD[1.,1.]^2+0.5*vdR^2*SLHA::YD[2.,1.]^2+0.5*vdR^2*SLHA::YD[3.,1.]^2), 
-(SLHA::MSQ2[1.,2.]+0.5*vdR^2*SLHA::YD[1.,1.]*SLHA::YD[1.,2.]+0.5*vdR^2*SLHA::YD[2.,1.]*SLHA::YD[2.,2.]+0.5*vdR^2*SLHA::YD[3.,1.]*SLHA::YD[3.,2.]), 
-(SLHA::MSQ2[1.,3.]+0.5*vdR^2*SLHA::YD[1.,1.]*SLHA::YD[1.,3.]+0.5*vdR^2*SLHA::YD[2.,1.]*SLHA::YD[2.,3.]+0.5*vdR^2*SLHA::YD[3.,1.]*SLHA::YD[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[1.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[1.,1.]+0.5*vE3*vL3*SLHA::YD[1.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[2.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[2.,1.]+0.5*vE3*vL3*SLHA::YD[2.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[3.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[3.,1.]+0.5*vE3*vL3*SLHA::YD[3.,1.]*SLHA::YE[3.,3.]), 
-(SLHA::MSQ2[2.,1.]+0.5*vdR^2*SLHA::YD[1.,1.]*SLHA::YD[1.,2.]+0.5*vdR^2*SLHA::YD[2.,1.]*SLHA::YD[2.,2.]+0.5*vdR^2*SLHA::YD[3.,1.]*SLHA::YD[3.,2.]), 
-(-0.041666666666666664*vdR^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vE3^2*SLHA::GAUGE[1.]^2-0.041666666666666664*vL3^2*SLHA::GAUGE[1.]^2+0.041666666666666664*vuR^2*SLHA::GAUGE[1.]^2-0.125*vdR^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSQ2[2.,2.]+0.5*vdR^2*SLHA::YD[1.,2.]^2+0.5*vdR^2*SLHA::YD[2.,2.]^2+0.5*vdR^2*SLHA::YD[3.,2.]^2), 
-(SLHA::MSQ2[2.,3.]+0.5*vdR^2*SLHA::YD[1.,2.]*SLHA::YD[1.,3.]+0.5*vdR^2*SLHA::YD[2.,2.]*SLHA::YD[2.,3.]+0.5*vdR^2*SLHA::YD[3.,2.]*SLHA::YD[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[1.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[1.,2.]+0.5*vE3*vL3*SLHA::YD[1.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[2.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[2.,2.]+0.5*vE3*vL3*SLHA::YD[2.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[3.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[3.,2.]+0.5*vE3*vL3*SLHA::YD[3.,2.]*SLHA::YE[3.,3.]), 
-(SLHA::MSQ2[3.,1.]+0.5*vdR^2*SLHA::YD[1.,1.]*SLHA::YD[1.,3.]+0.5*vdR^2*SLHA::YD[2.,1.]*SLHA::YD[2.,3.]+0.5*vdR^2*SLHA::YD[3.,1.]*SLHA::YD[3.,3.]), 
-(SLHA::MSQ2[3.,2.]+0.5*vdR^2*SLHA::YD[1.,2.]*SLHA::YD[1.,3.]+0.5*vdR^2*SLHA::YD[2.,2.]*SLHA::YD[2.,3.]+0.5*vdR^2*SLHA::YD[3.,2.]*SLHA::YD[3.,3.]), 
-(-0.041666666666666664*vdR^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vE3^2*SLHA::GAUGE[1.]^2-0.041666666666666664*vL3^2*SLHA::GAUGE[1.]^2+0.041666666666666664*vuR^2*SLHA::GAUGE[1.]^2-0.125*vdR^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSQ2[3.,3.]+0.5*vdR^2*SLHA::YD[1.,3.]^2+0.5*vdR^2*SLHA::YD[2.,3.]^2+0.5*vdR^2*SLHA::YD[3.,3.]^2), 
-(0.7071067811865475*vdR*SLHA::TD[1.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[1.,3.]+0.5*vE3*vL3*SLHA::YD[1.,3.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[2.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[2.,3.]+0.5*vE3*vL3*SLHA::YD[2.,3.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[3.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[3.,3.]+0.5*vE3*vL3*SLHA::YD[3.,3.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[1.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[1.,1.]+0.5*vE3*vL3*SLHA::YD[1.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[1.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[1.,2.]+0.5*vE3*vL3*SLHA::YD[1.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[1.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[1.,3.]+0.5*vE3*vL3*SLHA::YD[1.,3.]*SLHA::YE[3.,3.]), 
-(-0.08333333333333333*vdR^2*SLHA::GAUGE[1.]^2+0.16666666666666666*vE3^2*SLHA::GAUGE[1.]^2-0.08333333333333333*vL3^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vuR^2*SLHA::GAUGE[1.]^2+SLHA::MSD2[1.,1.]+0.5*vdR^2*SLHA::YD[1.,1.]^2+0.5*vdR^2*SLHA::YD[1.,2.]^2+0.5*vdR^2*SLHA::YD[1.,3.]^2), 
-(SLHA::MSD2[1.,2.]+0.5*vdR^2*SLHA::YD[1.,1.]*SLHA::YD[2.,1.]+0.5*vdR^2*SLHA::YD[1.,2.]*SLHA::YD[2.,2.]+0.5*vdR^2*SLHA::YD[1.,3.]*SLHA::YD[2.,3.]), 
-(SLHA::MSD2[1.,3.]+0.5*vdR^2*SLHA::YD[1.,1.]*SLHA::YD[3.,1.]+0.5*vdR^2*SLHA::YD[1.,2.]*SLHA::YD[3.,2.]+0.5*vdR^2*SLHA::YD[1.,3.]*SLHA::YD[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[2.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[2.,1.]+0.5*vE3*vL3*SLHA::YD[2.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[2.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[2.,2.]+0.5*vE3*vL3*SLHA::YD[2.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[2.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[2.,3.]+0.5*vE3*vL3*SLHA::YD[2.,3.]*SLHA::YE[3.,3.]), 
-(SLHA::MSD2[2.,1.]+0.5*vdR^2*SLHA::YD[1.,1.]*SLHA::YD[2.,1.]+0.5*vdR^2*SLHA::YD[1.,2.]*SLHA::YD[2.,2.]+0.5*vdR^2*SLHA::YD[1.,3.]*SLHA::YD[2.,3.]), 
-(-0.08333333333333333*vdR^2*SLHA::GAUGE[1.]^2+0.16666666666666666*vE3^2*SLHA::GAUGE[1.]^2-0.08333333333333333*vL3^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vuR^2*SLHA::GAUGE[1.]^2+SLHA::MSD2[2.,2.]+0.5*vdR^2*SLHA::YD[2.,1.]^2+0.5*vdR^2*SLHA::YD[2.,2.]^2+0.5*vdR^2*SLHA::YD[2.,3.]^2), 
-(SLHA::MSD2[2.,3.]+0.5*vdR^2*SLHA::YD[2.,1.]*SLHA::YD[3.,1.]+0.5*vdR^2*SLHA::YD[2.,2.]*SLHA::YD[3.,2.]+0.5*vdR^2*SLHA::YD[2.,3.]*SLHA::YD[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[3.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[3.,1.]+0.5*vE3*vL3*SLHA::YD[3.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[3.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[3.,2.]+0.5*vE3*vL3*SLHA::YD[3.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TD[3.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YD[3.,3.]+0.5*vE3*vL3*SLHA::YD[3.,3.]*SLHA::YE[3.,3.]), 
-(SLHA::MSD2[3.,1.]+0.5*vdR^2*SLHA::YD[1.,1.]*SLHA::YD[3.,1.]+0.5*vdR^2*SLHA::YD[1.,2.]*SLHA::YD[3.,2.]+0.5*vdR^2*SLHA::YD[1.,3.]*SLHA::YD[3.,3.]), 
-(SLHA::MSD2[3.,2.]+0.5*vdR^2*SLHA::YD[2.,1.]*SLHA::YD[3.,1.]+0.5*vdR^2*SLHA::YD[2.,2.]*SLHA::YD[3.,2.]+0.5*vdR^2*SLHA::YD[2.,3.]*SLHA::YD[3.,3.]), 
-(-0.08333333333333333*vdR^2*SLHA::GAUGE[1.]^2+0.16666666666666666*vE3^2*SLHA::GAUGE[1.]^2-0.08333333333333333*vL3^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vuR^2*SLHA::GAUGE[1.]^2+SLHA::MSD2[3.,3.]+0.5*vdR^2*SLHA::YD[3.,1.]^2+0.5*vdR^2*SLHA::YD[3.,2.]^2+0.5*vdR^2*SLHA::YD[3.,3.]^2) 
+(-0.041666666666666664*vd^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vE3^2*SLHA::GAUGE[1.]^2-0.041666666666666664*vL3^2*SLHA::GAUGE[1.]^2+0.041666666666666664*vu^2*SLHA::GAUGE[1.]^2-0.125*vd^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSQ2[1.,1.]+0.5*vd^2*SLHA::YD[1.,1.]^2+0.5*vd^2*SLHA::YD[2.,1.]^2+0.5*vd^2*SLHA::YD[3.,1.]^2), 
+(SLHA::MSQ2[1.,2.]+0.5*vd^2*SLHA::YD[1.,1.]*SLHA::YD[1.,2.]+0.5*vd^2*SLHA::YD[2.,1.]*SLHA::YD[2.,2.]+0.5*vd^2*SLHA::YD[3.,1.]*SLHA::YD[3.,2.]), 
+(SLHA::MSQ2[1.,3.]+0.5*vd^2*SLHA::YD[1.,1.]*SLHA::YD[1.,3.]+0.5*vd^2*SLHA::YD[2.,1.]*SLHA::YD[2.,3.]+0.5*vd^2*SLHA::YD[3.,1.]*SLHA::YD[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[1.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[1.,1.]+0.5*vE3*vL3*SLHA::YD[1.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[2.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[2.,1.]+0.5*vE3*vL3*SLHA::YD[2.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[3.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[3.,1.]+0.5*vE3*vL3*SLHA::YD[3.,1.]*SLHA::YE[3.,3.]), 
+(SLHA::MSQ2[2.,1.]+0.5*vd^2*SLHA::YD[1.,1.]*SLHA::YD[1.,2.]+0.5*vd^2*SLHA::YD[2.,1.]*SLHA::YD[2.,2.]+0.5*vd^2*SLHA::YD[3.,1.]*SLHA::YD[3.,2.]), 
+(-0.041666666666666664*vd^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vE3^2*SLHA::GAUGE[1.]^2-0.041666666666666664*vL3^2*SLHA::GAUGE[1.]^2+0.041666666666666664*vu^2*SLHA::GAUGE[1.]^2-0.125*vd^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSQ2[2.,2.]+0.5*vd^2*SLHA::YD[1.,2.]^2+0.5*vd^2*SLHA::YD[2.,2.]^2+0.5*vd^2*SLHA::YD[3.,2.]^2), 
+(SLHA::MSQ2[2.,3.]+0.5*vd^2*SLHA::YD[1.,2.]*SLHA::YD[1.,3.]+0.5*vd^2*SLHA::YD[2.,2.]*SLHA::YD[2.,3.]+0.5*vd^2*SLHA::YD[3.,2.]*SLHA::YD[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[1.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[1.,2.]+0.5*vE3*vL3*SLHA::YD[1.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[2.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[2.,2.]+0.5*vE3*vL3*SLHA::YD[2.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[3.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[3.,2.]+0.5*vE3*vL3*SLHA::YD[3.,2.]*SLHA::YE[3.,3.]), 
+(SLHA::MSQ2[3.,1.]+0.5*vd^2*SLHA::YD[1.,1.]*SLHA::YD[1.,3.]+0.5*vd^2*SLHA::YD[2.,1.]*SLHA::YD[2.,3.]+0.5*vd^2*SLHA::YD[3.,1.]*SLHA::YD[3.,3.]), 
+(SLHA::MSQ2[3.,2.]+0.5*vd^2*SLHA::YD[1.,2.]*SLHA::YD[1.,3.]+0.5*vd^2*SLHA::YD[2.,2.]*SLHA::YD[2.,3.]+0.5*vd^2*SLHA::YD[3.,2.]*SLHA::YD[3.,3.]), 
+(-0.041666666666666664*vd^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vE3^2*SLHA::GAUGE[1.]^2-0.041666666666666664*vL3^2*SLHA::GAUGE[1.]^2+0.041666666666666664*vu^2*SLHA::GAUGE[1.]^2-0.125*vd^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSQ2[3.,3.]+0.5*vd^2*SLHA::YD[1.,3.]^2+0.5*vd^2*SLHA::YD[2.,3.]^2+0.5*vd^2*SLHA::YD[3.,3.]^2), 
+(0.7071067811865475*vd*SLHA::TD[1.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[1.,3.]+0.5*vE3*vL3*SLHA::YD[1.,3.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[2.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[2.,3.]+0.5*vE3*vL3*SLHA::YD[2.,3.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[3.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[3.,3.]+0.5*vE3*vL3*SLHA::YD[3.,3.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[1.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[1.,1.]+0.5*vE3*vL3*SLHA::YD[1.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[1.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[1.,2.]+0.5*vE3*vL3*SLHA::YD[1.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[1.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[1.,3.]+0.5*vE3*vL3*SLHA::YD[1.,3.]*SLHA::YE[3.,3.]), 
+(-0.08333333333333333*vd^2*SLHA::GAUGE[1.]^2+0.16666666666666666*vE3^2*SLHA::GAUGE[1.]^2-0.08333333333333333*vL3^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vu^2*SLHA::GAUGE[1.]^2+SLHA::MSD2[1.,1.]+0.5*vd^2*SLHA::YD[1.,1.]^2+0.5*vd^2*SLHA::YD[1.,2.]^2+0.5*vd^2*SLHA::YD[1.,3.]^2), 
+(SLHA::MSD2[1.,2.]+0.5*vd^2*SLHA::YD[1.,1.]*SLHA::YD[2.,1.]+0.5*vd^2*SLHA::YD[1.,2.]*SLHA::YD[2.,2.]+0.5*vd^2*SLHA::YD[1.,3.]*SLHA::YD[2.,3.]), 
+(SLHA::MSD2[1.,3.]+0.5*vd^2*SLHA::YD[1.,1.]*SLHA::YD[3.,1.]+0.5*vd^2*SLHA::YD[1.,2.]*SLHA::YD[3.,2.]+0.5*vd^2*SLHA::YD[1.,3.]*SLHA::YD[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[2.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[2.,1.]+0.5*vE3*vL3*SLHA::YD[2.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[2.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[2.,2.]+0.5*vE3*vL3*SLHA::YD[2.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[2.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[2.,3.]+0.5*vE3*vL3*SLHA::YD[2.,3.]*SLHA::YE[3.,3.]), 
+(SLHA::MSD2[2.,1.]+0.5*vd^2*SLHA::YD[1.,1.]*SLHA::YD[2.,1.]+0.5*vd^2*SLHA::YD[1.,2.]*SLHA::YD[2.,2.]+0.5*vd^2*SLHA::YD[1.,3.]*SLHA::YD[2.,3.]), 
+(-0.08333333333333333*vd^2*SLHA::GAUGE[1.]^2+0.16666666666666666*vE3^2*SLHA::GAUGE[1.]^2-0.08333333333333333*vL3^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vu^2*SLHA::GAUGE[1.]^2+SLHA::MSD2[2.,2.]+0.5*vd^2*SLHA::YD[2.,1.]^2+0.5*vd^2*SLHA::YD[2.,2.]^2+0.5*vd^2*SLHA::YD[2.,3.]^2), 
+(SLHA::MSD2[2.,3.]+0.5*vd^2*SLHA::YD[2.,1.]*SLHA::YD[3.,1.]+0.5*vd^2*SLHA::YD[2.,2.]*SLHA::YD[3.,2.]+0.5*vd^2*SLHA::YD[2.,3.]*SLHA::YD[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[3.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[3.,1.]+0.5*vE3*vL3*SLHA::YD[3.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[3.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[3.,2.]+0.5*vE3*vL3*SLHA::YD[3.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TD[3.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YD[3.,3.]+0.5*vE3*vL3*SLHA::YD[3.,3.]*SLHA::YE[3.,3.]), 
+(SLHA::MSD2[3.,1.]+0.5*vd^2*SLHA::YD[1.,1.]*SLHA::YD[3.,1.]+0.5*vd^2*SLHA::YD[1.,2.]*SLHA::YD[3.,2.]+0.5*vd^2*SLHA::YD[1.,3.]*SLHA::YD[3.,3.]), 
+(SLHA::MSD2[3.,2.]+0.5*vd^2*SLHA::YD[2.,1.]*SLHA::YD[3.,1.]+0.5*vd^2*SLHA::YD[2.,2.]*SLHA::YD[3.,2.]+0.5*vd^2*SLHA::YD[2.,3.]*SLHA::YD[3.,3.]), 
+(-0.08333333333333333*vd^2*SLHA::GAUGE[1.]^2+0.16666666666666666*vE3^2*SLHA::GAUGE[1.]^2-0.08333333333333333*vL3^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vu^2*SLHA::GAUGE[1.]^2+SLHA::MSD2[3.,3.]+0.5*vd^2*SLHA::YD[3.,1.]^2+0.5*vd^2*SLHA::YD[3.,2.]^2+0.5*vd^2*SLHA::YD[3.,3.]^2) 
 </mass-squared_matrix> 
  
 <mass-squared_matrix 
 particle="Su"  rotationmatrix="ZU"  factor="6" >     
-(-0.041666666666666664*vdR^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vE3^2*SLHA::GAUGE[1.]^2-0.041666666666666664*vL3^2*SLHA::GAUGE[1.]^2+0.041666666666666664*vuR^2*SLHA::GAUGE[1.]^2+0.125*vdR^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSQ2[1.,1.]+0.5*vuR^2*SLHA::YU[1.,1.]^2+0.5*vuR^2*SLHA::YU[2.,1.]^2+0.5*vuR^2*SLHA::YU[3.,1.]^2), 
-(SLHA::MSQ2[1.,2.]+0.5*vuR^2*SLHA::YU[1.,1.]*SLHA::YU[1.,2.]+0.5*vuR^2*SLHA::YU[2.,1.]*SLHA::YU[2.,2.]+0.5*vuR^2*SLHA::YU[3.,1.]*SLHA::YU[3.,2.]), 
-(SLHA::MSQ2[1.,3.]+0.5*vuR^2*SLHA::YU[1.,1.]*SLHA::YU[1.,3.]+0.5*vuR^2*SLHA::YU[2.,1.]*SLHA::YU[2.,3.]+0.5*vuR^2*SLHA::YU[3.,1.]*SLHA::YU[3.,3.]), 
-(0.7071067811865475*vuR*SLHA::TU[1.,1.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[1.,1.]), 
-(0.7071067811865475*vuR*SLHA::TU[2.,1.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[2.,1.]), 
-(0.7071067811865475*vuR*SLHA::TU[3.,1.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[3.,1.]), 
-(SLHA::MSQ2[2.,1.]+0.5*vuR^2*SLHA::YU[1.,1.]*SLHA::YU[1.,2.]+0.5*vuR^2*SLHA::YU[2.,1.]*SLHA::YU[2.,2.]+0.5*vuR^2*SLHA::YU[3.,1.]*SLHA::YU[3.,2.]), 
-(-0.041666666666666664*vdR^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vE3^2*SLHA::GAUGE[1.]^2-0.041666666666666664*vL3^2*SLHA::GAUGE[1.]^2+0.041666666666666664*vuR^2*SLHA::GAUGE[1.]^2+0.125*vdR^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSQ2[2.,2.]+0.5*vuR^2*SLHA::YU[1.,2.]^2+0.5*vuR^2*SLHA::YU[2.,2.]^2+0.5*vuR^2*SLHA::YU[3.,2.]^2), 
-(SLHA::MSQ2[2.,3.]+0.5*vuR^2*SLHA::YU[1.,2.]*SLHA::YU[1.,3.]+0.5*vuR^2*SLHA::YU[2.,2.]*SLHA::YU[2.,3.]+0.5*vuR^2*SLHA::YU[3.,2.]*SLHA::YU[3.,3.]), 
-(0.7071067811865475*vuR*SLHA::TU[1.,2.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[1.,2.]), 
-(0.7071067811865475*vuR*SLHA::TU[2.,2.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[2.,2.]), 
-(0.7071067811865475*vuR*SLHA::TU[3.,2.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[3.,2.]), 
-(SLHA::MSQ2[3.,1.]+0.5*vuR^2*SLHA::YU[1.,1.]*SLHA::YU[1.,3.]+0.5*vuR^2*SLHA::YU[2.,1.]*SLHA::YU[2.,3.]+0.5*vuR^2*SLHA::YU[3.,1.]*SLHA::YU[3.,3.]), 
-(SLHA::MSQ2[3.,2.]+0.5*vuR^2*SLHA::YU[1.,2.]*SLHA::YU[1.,3.]+0.5*vuR^2*SLHA::YU[2.,2.]*SLHA::YU[2.,3.]+0.5*vuR^2*SLHA::YU[3.,2.]*SLHA::YU[3.,3.]), 
-(-0.041666666666666664*vdR^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vE3^2*SLHA::GAUGE[1.]^2-0.041666666666666664*vL3^2*SLHA::GAUGE[1.]^2+0.041666666666666664*vuR^2*SLHA::GAUGE[1.]^2+0.125*vdR^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSQ2[3.,3.]+0.5*vuR^2*SLHA::YU[1.,3.]^2+0.5*vuR^2*SLHA::YU[2.,3.]^2+0.5*vuR^2*SLHA::YU[3.,3.]^2), 
-(0.7071067811865475*vuR*SLHA::TU[1.,3.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[1.,3.]), 
-(0.7071067811865475*vuR*SLHA::TU[2.,3.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[2.,3.]), 
-(0.7071067811865475*vuR*SLHA::TU[3.,3.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[3.,3.]), 
-(0.7071067811865475*vuR*SLHA::TU[1.,1.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[1.,1.]), 
-(0.7071067811865475*vuR*SLHA::TU[1.,2.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[1.,2.]), 
-(0.7071067811865475*vuR*SLHA::TU[1.,3.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[1.,3.]), 
-(0.16666666666666666*vdR^2*SLHA::GAUGE[1.]^2-0.3333333333333333*vE3^2*SLHA::GAUGE[1.]^2+0.16666666666666666*vL3^2*SLHA::GAUGE[1.]^2-0.16666666666666666*vuR^2*SLHA::GAUGE[1.]^2+SLHA::MSU2[1.,1.]+0.5*vuR^2*SLHA::YU[1.,1.]^2+0.5*vuR^2*SLHA::YU[1.,2.]^2+0.5*vuR^2*SLHA::YU[1.,3.]^2), 
-(SLHA::MSU2[1.,2.]+0.5*vuR^2*SLHA::YU[1.,1.]*SLHA::YU[2.,1.]+0.5*vuR^2*SLHA::YU[1.,2.]*SLHA::YU[2.,2.]+0.5*vuR^2*SLHA::YU[1.,3.]*SLHA::YU[2.,3.]), 
-(SLHA::MSU2[1.,3.]+0.5*vuR^2*SLHA::YU[1.,1.]*SLHA::YU[3.,1.]+0.5*vuR^2*SLHA::YU[1.,2.]*SLHA::YU[3.,2.]+0.5*vuR^2*SLHA::YU[1.,3.]*SLHA::YU[3.,3.]), 
-(0.7071067811865475*vuR*SLHA::TU[2.,1.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[2.,1.]), 
-(0.7071067811865475*vuR*SLHA::TU[2.,2.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[2.,2.]), 
-(0.7071067811865475*vuR*SLHA::TU[2.,3.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[2.,3.]), 
-(SLHA::MSU2[2.,1.]+0.5*vuR^2*SLHA::YU[1.,1.]*SLHA::YU[2.,1.]+0.5*vuR^2*SLHA::YU[1.,2.]*SLHA::YU[2.,2.]+0.5*vuR^2*SLHA::YU[1.,3.]*SLHA::YU[2.,3.]), 
-(0.16666666666666666*vdR^2*SLHA::GAUGE[1.]^2-0.3333333333333333*vE3^2*SLHA::GAUGE[1.]^2+0.16666666666666666*vL3^2*SLHA::GAUGE[1.]^2-0.16666666666666666*vuR^2*SLHA::GAUGE[1.]^2+SLHA::MSU2[2.,2.]+0.5*vuR^2*SLHA::YU[2.,1.]^2+0.5*vuR^2*SLHA::YU[2.,2.]^2+0.5*vuR^2*SLHA::YU[2.,3.]^2), 
-(SLHA::MSU2[2.,3.]+0.5*vuR^2*SLHA::YU[2.,1.]*SLHA::YU[3.,1.]+0.5*vuR^2*SLHA::YU[2.,2.]*SLHA::YU[3.,2.]+0.5*vuR^2*SLHA::YU[2.,3.]*SLHA::YU[3.,3.]), 
-(0.7071067811865475*vuR*SLHA::TU[3.,1.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[3.,1.]), 
-(0.7071067811865475*vuR*SLHA::TU[3.,2.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[3.,2.]), 
-(0.7071067811865475*vuR*SLHA::TU[3.,3.]-0.7071067811865475*vdR*SLHA::HMIX[1.]*SLHA::YU[3.,3.]), 
-(SLHA::MSU2[3.,1.]+0.5*vuR^2*SLHA::YU[1.,1.]*SLHA::YU[3.,1.]+0.5*vuR^2*SLHA::YU[1.,2.]*SLHA::YU[3.,2.]+0.5*vuR^2*SLHA::YU[1.,3.]*SLHA::YU[3.,3.]), 
-(SLHA::MSU2[3.,2.]+0.5*vuR^2*SLHA::YU[2.,1.]*SLHA::YU[3.,1.]+0.5*vuR^2*SLHA::YU[2.,2.]*SLHA::YU[3.,2.]+0.5*vuR^2*SLHA::YU[2.,3.]*SLHA::YU[3.,3.]), 
-(0.16666666666666666*vdR^2*SLHA::GAUGE[1.]^2-0.3333333333333333*vE3^2*SLHA::GAUGE[1.]^2+0.16666666666666666*vL3^2*SLHA::GAUGE[1.]^2-0.16666666666666666*vuR^2*SLHA::GAUGE[1.]^2+SLHA::MSU2[3.,3.]+0.5*vuR^2*SLHA::YU[3.,1.]^2+0.5*vuR^2*SLHA::YU[3.,2.]^2+0.5*vuR^2*SLHA::YU[3.,3.]^2) 
+(-0.041666666666666664*vd^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vE3^2*SLHA::GAUGE[1.]^2-0.041666666666666664*vL3^2*SLHA::GAUGE[1.]^2+0.041666666666666664*vu^2*SLHA::GAUGE[1.]^2+0.125*vd^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSQ2[1.,1.]+0.5*vu^2*SLHA::YU[1.,1.]^2+0.5*vu^2*SLHA::YU[2.,1.]^2+0.5*vu^2*SLHA::YU[3.,1.]^2), 
+(SLHA::MSQ2[1.,2.]+0.5*vu^2*SLHA::YU[1.,1.]*SLHA::YU[1.,2.]+0.5*vu^2*SLHA::YU[2.,1.]*SLHA::YU[2.,2.]+0.5*vu^2*SLHA::YU[3.,1.]*SLHA::YU[3.,2.]), 
+(SLHA::MSQ2[1.,3.]+0.5*vu^2*SLHA::YU[1.,1.]*SLHA::YU[1.,3.]+0.5*vu^2*SLHA::YU[2.,1.]*SLHA::YU[2.,3.]+0.5*vu^2*SLHA::YU[3.,1.]*SLHA::YU[3.,3.]), 
+(0.7071067811865475*vu*SLHA::TU[1.,1.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[1.,1.]), 
+(0.7071067811865475*vu*SLHA::TU[2.,1.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[2.,1.]), 
+(0.7071067811865475*vu*SLHA::TU[3.,1.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[3.,1.]), 
+(SLHA::MSQ2[2.,1.]+0.5*vu^2*SLHA::YU[1.,1.]*SLHA::YU[1.,2.]+0.5*vu^2*SLHA::YU[2.,1.]*SLHA::YU[2.,2.]+0.5*vu^2*SLHA::YU[3.,1.]*SLHA::YU[3.,2.]), 
+(-0.041666666666666664*vd^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vE3^2*SLHA::GAUGE[1.]^2-0.041666666666666664*vL3^2*SLHA::GAUGE[1.]^2+0.041666666666666664*vu^2*SLHA::GAUGE[1.]^2+0.125*vd^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSQ2[2.,2.]+0.5*vu^2*SLHA::YU[1.,2.]^2+0.5*vu^2*SLHA::YU[2.,2.]^2+0.5*vu^2*SLHA::YU[3.,2.]^2), 
+(SLHA::MSQ2[2.,3.]+0.5*vu^2*SLHA::YU[1.,2.]*SLHA::YU[1.,3.]+0.5*vu^2*SLHA::YU[2.,2.]*SLHA::YU[2.,3.]+0.5*vu^2*SLHA::YU[3.,2.]*SLHA::YU[3.,3.]), 
+(0.7071067811865475*vu*SLHA::TU[1.,2.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[1.,2.]), 
+(0.7071067811865475*vu*SLHA::TU[2.,2.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[2.,2.]), 
+(0.7071067811865475*vu*SLHA::TU[3.,2.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[3.,2.]), 
+(SLHA::MSQ2[3.,1.]+0.5*vu^2*SLHA::YU[1.,1.]*SLHA::YU[1.,3.]+0.5*vu^2*SLHA::YU[2.,1.]*SLHA::YU[2.,3.]+0.5*vu^2*SLHA::YU[3.,1.]*SLHA::YU[3.,3.]), 
+(SLHA::MSQ2[3.,2.]+0.5*vu^2*SLHA::YU[1.,2.]*SLHA::YU[1.,3.]+0.5*vu^2*SLHA::YU[2.,2.]*SLHA::YU[2.,3.]+0.5*vu^2*SLHA::YU[3.,2.]*SLHA::YU[3.,3.]), 
+(-0.041666666666666664*vd^2*SLHA::GAUGE[1.]^2+0.08333333333333333*vE3^2*SLHA::GAUGE[1.]^2-0.041666666666666664*vL3^2*SLHA::GAUGE[1.]^2+0.041666666666666664*vu^2*SLHA::GAUGE[1.]^2+0.125*vd^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSQ2[3.,3.]+0.5*vu^2*SLHA::YU[1.,3.]^2+0.5*vu^2*SLHA::YU[2.,3.]^2+0.5*vu^2*SLHA::YU[3.,3.]^2), 
+(0.7071067811865475*vu*SLHA::TU[1.,3.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[1.,3.]), 
+(0.7071067811865475*vu*SLHA::TU[2.,3.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[2.,3.]), 
+(0.7071067811865475*vu*SLHA::TU[3.,3.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[3.,3.]), 
+(0.7071067811865475*vu*SLHA::TU[1.,1.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[1.,1.]), 
+(0.7071067811865475*vu*SLHA::TU[1.,2.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[1.,2.]), 
+(0.7071067811865475*vu*SLHA::TU[1.,3.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[1.,3.]), 
+(0.16666666666666666*vd^2*SLHA::GAUGE[1.]^2-0.3333333333333333*vE3^2*SLHA::GAUGE[1.]^2+0.16666666666666666*vL3^2*SLHA::GAUGE[1.]^2-0.16666666666666666*vu^2*SLHA::GAUGE[1.]^2+SLHA::MSU2[1.,1.]+0.5*vu^2*SLHA::YU[1.,1.]^2+0.5*vu^2*SLHA::YU[1.,2.]^2+0.5*vu^2*SLHA::YU[1.,3.]^2), 
+(SLHA::MSU2[1.,2.]+0.5*vu^2*SLHA::YU[1.,1.]*SLHA::YU[2.,1.]+0.5*vu^2*SLHA::YU[1.,2.]*SLHA::YU[2.,2.]+0.5*vu^2*SLHA::YU[1.,3.]*SLHA::YU[2.,3.]), 
+(SLHA::MSU2[1.,3.]+0.5*vu^2*SLHA::YU[1.,1.]*SLHA::YU[3.,1.]+0.5*vu^2*SLHA::YU[1.,2.]*SLHA::YU[3.,2.]+0.5*vu^2*SLHA::YU[1.,3.]*SLHA::YU[3.,3.]), 
+(0.7071067811865475*vu*SLHA::TU[2.,1.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[2.,1.]), 
+(0.7071067811865475*vu*SLHA::TU[2.,2.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[2.,2.]), 
+(0.7071067811865475*vu*SLHA::TU[2.,3.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[2.,3.]), 
+(SLHA::MSU2[2.,1.]+0.5*vu^2*SLHA::YU[1.,1.]*SLHA::YU[2.,1.]+0.5*vu^2*SLHA::YU[1.,2.]*SLHA::YU[2.,2.]+0.5*vu^2*SLHA::YU[1.,3.]*SLHA::YU[2.,3.]), 
+(0.16666666666666666*vd^2*SLHA::GAUGE[1.]^2-0.3333333333333333*vE3^2*SLHA::GAUGE[1.]^2+0.16666666666666666*vL3^2*SLHA::GAUGE[1.]^2-0.16666666666666666*vu^2*SLHA::GAUGE[1.]^2+SLHA::MSU2[2.,2.]+0.5*vu^2*SLHA::YU[2.,1.]^2+0.5*vu^2*SLHA::YU[2.,2.]^2+0.5*vu^2*SLHA::YU[2.,3.]^2), 
+(SLHA::MSU2[2.,3.]+0.5*vu^2*SLHA::YU[2.,1.]*SLHA::YU[3.,1.]+0.5*vu^2*SLHA::YU[2.,2.]*SLHA::YU[3.,2.]+0.5*vu^2*SLHA::YU[2.,3.]*SLHA::YU[3.,3.]), 
+(0.7071067811865475*vu*SLHA::TU[3.,1.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[3.,1.]), 
+(0.7071067811865475*vu*SLHA::TU[3.,2.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[3.,2.]), 
+(0.7071067811865475*vu*SLHA::TU[3.,3.]-0.7071067811865475*vd*SLHA::HMIX[1.]*SLHA::YU[3.,3.]), 
+(SLHA::MSU2[3.,1.]+0.5*vu^2*SLHA::YU[1.,1.]*SLHA::YU[3.,1.]+0.5*vu^2*SLHA::YU[1.,2.]*SLHA::YU[3.,2.]+0.5*vu^2*SLHA::YU[1.,3.]*SLHA::YU[3.,3.]), 
+(SLHA::MSU2[3.,2.]+0.5*vu^2*SLHA::YU[2.,1.]*SLHA::YU[3.,1.]+0.5*vu^2*SLHA::YU[2.,2.]*SLHA::YU[3.,2.]+0.5*vu^2*SLHA::YU[2.,3.]*SLHA::YU[3.,3.]), 
+(0.16666666666666666*vd^2*SLHA::GAUGE[1.]^2-0.3333333333333333*vE3^2*SLHA::GAUGE[1.]^2+0.16666666666666666*vL3^2*SLHA::GAUGE[1.]^2-0.16666666666666666*vu^2*SLHA::GAUGE[1.]^2+SLHA::MSU2[3.,3.]+0.5*vu^2*SLHA::YU[3.,1.]^2+0.5*vu^2*SLHA::YU[3.,2.]^2+0.5*vu^2*SLHA::YU[3.,3.]^2) 
 </mass-squared_matrix> 
  
 <mass-squared_matrix 
 particle="hh"  rotationmatrix="ZH"  factor="1" >     
-(0.375*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2+0.375*vdR^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[21.]+0.5*vL3^2*SLHA::YE[1.,3.]^2+0.5*vL3^2*SLHA::YE[2.,3.]^2+0.5*vE3^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2+0.5*vL3^2*SLHA::YE[3.,3.]^2), 
-(-0.25*vdR*vuR*SLHA::GAUGE[1.]^2-0.25*vdR*vuR*SLHA::GAUGE[2.]^2-1.*( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )), 
+(0.375*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2+0.375*vd^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[21.]+0.5*vL3^2*SLHA::YE[1.,3.]^2+0.5*vL3^2*SLHA::YE[2.,3.]^2+0.5*vE3^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2+0.5*vL3^2*SLHA::YE[3.,3.]^2), 
+(-0.25*vd*vu*SLHA::GAUGE[1.]^2-0.25*vd*vu*SLHA::GAUGE[2.]^2-1.*( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
-(0.7071067811865475*vE3*SLHA::TE[3.,1.]+vdR*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+vdR*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+vdR*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vE3*SLHA::TE[3.,2.]+vdR*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+vdR*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+vdR*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
-(0.25*vdR*vL3*SLHA::GAUGE[1.]^2-0.25*vdR*vL3*SLHA::GAUGE[2.]^2+0.7071067811865475*vE3*SLHA::TE[3.,3.]+vdR*vL3*SLHA::YE[1.,3.]^2+vdR*vL3*SLHA::YE[2.,3.]^2+vdR*vL3*SLHA::YE[3.,3.]^2), 
-(0.7071067811865475*vL3*SLHA::TE[1.,3.]+vdR*vE3*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+vdR*vE3*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+vdR*vE3*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vL3*SLHA::TE[2.,3.]+vdR*vE3*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+vdR*vE3*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+vdR*vE3*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
-(-0.5*vdR*vE3*SLHA::GAUGE[1.]^2+0.7071067811865475*vL3*SLHA::TE[3.,3.]+vdR*vE3*SLHA::YE[3.,1.]^2+vdR*vE3*SLHA::YE[3.,2.]^2+vdR*vE3*SLHA::YE[3.,3.]^2), 
-(-0.25*vdR*vuR*SLHA::GAUGE[1.]^2-0.25*vdR*vuR*SLHA::GAUGE[2.]^2-1.*( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )), 
-(-0.125*vdR^2*SLHA::GAUGE[1.]^2+0.25*vE3^2*SLHA::GAUGE[1.]^2-0.125*vL3^2*SLHA::GAUGE[1.]^2+0.375*vuR^2*SLHA::GAUGE[1.]^2-0.125*vdR^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.375*vuR^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[22.]), 
+(0.7071067811865475*vE3*SLHA::TE[3.,1.]+vd*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+vd*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+vd*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vE3*SLHA::TE[3.,2.]+vd*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+vd*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+vd*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(0.25*vd*vL3*SLHA::GAUGE[1.]^2-0.25*vd*vL3*SLHA::GAUGE[2.]^2+0.7071067811865475*vE3*SLHA::TE[3.,3.]+vd*vL3*SLHA::YE[1.,3.]^2+vd*vL3*SLHA::YE[2.,3.]^2+vd*vL3*SLHA::YE[3.,3.]^2), 
+(0.7071067811865475*vL3*SLHA::TE[1.,3.]+vd*vE3*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+vd*vE3*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+vd*vE3*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vL3*SLHA::TE[2.,3.]+vd*vE3*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+vd*vE3*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+vd*vE3*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
+(-0.5*vd*vE3*SLHA::GAUGE[1.]^2+0.7071067811865475*vL3*SLHA::TE[3.,3.]+vd*vE3*SLHA::YE[3.,1.]^2+vd*vE3*SLHA::YE[3.,2.]^2+vd*vE3*SLHA::YE[3.,3.]^2), 
+(-0.25*vd*vu*SLHA::GAUGE[1.]^2-0.25*vd*vu*SLHA::GAUGE[2.]^2-1.*( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )), 
+(-0.125*vd^2*SLHA::GAUGE[1.]^2+0.25*vE3^2*SLHA::GAUGE[1.]^2-0.125*vL3^2*SLHA::GAUGE[1.]^2+0.375*vu^2*SLHA::GAUGE[1.]^2-0.125*vd^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.375*vu^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[22.]), 
 (0.), 
 (0.), 
 (0.), 
@@ -241,30 +277,30 @@ particle="hh"  rotationmatrix="ZH"  factor="1" >
 (0.), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,1.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
-(-0.25*vL3*vuR*SLHA::GAUGE[1.]^2+0.25*vL3*vuR*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(-0.25*vL3*vu*SLHA::GAUGE[1.]^2+0.25*vL3*vu*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[1.,3.]), 
 (-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[2.,3.]), 
-(0.5*vE3*vuR*SLHA::GAUGE[1.]^2-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(0.5*vE3*vu*SLHA::GAUGE[1.]^2-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2+0.125*vdR^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[21.]+0.5*vE3^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
-(0.25*vdR*vuR*SLHA::GAUGE[2.]^2+( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )), 
-(-0.7071067811865475*vE3*SLHA::TE[3.,1.]-0.5*vdR*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]-0.5*vdR*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]-0.5*vdR*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
-(-0.7071067811865475*vE3*SLHA::TE[3.,2.]-0.5*vdR*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]-0.5*vdR*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]-0.5*vdR*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
-(0.25*vdR*vL3*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::TE[3.,3.]-0.5*vdR*vL3*SLHA::YE[1.,3.]^2-0.5*vdR*vL3*SLHA::YE[2.,3.]^2-0.5*vdR*vL3*SLHA::YE[3.,3.]^2), 
-(0.), 
-(0.), 
-(0.), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2+0.125*vd^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[21.]+0.5*vE3^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
+(0.25*vd*vu*SLHA::GAUGE[2.]^2+( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )), 
+(-0.7071067811865475*vE3*SLHA::TE[3.,1.]-0.5*vd*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]-0.5*vd*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]-0.5*vd*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(-0.7071067811865475*vE3*SLHA::TE[3.,2.]-0.5*vd*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]-0.5*vd*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]-0.5*vd*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(0.25*vd*vL3*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::TE[3.,3.]-0.5*vd*vL3*SLHA::YE[1.,3.]^2-0.5*vd*vL3*SLHA::YE[2.,3.]^2-0.5*vd*vL3*SLHA::YE[3.,3.]^2), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
-(0.25*vdR*vuR*SLHA::GAUGE[2.]^2+( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )), 
-(-0.125*vdR^2*SLHA::GAUGE[1.]^2+0.25*vE3^2*SLHA::GAUGE[1.]^2-0.125*vL3^2*SLHA::GAUGE[1.]^2+0.125*vuR^2*SLHA::GAUGE[1.]^2+0.125*vdR^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[22.]), 
+(0.), 
+(0.), 
+(0.), 
+(0.25*vd*vu*SLHA::GAUGE[2.]^2+( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )), 
+(-0.125*vd^2*SLHA::GAUGE[1.]^2+0.25*vE3^2*SLHA::GAUGE[1.]^2-0.125*vL3^2*SLHA::GAUGE[1.]^2+0.125*vu^2*SLHA::GAUGE[1.]^2+0.125*vd^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[22.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,1.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
-(0.25*vL3*vuR*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(0.25*vL3*vu*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
 (0.), 
@@ -273,9 +309,9 @@ particle="hh"  rotationmatrix="ZH"  factor="1" >
 (0.), 
 (0.), 
 (0.), 
-(-0.7071067811865475*vE3*SLHA::TE[3.,1.]-0.5*vdR*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]-0.5*vdR*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]-0.5*vdR*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(-0.7071067811865475*vE3*SLHA::TE[3.,1.]-0.5*vd*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]-0.5*vd*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]-0.5*vd*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,1.]), 
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2+0.125*vdR^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[1.,1.]+0.5*vE3^2*SLHA::YE[3.,1.]^2), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2+0.125*vd^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[1.,1.]+0.5*vE3^2*SLHA::YE[3.,1.]^2), 
 (0.5*SLHA::MSL2[1.,2.]+0.5*SLHA::MSL2[2.,1.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
 (0.5*SLHA::MSL2[1.,3.]+0.5*SLHA::MSL2[3.,1.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
 (0.), 
@@ -286,10 +322,10 @@ particle="hh"  rotationmatrix="ZH"  factor="1" >
 (0.), 
 (0.), 
 (0.), 
-(-0.7071067811865475*vE3*SLHA::TE[3.,2.]-0.5*vdR*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]-0.5*vdR*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]-0.5*vdR*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(-0.7071067811865475*vE3*SLHA::TE[3.,2.]-0.5*vd*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]-0.5*vd*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]-0.5*vd*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
 (0.5*SLHA::MSL2[1.,2.]+0.5*SLHA::MSL2[2.,1.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2+0.125*vdR^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[2.,2.]+0.5*vE3^2*SLHA::YE[3.,2.]^2), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2+0.125*vd^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[2.,2.]+0.5*vE3^2*SLHA::YE[3.,2.]^2), 
 (0.5*SLHA::MSL2[2.,3.]+0.5*SLHA::MSL2[3.,2.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
@@ -299,100 +335,100 @@ particle="hh"  rotationmatrix="ZH"  factor="1" >
 (0.), 
 (0.), 
 (0.), 
-(0.25*vdR*vL3*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::TE[3.,3.]-0.5*vdR*vL3*SLHA::YE[1.,3.]^2-0.5*vdR*vL3*SLHA::YE[2.,3.]^2-0.5*vdR*vL3*SLHA::YE[3.,3.]^2), 
-(0.25*vL3*vuR*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(0.25*vd*vL3*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::TE[3.,3.]-0.5*vd*vL3*SLHA::YE[1.,3.]^2-0.5*vd*vL3*SLHA::YE[2.,3.]^2-0.5*vd*vL3*SLHA::YE[3.,3.]^2), 
+(0.25*vL3*vu*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.5*SLHA::MSL2[1.,3.]+0.5*SLHA::MSL2[3.,1.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
 (0.5*SLHA::MSL2[2.,3.]+0.5*SLHA::MSL2[3.,2.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2+0.125*vdR^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[3.,3.]+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2+0.125*vd^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[3.,3.]+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
-(0.7071067811865475*vE3*SLHA::TE[3.,1.]+vdR*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+vdR*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+vdR*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vE3*SLHA::TE[3.,1.]+vd*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+vd*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+vd*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,1.]), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2-0.125*vdR^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[1.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]^2+0.5*vdR^2*SLHA::YE[2.,1.]^2+0.5*vdR^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,1.]^2), 
-(0.5*SLHA::MSL2[1.,2.]+0.5*SLHA::MSL2[2.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[1.,2.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[2.,2.]+0.5*vdR^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
-(0.5*SLHA::MSL2[1.,3.]+0.5*SLHA::MSL2[3.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vdR^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[1.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[1.,1.]+0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[1.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[2.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[2.,1.]+0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[2.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[3.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[3.,1.]+vE3*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vE3*SLHA::TE[3.,2.]+vdR*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+vdR*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+vdR*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2-0.125*vd^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[1.,1.]+0.5*vd^2*SLHA::YE[1.,1.]^2+0.5*vd^2*SLHA::YE[2.,1.]^2+0.5*vd^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,1.]^2), 
+(0.5*SLHA::MSL2[1.,2.]+0.5*SLHA::MSL2[2.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[1.,2.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[2.,2.]+0.5*vd^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
+(0.5*SLHA::MSL2[1.,3.]+0.5*SLHA::MSL2[3.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vd^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[1.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[1.,1.]+0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[1.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[2.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[2.,1.]+0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[2.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[3.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[3.,1.]+vE3*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vE3*SLHA::TE[3.,2.]+vd*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+vd*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+vd*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
-(0.5*SLHA::MSL2[1.,2.]+0.5*SLHA::MSL2[2.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[1.,2.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[2.,2.]+0.5*vdR^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2-0.125*vdR^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[2.,2.]+0.5*vdR^2*SLHA::YE[1.,2.]^2+0.5*vdR^2*SLHA::YE[2.,2.]^2+0.5*vdR^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2), 
-(0.5*SLHA::MSL2[2.,3.]+0.5*SLHA::MSL2[3.,2.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vdR^2*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vdR^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[1.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[1.,2.]+0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[1.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[2.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[2.,2.]+0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[2.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[3.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[3.,2.]+vE3*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
-(0.25*vdR*vL3*SLHA::GAUGE[1.]^2-0.25*vdR*vL3*SLHA::GAUGE[2.]^2+0.7071067811865475*vE3*SLHA::TE[3.,3.]+vdR*vL3*SLHA::YE[1.,3.]^2+vdR*vL3*SLHA::YE[2.,3.]^2+vdR*vL3*SLHA::YE[3.,3.]^2), 
-(-0.25*vL3*vuR*SLHA::GAUGE[1.]^2+0.25*vL3*vuR*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(0.5*SLHA::MSL2[1.,2.]+0.5*SLHA::MSL2[2.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[1.,2.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[2.,2.]+0.5*vd^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2-0.125*vd^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[2.,2.]+0.5*vd^2*SLHA::YE[1.,2.]^2+0.5*vd^2*SLHA::YE[2.,2.]^2+0.5*vd^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2), 
+(0.5*SLHA::MSL2[2.,3.]+0.5*SLHA::MSL2[3.,2.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vd^2*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vd^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[1.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[1.,2.]+0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[1.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[2.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[2.,2.]+0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[2.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[3.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[3.,2.]+vE3*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(0.25*vd*vL3*SLHA::GAUGE[1.]^2-0.25*vd*vL3*SLHA::GAUGE[2.]^2+0.7071067811865475*vE3*SLHA::TE[3.,3.]+vd*vL3*SLHA::YE[1.,3.]^2+vd*vL3*SLHA::YE[2.,3.]^2+vd*vL3*SLHA::YE[3.,3.]^2), 
+(-0.25*vL3*vu*SLHA::GAUGE[1.]^2+0.25*vL3*vu*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
-(0.5*SLHA::MSL2[1.,3.]+0.5*SLHA::MSL2[3.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vdR^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
-(0.5*SLHA::MSL2[2.,3.]+0.5*SLHA::MSL2[3.,2.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vdR^2*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vdR^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.375*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2-0.125*vdR^2*SLHA::GAUGE[2.]^2+0.375*vL3^2*SLHA::GAUGE[2.]^2+0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[3.,3.]+0.5*vdR^2*SLHA::YE[1.,3.]^2+0.5*vdR^2*SLHA::YE[2.,3.]^2+0.5*vdR^2*SLHA::YE[3.,3.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
-(0.7071067811865475*vdR*SLHA::TE[1.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[1.,3.]+vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[2.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[2.,3.]+vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
-(-0.5*vE3*vL3*SLHA::GAUGE[1.]^2+0.7071067811865475*vdR*SLHA::TE[3.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[3.,3.]+vE3*vL3*SLHA::YE[3.,3.]^2), 
-(0.7071067811865475*vL3*SLHA::TE[1.,3.]+vdR*vE3*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+vdR*vE3*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+vdR*vE3*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
+(0.5*SLHA::MSL2[1.,3.]+0.5*SLHA::MSL2[3.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vd^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(0.5*SLHA::MSL2[2.,3.]+0.5*SLHA::MSL2[3.,2.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vd^2*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vd^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.375*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2-0.125*vd^2*SLHA::GAUGE[2.]^2+0.375*vL3^2*SLHA::GAUGE[2.]^2+0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[3.,3.]+0.5*vd^2*SLHA::YE[1.,3.]^2+0.5*vd^2*SLHA::YE[2.,3.]^2+0.5*vd^2*SLHA::YE[3.,3.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
+(0.7071067811865475*vd*SLHA::TE[1.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[1.,3.]+vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[2.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[2.,3.]+vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
+(-0.5*vE3*vL3*SLHA::GAUGE[1.]^2+0.7071067811865475*vd*SLHA::TE[3.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[3.,3.]+vE3*vL3*SLHA::YE[3.,3.]^2), 
+(0.7071067811865475*vL3*SLHA::TE[1.,3.]+vd*vE3*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+vd*vE3*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+vd*vE3*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
 (-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[1.,3.]), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
-(0.7071067811865475*vdR*SLHA::TE[1.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[1.,1.]+0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[1.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[1.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[1.,2.]+0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[1.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[1.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[1.,3.]+vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
-(-0.25*vdR^2*SLHA::GAUGE[1.]^2+0.5*vE3^2*SLHA::GAUGE[1.]^2-0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vuR^2*SLHA::GAUGE[1.]^2+SLHA::MSE2[1.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]^2+0.5*vdR^2*SLHA::YE[1.,2.]^2+0.5*vdR^2*SLHA::YE[1.,3.]^2+0.5*vL3^2*SLHA::YE[1.,3.]^2), 
-(0.5*SLHA::MSE2[1.,2.]+0.5*SLHA::MSE2[2.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[2.,1.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[2.,2.]+0.5*vdR^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]), 
-(0.5*SLHA::MSE2[1.,3.]+0.5*SLHA::MSE2[3.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vdR^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vL3*SLHA::TE[2.,3.]+vdR*vE3*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+vdR*vE3*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+vdR*vE3*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[1.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[1.,1.]+0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[1.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[1.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[1.,2.]+0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[1.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[1.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[1.,3.]+vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
+(-0.25*vd^2*SLHA::GAUGE[1.]^2+0.5*vE3^2*SLHA::GAUGE[1.]^2-0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vu^2*SLHA::GAUGE[1.]^2+SLHA::MSE2[1.,1.]+0.5*vd^2*SLHA::YE[1.,1.]^2+0.5*vd^2*SLHA::YE[1.,2.]^2+0.5*vd^2*SLHA::YE[1.,3.]^2+0.5*vL3^2*SLHA::YE[1.,3.]^2), 
+(0.5*SLHA::MSE2[1.,2.]+0.5*SLHA::MSE2[2.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[2.,1.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[2.,2.]+0.5*vd^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]), 
+(0.5*SLHA::MSE2[1.,3.]+0.5*SLHA::MSE2[3.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vd^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vL3*SLHA::TE[2.,3.]+vd*vE3*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+vd*vE3*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+vd*vE3*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
 (-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[2.,3.]), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
-(0.7071067811865475*vdR*SLHA::TE[2.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[2.,1.]+0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[2.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[2.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[2.,2.]+0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[2.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[2.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[2.,3.]+vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
-(0.5*SLHA::MSE2[1.,2.]+0.5*SLHA::MSE2[2.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[2.,1.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[2.,2.]+0.5*vdR^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]), 
-(-0.25*vdR^2*SLHA::GAUGE[1.]^2+0.5*vE3^2*SLHA::GAUGE[1.]^2-0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vuR^2*SLHA::GAUGE[1.]^2+SLHA::MSE2[2.,2.]+0.5*vdR^2*SLHA::YE[2.,1.]^2+0.5*vdR^2*SLHA::YE[2.,2.]^2+0.5*vdR^2*SLHA::YE[2.,3.]^2+0.5*vL3^2*SLHA::YE[2.,3.]^2), 
-(0.5*SLHA::MSE2[2.,3.]+0.5*SLHA::MSE2[3.,2.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vdR^2*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vdR^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
-(-0.5*vdR*vE3*SLHA::GAUGE[1.]^2+0.7071067811865475*vL3*SLHA::TE[3.,3.]+vdR*vE3*SLHA::YE[3.,1.]^2+vdR*vE3*SLHA::YE[3.,2.]^2+vdR*vE3*SLHA::YE[3.,3.]^2), 
-(0.5*vE3*vuR*SLHA::GAUGE[1.]^2-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[2.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[2.,1.]+0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[2.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[2.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[2.,2.]+0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[2.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[2.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[2.,3.]+vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
+(0.5*SLHA::MSE2[1.,2.]+0.5*SLHA::MSE2[2.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[2.,1.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[2.,2.]+0.5*vd^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]), 
+(-0.25*vd^2*SLHA::GAUGE[1.]^2+0.5*vE3^2*SLHA::GAUGE[1.]^2-0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vu^2*SLHA::GAUGE[1.]^2+SLHA::MSE2[2.,2.]+0.5*vd^2*SLHA::YE[2.,1.]^2+0.5*vd^2*SLHA::YE[2.,2.]^2+0.5*vd^2*SLHA::YE[2.,3.]^2+0.5*vL3^2*SLHA::YE[2.,3.]^2), 
+(0.5*SLHA::MSE2[2.,3.]+0.5*SLHA::MSE2[3.,2.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vd^2*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vd^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
+(-0.5*vd*vE3*SLHA::GAUGE[1.]^2+0.7071067811865475*vL3*SLHA::TE[3.,3.]+vd*vE3*SLHA::YE[3.,1.]^2+vd*vE3*SLHA::YE[3.,2.]^2+vd*vE3*SLHA::YE[3.,3.]^2), 
+(0.5*vE3*vu*SLHA::GAUGE[1.]^2-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
-(0.7071067811865475*vdR*SLHA::TE[3.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[3.,1.]+vE3*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[3.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[3.,2.]+vE3*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
-(-0.5*vE3*vL3*SLHA::GAUGE[1.]^2+0.7071067811865475*vdR*SLHA::TE[3.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[3.,3.]+vE3*vL3*SLHA::YE[3.,3.]^2), 
-(0.5*SLHA::MSE2[1.,3.]+0.5*SLHA::MSE2[3.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vdR^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
-(0.5*SLHA::MSE2[2.,3.]+0.5*SLHA::MSE2[3.,2.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vdR^2*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vdR^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
-(-0.25*vdR^2*SLHA::GAUGE[1.]^2+1.5*vE3^2*SLHA::GAUGE[1.]^2-0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vuR^2*SLHA::GAUGE[1.]^2+SLHA::MSE2[3.,3.]+0.5*vdR^2*SLHA::YE[3.,1.]^2+0.5*vdR^2*SLHA::YE[3.,2.]^2+0.5*vdR^2*SLHA::YE[3.,3.]^2+0.5*vL3^2*SLHA::YE[3.,3.]^2) 
+(0.7071067811865475*vd*SLHA::TE[3.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[3.,1.]+vE3*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[3.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[3.,2.]+vE3*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(-0.5*vE3*vL3*SLHA::GAUGE[1.]^2+0.7071067811865475*vd*SLHA::TE[3.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[3.,3.]+vE3*vL3*SLHA::YE[3.,3.]^2), 
+(0.5*SLHA::MSE2[1.,3.]+0.5*SLHA::MSE2[3.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vd^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
+(0.5*SLHA::MSE2[2.,3.]+0.5*SLHA::MSE2[3.,2.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vd^2*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vd^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
+(-0.25*vd^2*SLHA::GAUGE[1.]^2+1.5*vE3^2*SLHA::GAUGE[1.]^2-0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vu^2*SLHA::GAUGE[1.]^2+SLHA::MSE2[3.,3.]+0.5*vd^2*SLHA::YE[3.,1.]^2+0.5*vd^2*SLHA::YE[3.,2.]^2+0.5*vd^2*SLHA::YE[3.,3.]^2+0.5*vL3^2*SLHA::YE[3.,3.]^2) 
 </mass-squared_matrix> 
  
 <mass-squared_matrix 
 particle="Ah"  rotationmatrix="ZA"  factor="1" >     
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2+0.125*vdR^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[21.]+0.5*vL3^2*SLHA::YE[1.,3.]^2+0.5*vL3^2*SLHA::YE[2.,3.]^2+0.5*vE3^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2+0.5*vL3^2*SLHA::YE[3.,3.]^2), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2+0.125*vd^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[21.]+0.5*vL3^2*SLHA::YE[1.,3.]^2+0.5*vL3^2*SLHA::YE[2.,3.]^2+0.5*vE3^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2+0.5*vL3^2*SLHA::YE[3.,3.]^2), 
 (( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )), 
 (0.), 
 (0.), 
@@ -406,7 +442,7 @@ particle="Ah"  rotationmatrix="ZA"  factor="1" >
 (0.7071067811865475*vL3*SLHA::TE[2.,3.]), 
 (0.7071067811865475*vL3*SLHA::TE[3.,3.]), 
 (( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )), 
-(-0.125*vdR^2*SLHA::GAUGE[1.]^2+0.25*vE3^2*SLHA::GAUGE[1.]^2-0.125*vL3^2*SLHA::GAUGE[1.]^2+0.125*vuR^2*SLHA::GAUGE[1.]^2-0.125*vdR^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[22.]), 
+(-0.125*vd^2*SLHA::GAUGE[1.]^2+0.25*vE3^2*SLHA::GAUGE[1.]^2-0.125*vL3^2*SLHA::GAUGE[1.]^2+0.125*vu^2*SLHA::GAUGE[1.]^2-0.125*vd^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[22.]), 
 (0.), 
 (0.), 
 (0.), 
@@ -420,11 +456,11 @@ particle="Ah"  rotationmatrix="ZA"  factor="1" >
 (0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2+0.125*vdR^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[21.]+0.5*vE3^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
-(-0.25*vdR*vuR*SLHA::GAUGE[2.]^2-1.*( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )), 
-(0.7071067811865475*vE3*SLHA::TE[3.,1.]+0.5*vdR*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vdR*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vdR*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vE3*SLHA::TE[3.,2.]+0.5*vdR*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vdR*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vdR*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
-(-0.25*vdR*vL3*SLHA::GAUGE[2.]^2+0.7071067811865475*vE3*SLHA::TE[3.,3.]+0.5*vdR*vL3*SLHA::YE[1.,3.]^2+0.5*vdR*vL3*SLHA::YE[2.,3.]^2+0.5*vdR*vL3*SLHA::YE[3.,3.]^2), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2+0.125*vd^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[21.]+0.5*vE3^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
+(-0.25*vd*vu*SLHA::GAUGE[2.]^2-1.*( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )), 
+(0.7071067811865475*vE3*SLHA::TE[3.,1.]+0.5*vd*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vd*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vd*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vE3*SLHA::TE[3.,2.]+0.5*vd*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vd*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vd*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(-0.25*vd*vL3*SLHA::GAUGE[2.]^2+0.7071067811865475*vE3*SLHA::TE[3.,3.]+0.5*vd*vL3*SLHA::YE[1.,3.]^2+0.5*vd*vL3*SLHA::YE[2.,3.]^2+0.5*vd*vL3*SLHA::YE[3.,3.]^2), 
 (0.), 
 (0.), 
 (0.), 
@@ -433,11 +469,11 @@ particle="Ah"  rotationmatrix="ZA"  factor="1" >
 (0.), 
 (0.), 
 (0.), 
-(-0.25*vdR*vuR*SLHA::GAUGE[2.]^2-1.*( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )), 
-(-0.125*vdR^2*SLHA::GAUGE[1.]^2+0.25*vE3^2*SLHA::GAUGE[1.]^2-0.125*vL3^2*SLHA::GAUGE[1.]^2+0.125*vuR^2*SLHA::GAUGE[1.]^2+0.125*vdR^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[22.]), 
+(-0.25*vd*vu*SLHA::GAUGE[2.]^2-1.*( ( SLHA::HMIX[4] * SLHA::HMIX[2] ) / ( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )), 
+(-0.125*vd^2*SLHA::GAUGE[1.]^2+0.25*vE3^2*SLHA::GAUGE[1.]^2-0.125*vL3^2*SLHA::GAUGE[1.]^2+0.125*vu^2*SLHA::GAUGE[1.]^2+0.125*vd^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+SLHA::MSOFT[22.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,1.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
-(0.25*vL3*vuR*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(0.25*vL3*vu*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
 (0.), 
@@ -446,9 +482,9 @@ particle="Ah"  rotationmatrix="ZA"  factor="1" >
 (0.), 
 (0.), 
 (0.), 
-(0.7071067811865475*vE3*SLHA::TE[3.,1.]+0.5*vdR*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vdR*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vdR*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vE3*SLHA::TE[3.,1.]+0.5*vd*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vd*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vd*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,1.]), 
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2+0.125*vdR^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[1.,1.]+0.5*vE3^2*SLHA::YE[3.,1.]^2), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2+0.125*vd^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[1.,1.]+0.5*vE3^2*SLHA::YE[3.,1.]^2), 
 (0.5*SLHA::MSL2[1.,2.]+0.5*SLHA::MSL2[2.,1.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
 (0.5*SLHA::MSL2[1.,3.]+0.5*SLHA::MSL2[3.,1.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
 (0.), 
@@ -459,10 +495,10 @@ particle="Ah"  rotationmatrix="ZA"  factor="1" >
 (0.), 
 (0.), 
 (0.), 
-(0.7071067811865475*vE3*SLHA::TE[3.,2.]+0.5*vdR*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vdR*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vdR*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vE3*SLHA::TE[3.,2.]+0.5*vd*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vd*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vd*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
 (0.5*SLHA::MSL2[1.,2.]+0.5*SLHA::MSL2[2.,1.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2+0.125*vdR^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[2.,2.]+0.5*vE3^2*SLHA::YE[3.,2.]^2), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2+0.125*vd^2*SLHA::GAUGE[2.]^2-0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[2.,2.]+0.5*vE3^2*SLHA::YE[3.,2.]^2), 
 (0.5*SLHA::MSL2[2.,3.]+0.5*SLHA::MSL2[3.,2.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
@@ -472,11 +508,11 @@ particle="Ah"  rotationmatrix="ZA"  factor="1" >
 (0.), 
 (0.), 
 (0.), 
-(-0.25*vdR*vL3*SLHA::GAUGE[2.]^2+0.7071067811865475*vE3*SLHA::TE[3.,3.]+0.5*vdR*vL3*SLHA::YE[1.,3.]^2+0.5*vdR*vL3*SLHA::YE[2.,3.]^2+0.5*vdR*vL3*SLHA::YE[3.,3.]^2), 
-(0.25*vL3*vuR*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(-0.25*vd*vL3*SLHA::GAUGE[2.]^2+0.7071067811865475*vE3*SLHA::TE[3.,3.]+0.5*vd*vL3*SLHA::YE[1.,3.]^2+0.5*vd*vL3*SLHA::YE[2.,3.]^2+0.5*vd*vL3*SLHA::YE[3.,3.]^2), 
+(0.25*vL3*vu*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.5*SLHA::MSL2[1.,3.]+0.5*SLHA::MSL2[3.,1.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
 (0.5*SLHA::MSL2[2.,3.]+0.5*SLHA::MSL2[3.,2.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2+0.125*vdR^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[3.,3.]+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2+0.125*vd^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2-0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[3.,3.]+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
 (0.), 
 (0.), 
 (0.), 
@@ -490,12 +526,12 @@ particle="Ah"  rotationmatrix="ZA"  factor="1" >
 (0.), 
 (0.), 
 (0.), 
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2-0.125*vdR^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[1.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]^2+0.5*vdR^2*SLHA::YE[2.,1.]^2+0.5*vdR^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,1.]^2), 
-(0.5*SLHA::MSL2[1.,2.]+0.5*SLHA::MSL2[2.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[1.,2.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[2.,2.]+0.5*vdR^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
-(0.5*SLHA::MSL2[1.,3.]+0.5*SLHA::MSL2[3.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vdR^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[1.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[1.,1.]-0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[1.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[2.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[2.,1.]-0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[2.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[3.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[3.,1.]), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2-0.125*vd^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[1.,1.]+0.5*vd^2*SLHA::YE[1.,1.]^2+0.5*vd^2*SLHA::YE[2.,1.]^2+0.5*vd^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,1.]^2), 
+(0.5*SLHA::MSL2[1.,2.]+0.5*SLHA::MSL2[2.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[1.,2.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[2.,2.]+0.5*vd^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
+(0.5*SLHA::MSL2[1.,3.]+0.5*SLHA::MSL2[3.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vd^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[1.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[1.,1.]-0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[1.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[2.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[2.,1.]-0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[2.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[3.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[3.,1.]), 
 (-0.7071067811865475*vE3*SLHA::TE[3.,2.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
 (0.), 
@@ -503,12 +539,12 @@ particle="Ah"  rotationmatrix="ZA"  factor="1" >
 (0.), 
 (0.), 
 (0.), 
-(0.5*SLHA::MSL2[1.,2.]+0.5*SLHA::MSL2[2.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[1.,2.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[2.,2.]+0.5*vdR^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2-0.125*vdR^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[2.,2.]+0.5*vdR^2*SLHA::YE[1.,2.]^2+0.5*vdR^2*SLHA::YE[2.,2.]^2+0.5*vdR^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2), 
-(0.5*SLHA::MSL2[2.,3.]+0.5*SLHA::MSL2[3.,2.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vdR^2*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vdR^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[1.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[1.,2.]-0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[1.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[2.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[2.,2.]-0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[2.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[3.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
+(0.5*SLHA::MSL2[1.,2.]+0.5*SLHA::MSL2[2.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[1.,2.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[2.,2.]+0.5*vd^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2-0.125*vd^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[2.,2.]+0.5*vd^2*SLHA::YE[1.,2.]^2+0.5*vd^2*SLHA::YE[2.,2.]^2+0.5*vd^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2), 
+(0.5*SLHA::MSL2[2.,3.]+0.5*SLHA::MSL2[3.,2.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vd^2*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vd^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[1.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[1.,2.]-0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[1.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[2.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[2.,2.]-0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[2.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[3.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
 (-0.7071067811865475*vE3*SLHA::TE[3.,3.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.), 
@@ -516,12 +552,12 @@ particle="Ah"  rotationmatrix="ZA"  factor="1" >
 (0.), 
 (0.), 
 (0.), 
-(0.5*SLHA::MSL2[1.,3.]+0.5*SLHA::MSL2[3.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vdR^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
-(0.5*SLHA::MSL2[2.,3.]+0.5*SLHA::MSL2[3.,2.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vdR^2*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vdR^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
-(0.125*vdR^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vuR^2*SLHA::GAUGE[1.]^2-0.125*vdR^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[3.,3.]+0.5*vdR^2*SLHA::YE[1.,3.]^2+0.5*vdR^2*SLHA::YE[2.,3.]^2+0.5*vdR^2*SLHA::YE[3.,3.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
-(0.7071067811865475*vdR*SLHA::TE[1.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[1.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[2.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[2.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[3.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(0.5*SLHA::MSL2[1.,3.]+0.5*SLHA::MSL2[3.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vd^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(0.5*SLHA::MSL2[2.,3.]+0.5*SLHA::MSL2[3.,2.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vd^2*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vd^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(0.125*vd^2*SLHA::GAUGE[1.]^2-0.25*vE3^2*SLHA::GAUGE[1.]^2+0.125*vL3^2*SLHA::GAUGE[1.]^2-0.125*vu^2*SLHA::GAUGE[1.]^2-0.125*vd^2*SLHA::GAUGE[2.]^2+0.125*vL3^2*SLHA::GAUGE[2.]^2+0.125*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSL2[3.,3.]+0.5*vd^2*SLHA::YE[1.,3.]^2+0.5*vd^2*SLHA::YE[2.,3.]^2+0.5*vd^2*SLHA::YE[3.,3.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
+(0.7071067811865475*vd*SLHA::TE[1.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[1.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[2.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[2.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[3.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.7071067811865475*vL3*SLHA::TE[1.,3.]), 
 (0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[1.,3.]), 
 (0.), 
@@ -529,12 +565,12 @@ particle="Ah"  rotationmatrix="ZA"  factor="1" >
 (0.), 
 (0.), 
 (0.), 
-(0.7071067811865475*vdR*SLHA::TE[1.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[1.,1.]-0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[1.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[1.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[1.,2.]-0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[1.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[1.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[1.,3.]), 
-(-0.25*vdR^2*SLHA::GAUGE[1.]^2+0.5*vE3^2*SLHA::GAUGE[1.]^2-0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vuR^2*SLHA::GAUGE[1.]^2+SLHA::MSE2[1.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]^2+0.5*vdR^2*SLHA::YE[1.,2.]^2+0.5*vdR^2*SLHA::YE[1.,3.]^2+0.5*vL3^2*SLHA::YE[1.,3.]^2), 
-(0.5*SLHA::MSE2[1.,2.]+0.5*SLHA::MSE2[2.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[2.,1.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[2.,2.]+0.5*vdR^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]), 
-(0.5*SLHA::MSE2[1.,3.]+0.5*SLHA::MSE2[3.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vdR^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[1.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[1.,1.]-0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[1.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[1.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[1.,2.]-0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[1.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[1.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[1.,3.]), 
+(-0.25*vd^2*SLHA::GAUGE[1.]^2+0.5*vE3^2*SLHA::GAUGE[1.]^2-0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vu^2*SLHA::GAUGE[1.]^2+SLHA::MSE2[1.,1.]+0.5*vd^2*SLHA::YE[1.,1.]^2+0.5*vd^2*SLHA::YE[1.,2.]^2+0.5*vd^2*SLHA::YE[1.,3.]^2+0.5*vL3^2*SLHA::YE[1.,3.]^2), 
+(0.5*SLHA::MSE2[1.,2.]+0.5*SLHA::MSE2[2.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[2.,1.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[2.,2.]+0.5*vd^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]), 
+(0.5*SLHA::MSE2[1.,3.]+0.5*SLHA::MSE2[3.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vd^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
 (0.7071067811865475*vL3*SLHA::TE[2.,3.]), 
 (0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[2.,3.]), 
 (0.), 
@@ -542,12 +578,12 @@ particle="Ah"  rotationmatrix="ZA"  factor="1" >
 (0.), 
 (0.), 
 (0.), 
-(0.7071067811865475*vdR*SLHA::TE[2.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[2.,1.]-0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[2.,1.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[2.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[2.,2.]-0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[2.,2.]*SLHA::YE[3.,3.]), 
-(0.7071067811865475*vdR*SLHA::TE[2.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[2.,3.]), 
-(0.5*SLHA::MSE2[1.,2.]+0.5*SLHA::MSE2[2.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[2.,1.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[2.,2.]+0.5*vdR^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]), 
-(-0.25*vdR^2*SLHA::GAUGE[1.]^2+0.5*vE3^2*SLHA::GAUGE[1.]^2-0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vuR^2*SLHA::GAUGE[1.]^2+SLHA::MSE2[2.,2.]+0.5*vdR^2*SLHA::YE[2.,1.]^2+0.5*vdR^2*SLHA::YE[2.,2.]^2+0.5*vdR^2*SLHA::YE[2.,3.]^2+0.5*vL3^2*SLHA::YE[2.,3.]^2), 
-(0.5*SLHA::MSE2[2.,3.]+0.5*SLHA::MSE2[3.,2.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vdR^2*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vdR^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[2.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[2.,1.]-0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,1.]+0.5*vE3*vL3*SLHA::YE[2.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[2.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[2.,2.]-0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,2.]+0.5*vE3*vL3*SLHA::YE[2.,2.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vd*SLHA::TE[2.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[2.,3.]), 
+(0.5*SLHA::MSE2[1.,2.]+0.5*SLHA::MSE2[2.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[2.,1.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[2.,2.]+0.5*vd^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]), 
+(-0.25*vd^2*SLHA::GAUGE[1.]^2+0.5*vE3^2*SLHA::GAUGE[1.]^2-0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vu^2*SLHA::GAUGE[1.]^2+SLHA::MSE2[2.,2.]+0.5*vd^2*SLHA::YE[2.,1.]^2+0.5*vd^2*SLHA::YE[2.,2.]^2+0.5*vd^2*SLHA::YE[2.,3.]^2+0.5*vL3^2*SLHA::YE[2.,3.]^2), 
+(0.5*SLHA::MSE2[2.,3.]+0.5*SLHA::MSE2[3.,2.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vd^2*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vd^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
 (0.7071067811865475*vL3*SLHA::TE[3.,3.]), 
 (0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.), 
@@ -555,80 +591,80 @@ particle="Ah"  rotationmatrix="ZA"  factor="1" >
 (0.), 
 (0.), 
 (0.), 
-(0.7071067811865475*vdR*SLHA::TE[3.,1.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[3.,1.]), 
-(0.7071067811865475*vdR*SLHA::TE[3.,2.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
-(0.7071067811865475*vdR*SLHA::TE[3.,3.]-0.7071067811865475*vuR*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
-(0.5*SLHA::MSE2[1.,3.]+0.5*SLHA::MSE2[3.,1.]+0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vdR^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
-(0.5*SLHA::MSE2[2.,3.]+0.5*SLHA::MSE2[3.,2.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vdR^2*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vdR^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
-(-0.25*vdR^2*SLHA::GAUGE[1.]^2+0.5*vE3^2*SLHA::GAUGE[1.]^2-0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vuR^2*SLHA::GAUGE[1.]^2+SLHA::MSE2[3.,3.]+0.5*vdR^2*SLHA::YE[3.,1.]^2+0.5*vdR^2*SLHA::YE[3.,2.]^2+0.5*vdR^2*SLHA::YE[3.,3.]^2+0.5*vL3^2*SLHA::YE[3.,3.]^2) 
+(0.7071067811865475*vd*SLHA::TE[3.,1.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[3.,1.]), 
+(0.7071067811865475*vd*SLHA::TE[3.,2.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
+(0.7071067811865475*vd*SLHA::TE[3.,3.]-0.7071067811865475*vu*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(0.5*SLHA::MSE2[1.,3.]+0.5*SLHA::MSE2[3.,1.]+0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vd^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
+(0.5*SLHA::MSE2[2.,3.]+0.5*SLHA::MSE2[3.,2.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vd^2*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vd^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
+(-0.25*vd^2*SLHA::GAUGE[1.]^2+0.5*vE3^2*SLHA::GAUGE[1.]^2-0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vu^2*SLHA::GAUGE[1.]^2+SLHA::MSE2[3.,3.]+0.5*vd^2*SLHA::YE[3.,1.]^2+0.5*vd^2*SLHA::YE[3.,2.]^2+0.5*vd^2*SLHA::YE[3.,3.]^2+0.5*vL3^2*SLHA::YE[3.,3.]^2) 
 </mass-squared_matrix> 
  
 <mass-squared_matrix 
 particle="Chi"  rotationmatrix="ZN"  factor="-2" >     
-(0.25*vdR^2*SLHA::GAUGE[1.]^2+vE3^2*SLHA::GAUGE[1.]^2+0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vuR^2*SLHA::GAUGE[1.]^2+SLHA::MSOFT[1.]^2), 
-(-0.25*vdR^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]+0.25*vL3^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]-0.25*vuR^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]), 
-(-0.5*vuR*SLHA::GAUGE[1.]*SLHA::HMIX[1.]-0.5*vdR*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]+0.35355339059327373*vE3*vL3*SLHA::GAUGE[1.]*SLHA::YE[3.,3.]), 
-(0.5*vdR*SLHA::GAUGE[1.]*SLHA::HMIX[1.]+0.5*vuR*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]), 
+(0.25*vd^2*SLHA::GAUGE[1.]^2+vE3^2*SLHA::GAUGE[1.]^2+0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vu^2*SLHA::GAUGE[1.]^2+SLHA::MSOFT[1.]^2), 
+(-0.25*vd^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]+0.25*vL3^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]-0.25*vu^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]), 
+(-0.5*vu*SLHA::GAUGE[1.]*SLHA::HMIX[1.]-0.5*vd*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]+0.35355339059327373*vE3*vL3*SLHA::GAUGE[1.]*SLHA::YE[3.,3.]), 
+(0.5*vd*SLHA::GAUGE[1.]*SLHA::HMIX[1.]+0.5*vu*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]), 
 (0.), 
 (0.), 
 (0.), 
-(0.35355339059327373*vdR*vE3*SLHA::GAUGE[1.]*SLHA::YE[3.,1.]), 
-(0.35355339059327373*vdR*vE3*SLHA::GAUGE[1.]*SLHA::YE[3.,2.]), 
-(-0.5*vL3*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]+0.35355339059327373*vdR*vE3*SLHA::GAUGE[1.]*SLHA::YE[3.,3.]), 
-(-0.7071067811865475*vdR*vL3*SLHA::GAUGE[1.]*SLHA::YE[1.,3.]), 
-(-0.7071067811865475*vdR*vL3*SLHA::GAUGE[1.]*SLHA::YE[2.,3.]), 
-(vE3*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]-0.7071067811865475*vdR*vL3*SLHA::GAUGE[1.]*SLHA::YE[3.,3.]), 
-(0.), 
-(0.), 
-(0.), 
-(0.), 
-(-0.25*vdR^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]+0.25*vL3^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]-0.25*vuR^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]), 
-(0.25*vdR^2*SLHA::GAUGE[2.]^2+0.25*vL3^2*SLHA::GAUGE[2.]^2+0.25*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSOFT[2.]^2), 
-(0.5*vuR*SLHA::GAUGE[2.]*SLHA::HMIX[1.]+0.5*vdR*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]-0.35355339059327373*vE3*vL3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
-(-0.5*vdR*SLHA::GAUGE[2.]*SLHA::HMIX[1.]-0.5*vuR*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]), 
-(0.), 
-(0.), 
-(0.), 
-(0.35355339059327373*vdR*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,1.]), 
-(0.35355339059327373*vdR*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,2.]), 
-(-0.5*vL3*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]+0.35355339059327373*vdR*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
+(0.35355339059327373*vd*vE3*SLHA::GAUGE[1.]*SLHA::YE[3.,1.]), 
+(0.35355339059327373*vd*vE3*SLHA::GAUGE[1.]*SLHA::YE[3.,2.]), 
+(-0.5*vL3*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]+0.35355339059327373*vd*vE3*SLHA::GAUGE[1.]*SLHA::YE[3.,3.]), 
+(-0.7071067811865475*vd*vL3*SLHA::GAUGE[1.]*SLHA::YE[1.,3.]), 
+(-0.7071067811865475*vd*vL3*SLHA::GAUGE[1.]*SLHA::YE[2.,3.]), 
+(vE3*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]-0.7071067811865475*vd*vL3*SLHA::GAUGE[1.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
+(-0.25*vd^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]+0.25*vL3^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]-0.25*vu^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]), 
+(0.25*vd^2*SLHA::GAUGE[2.]^2+0.25*vL3^2*SLHA::GAUGE[2.]^2+0.25*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSOFT[2.]^2), 
+(0.5*vu*SLHA::GAUGE[2.]*SLHA::HMIX[1.]+0.5*vd*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]-0.35355339059327373*vE3*vL3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
+(-0.5*vd*SLHA::GAUGE[2.]*SLHA::HMIX[1.]-0.5*vu*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]), 
 (0.), 
 (0.), 
 (0.), 
-(-0.5*vuR*SLHA::GAUGE[1.]*SLHA::HMIX[1.]-0.5*vdR*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]+0.35355339059327373*vE3*vL3*SLHA::GAUGE[1.]*SLHA::YE[3.,3.]), 
-(0.5*vuR*SLHA::GAUGE[2.]*SLHA::HMIX[1.]+0.5*vdR*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]-0.35355339059327373*vE3*vL3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
-(0.25*vdR^2*SLHA::GAUGE[1.]^2+0.25*vdR^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+0.5*vL3^2*SLHA::YE[1.,3.]^2+0.5*vL3^2*SLHA::YE[2.,3.]^2+0.5*vE3^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2+0.5*vL3^2*SLHA::YE[3.,3.]^2), 
-(-0.25*vdR*vuR*SLHA::GAUGE[1.]^2-0.25*vdR*vuR*SLHA::GAUGE[2.]^2), 
-(0.), 
-(0.), 
-(0.), 
-(0.5*vdR*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vdR*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vdR*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
-(0.5*vdR*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vdR*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vdR*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
-(0.25*vdR*vL3*SLHA::GAUGE[1.]^2-0.25*vdR*vL3*SLHA::GAUGE[2.]^2+0.5*vdR*vL3*SLHA::YE[1.,3.]^2+0.5*vdR*vL3*SLHA::YE[2.,3.]^2+0.5*vdR*vL3*SLHA::YE[3.,3.]^2), 
-(0.5*vdR*vE3*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vdR*vE3*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vdR*vE3*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
-(0.5*vdR*vE3*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vdR*vE3*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vdR*vE3*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
-(-0.5*vdR*vE3*SLHA::GAUGE[1.]^2+0.5*vdR*vE3*SLHA::YE[3.,1.]^2+0.5*vdR*vE3*SLHA::YE[3.,2.]^2+0.5*vdR*vE3*SLHA::YE[3.,3.]^2), 
+(0.35355339059327373*vd*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,1.]), 
+(0.35355339059327373*vd*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,2.]), 
+(-0.5*vL3*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]+0.35355339059327373*vd*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
-(0.5*vdR*SLHA::GAUGE[1.]*SLHA::HMIX[1.]+0.5*vuR*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]), 
-(-0.5*vdR*SLHA::GAUGE[2.]*SLHA::HMIX[1.]-0.5*vuR*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]), 
-(-0.25*vdR*vuR*SLHA::GAUGE[1.]^2-0.25*vdR*vuR*SLHA::GAUGE[2.]^2), 
-(0.25*vuR^2*SLHA::GAUGE[1.]^2+0.25*vuR^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2), 
+(0.), 
+(0.), 
+(0.), 
+(-0.5*vu*SLHA::GAUGE[1.]*SLHA::HMIX[1.]-0.5*vd*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]+0.35355339059327373*vE3*vL3*SLHA::GAUGE[1.]*SLHA::YE[3.,3.]), 
+(0.5*vu*SLHA::GAUGE[2.]*SLHA::HMIX[1.]+0.5*vd*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]-0.35355339059327373*vE3*vL3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
+(0.25*vd^2*SLHA::GAUGE[1.]^2+0.25*vd^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+0.5*vL3^2*SLHA::YE[1.,3.]^2+0.5*vL3^2*SLHA::YE[2.,3.]^2+0.5*vE3^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2+0.5*vL3^2*SLHA::YE[3.,3.]^2), 
+(-0.25*vd*vu*SLHA::GAUGE[1.]^2-0.25*vd*vu*SLHA::GAUGE[2.]^2), 
+(0.), 
+(0.), 
+(0.), 
+(0.5*vd*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vd*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vd*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(0.5*vd*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vd*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vd*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(0.25*vd*vL3*SLHA::GAUGE[1.]^2-0.25*vd*vL3*SLHA::GAUGE[2.]^2+0.5*vd*vL3*SLHA::YE[1.,3.]^2+0.5*vd*vL3*SLHA::YE[2.,3.]^2+0.5*vd*vL3*SLHA::YE[3.,3.]^2), 
+(0.5*vd*vE3*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vd*vE3*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vd*vE3*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
+(0.5*vd*vE3*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vd*vE3*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vd*vE3*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
+(-0.5*vd*vE3*SLHA::GAUGE[1.]^2+0.5*vd*vE3*SLHA::YE[3.,1.]^2+0.5*vd*vE3*SLHA::YE[3.,2.]^2+0.5*vd*vE3*SLHA::YE[3.,3.]^2), 
+(0.), 
+(0.), 
+(0.), 
+(0.), 
+(0.5*vd*SLHA::GAUGE[1.]*SLHA::HMIX[1.]+0.5*vu*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]), 
+(-0.5*vd*SLHA::GAUGE[2.]*SLHA::HMIX[1.]-0.5*vu*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]), 
+(-0.25*vd*vu*SLHA::GAUGE[1.]^2-0.25*vd*vu*SLHA::GAUGE[2.]^2), 
+(0.25*vu^2*SLHA::GAUGE[1.]^2+0.25*vu^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2), 
 (0.), 
 (0.), 
 (0.), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,1.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
-(-0.25*vL3*vuR*SLHA::GAUGE[1.]^2+0.25*vL3*vuR*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(-0.25*vL3*vu*SLHA::GAUGE[1.]^2+0.25*vL3*vu*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[1.,3.]), 
 (-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[2.,3.]), 
-(0.5*vE3*vuR*SLHA::GAUGE[1.]^2-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(0.5*vE3*vu*SLHA::GAUGE[1.]^2-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
 (0.), 
@@ -648,7 +684,7 @@ particle="Chi"  rotationmatrix="ZN"  factor="-2" >
 (0.), 
 (0.), 
 (0.), 
-(-0.5*vdR*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,1.]), 
+(-0.5*vd*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,1.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,1.]), 
 (0.), 
 (0.), 
@@ -665,7 +701,7 @@ particle="Chi"  rotationmatrix="ZN"  factor="-2" >
 (0.), 
 (0.), 
 (0.), 
-(-0.5*vdR*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,2.]), 
+(-0.5*vd*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,2.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
 (0.), 
 (0.), 
@@ -682,18 +718,18 @@ particle="Chi"  rotationmatrix="ZN"  factor="-2" >
 (0.), 
 (0.), 
 (0.), 
-(0.7071067811865475*vL3*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]-0.5*vdR*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
-(0.5*vL3*vuR*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
-(0.35355339059327373*vdR*vE3*SLHA::GAUGE[1.]*SLHA::YE[3.,1.]), 
-(0.35355339059327373*vdR*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,1.]), 
-(0.5*vdR*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vdR*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vdR*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(0.7071067811865475*vL3*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]-0.5*vd*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
+(0.5*vL3*vu*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(0.35355339059327373*vd*vE3*SLHA::GAUGE[1.]*SLHA::YE[3.,1.]), 
+(0.35355339059327373*vd*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,1.]), 
+(0.5*vd*vL3*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vd*vL3*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vd*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,1.]), 
 (0.), 
 (0.), 
 (0.), 
-(0.5*vdR^2*SLHA::YE[1.,1.]^2+0.5*vdR^2*SLHA::YE[2.,1.]^2+0.5*vdR^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,1.]^2), 
-(0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[1.,2.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[2.,2.]+0.5*vdR^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
-(0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vdR^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(0.5*vd^2*SLHA::YE[1.,1.]^2+0.5*vd^2*SLHA::YE[2.,1.]^2+0.5*vd^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,1.]^2), 
+(0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[1.,2.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[2.,2.]+0.5*vd^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
+(0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vd^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
 (0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,1.]), 
 (0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,1.]), 
 (0.5*vE3*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
@@ -701,16 +737,16 @@ particle="Chi"  rotationmatrix="ZN"  factor="-2" >
 (0.), 
 (0.), 
 (0.), 
-(0.35355339059327373*vdR*vE3*SLHA::GAUGE[1.]*SLHA::YE[3.,2.]), 
-(0.35355339059327373*vdR*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,2.]), 
-(0.5*vdR*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vdR*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vdR*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(0.35355339059327373*vd*vE3*SLHA::GAUGE[1.]*SLHA::YE[3.,2.]), 
+(0.35355339059327373*vd*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,2.]), 
+(0.5*vd*vL3*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vd*vL3*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vd*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
 (0.), 
 (0.), 
 (0.), 
-(0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[1.,2.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[2.,2.]+0.5*vdR^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
-(0.5*vdR^2*SLHA::YE[1.,2.]^2+0.5*vdR^2*SLHA::YE[2.,2.]^2+0.5*vdR^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2), 
-(0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vdR^2*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vdR^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[1.,2.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[2.,2.]+0.5*vd^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,2.]), 
+(0.5*vd^2*SLHA::YE[1.,2.]^2+0.5*vd^2*SLHA::YE[2.,2.]^2+0.5*vd^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2), 
+(0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vd^2*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vd^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
 (0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,2.]), 
 (0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,2.]), 
 (0.5*vE3*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
@@ -718,16 +754,16 @@ particle="Chi"  rotationmatrix="ZN"  factor="-2" >
 (0.), 
 (0.), 
 (0.), 
-(-0.5*vL3*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]+0.35355339059327373*vdR*vE3*SLHA::GAUGE[1.]*SLHA::YE[3.,3.]), 
-(-0.5*vL3*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]+0.35355339059327373*vdR*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
-(0.25*vdR*vL3*SLHA::GAUGE[1.]^2-0.25*vdR*vL3*SLHA::GAUGE[2.]^2+0.5*vdR*vL3*SLHA::YE[1.,3.]^2+0.5*vdR*vL3*SLHA::YE[2.,3.]^2+0.5*vdR*vL3*SLHA::YE[3.,3.]^2), 
-(-0.25*vL3*vuR*SLHA::GAUGE[1.]^2+0.25*vL3*vuR*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(-0.5*vL3*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]+0.35355339059327373*vd*vE3*SLHA::GAUGE[1.]*SLHA::YE[3.,3.]), 
+(-0.5*vL3*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]+0.35355339059327373*vd*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
+(0.25*vd*vL3*SLHA::GAUGE[1.]^2-0.25*vd*vL3*SLHA::GAUGE[2.]^2+0.5*vd*vL3*SLHA::YE[1.,3.]^2+0.5*vd*vL3*SLHA::YE[2.,3.]^2+0.5*vd*vL3*SLHA::YE[3.,3.]^2), 
+(-0.25*vL3*vu*SLHA::GAUGE[1.]^2+0.25*vL3*vu*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
 (0.), 
-(0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vdR^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
-(0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vdR^2*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vdR^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
-(0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vL3^2*SLHA::GAUGE[2.]^2+0.5*vdR^2*SLHA::YE[1.,3.]^2+0.5*vdR^2*SLHA::YE[2.,3.]^2+0.5*vdR^2*SLHA::YE[3.,3.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
+(0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[1.,3.]+0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[2.,3.]+0.5*vd^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
+(0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[1.,3.]+0.5*vd^2*SLHA::YE[2.,2.]*SLHA::YE[2.,3.]+0.5*vd^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]+0.5*vE3^2*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
+(0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vL3^2*SLHA::GAUGE[2.]^2+0.5*vd^2*SLHA::YE[1.,3.]^2+0.5*vd^2*SLHA::YE[2.,3.]^2+0.5*vd^2*SLHA::YE[3.,3.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
 (0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
 (0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
 (-0.5*vE3*vL3*SLHA::GAUGE[1.]^2+0.5*vE3*vL3*SLHA::YE[3.,3.]^2), 
@@ -735,9 +771,9 @@ particle="Chi"  rotationmatrix="ZN"  factor="-2" >
 (0.), 
 (0.), 
 (0.), 
-(-0.7071067811865475*vdR*vL3*SLHA::GAUGE[1.]*SLHA::YE[1.,3.]), 
+(-0.7071067811865475*vd*vL3*SLHA::GAUGE[1.]*SLHA::YE[1.,3.]), 
 (0.), 
-(0.5*vdR*vE3*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vdR*vE3*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vdR*vE3*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
+(0.5*vd*vE3*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vd*vE3*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vd*vE3*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
 (-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[1.,3.]), 
 (0.), 
 (0.), 
@@ -745,16 +781,16 @@ particle="Chi"  rotationmatrix="ZN"  factor="-2" >
 (0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,1.]), 
 (0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,2.]), 
 (0.5*vE3*vL3*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
-(0.5*vdR^2*SLHA::YE[1.,1.]^2+0.5*vdR^2*SLHA::YE[1.,2.]^2+0.5*vdR^2*SLHA::YE[1.,3.]^2+0.5*vL3^2*SLHA::YE[1.,3.]^2), 
-(0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[2.,1.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[2.,2.]+0.5*vdR^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]), 
-(0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vdR^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
+(0.5*vd^2*SLHA::YE[1.,1.]^2+0.5*vd^2*SLHA::YE[1.,2.]^2+0.5*vd^2*SLHA::YE[1.,3.]^2+0.5*vL3^2*SLHA::YE[1.,3.]^2), 
+(0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[2.,1.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[2.,2.]+0.5*vd^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]), 
+(0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vd^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
-(-0.7071067811865475*vdR*vL3*SLHA::GAUGE[1.]*SLHA::YE[2.,3.]), 
+(-0.7071067811865475*vd*vL3*SLHA::GAUGE[1.]*SLHA::YE[2.,3.]), 
 (0.), 
-(0.5*vdR*vE3*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vdR*vE3*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vdR*vE3*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
+(0.5*vd*vE3*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vd*vE3*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vd*vE3*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
 (-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[2.,3.]), 
 (0.), 
 (0.), 
@@ -762,26 +798,26 @@ particle="Chi"  rotationmatrix="ZN"  factor="-2" >
 (0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,1.]), 
 (0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,2.]), 
 (0.5*vE3*vL3*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
-(0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[2.,1.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[2.,2.]+0.5*vdR^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]), 
-(0.5*vdR^2*SLHA::YE[2.,1.]^2+0.5*vdR^2*SLHA::YE[2.,2.]^2+0.5*vdR^2*SLHA::YE[2.,3.]^2+0.5*vL3^2*SLHA::YE[2.,3.]^2), 
-(0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vdR^2*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vdR^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
+(0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[2.,1.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[2.,2.]+0.5*vd^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[2.,3.]), 
+(0.5*vd^2*SLHA::YE[2.,1.]^2+0.5*vd^2*SLHA::YE[2.,2.]^2+0.5*vd^2*SLHA::YE[2.,3.]^2+0.5*vL3^2*SLHA::YE[2.,3.]^2), 
+(0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vd^2*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vd^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
-(vE3*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]-0.7071067811865475*vdR*vL3*SLHA::GAUGE[1.]*SLHA::YE[3.,3.]), 
+(vE3*SLHA::GAUGE[1.]*SLHA::MSOFT[1.]-0.7071067811865475*vd*vL3*SLHA::GAUGE[1.]*SLHA::YE[3.,3.]), 
 (0.), 
-(-0.5*vdR*vE3*SLHA::GAUGE[1.]^2+0.5*vdR*vE3*SLHA::YE[3.,1.]^2+0.5*vdR*vE3*SLHA::YE[3.,2.]^2+0.5*vdR*vE3*SLHA::YE[3.,3.]^2), 
-(0.5*vE3*vuR*SLHA::GAUGE[1.]^2-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(-0.5*vd*vE3*SLHA::GAUGE[1.]^2+0.5*vd*vE3*SLHA::YE[3.,1.]^2+0.5*vd*vE3*SLHA::YE[3.,2.]^2+0.5*vd*vE3*SLHA::YE[3.,3.]^2), 
+(0.5*vE3*vu*SLHA::GAUGE[1.]^2-0.7071067811865475*vL3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
 (0.), 
 (0.5*vE3*vL3*SLHA::YE[3.,1.]*SLHA::YE[3.,3.]), 
 (0.5*vE3*vL3*SLHA::YE[3.,2.]*SLHA::YE[3.,3.]), 
 (-0.5*vE3*vL3*SLHA::GAUGE[1.]^2+0.5*vE3*vL3*SLHA::YE[3.,3.]^2), 
-(0.5*vdR^2*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vdR^2*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vdR^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
-(0.5*vdR^2*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vdR^2*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vdR^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
-(vE3^2*SLHA::GAUGE[1.]^2+0.5*vdR^2*SLHA::YE[3.,1.]^2+0.5*vdR^2*SLHA::YE[3.,2.]^2+0.5*vdR^2*SLHA::YE[3.,3.]^2+0.5*vL3^2*SLHA::YE[3.,3.]^2), 
+(0.5*vd^2*SLHA::YE[1.,1.]*SLHA::YE[3.,1.]+0.5*vd^2*SLHA::YE[1.,2.]*SLHA::YE[3.,2.]+0.5*vd^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[1.,3.]*SLHA::YE[3.,3.]), 
+(0.5*vd^2*SLHA::YE[2.,1.]*SLHA::YE[3.,1.]+0.5*vd^2*SLHA::YE[2.,2.]*SLHA::YE[3.,2.]+0.5*vd^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]+0.5*vL3^2*SLHA::YE[2.,3.]*SLHA::YE[3.,3.]), 
+(vE3^2*SLHA::GAUGE[1.]^2+0.5*vd^2*SLHA::YE[3.,1.]^2+0.5*vd^2*SLHA::YE[3.,2.]^2+0.5*vd^2*SLHA::YE[3.,3.]^2+0.5*vL3^2*SLHA::YE[3.,3.]^2), 
 (0.), 
 (0.), 
 (0.), 
@@ -799,8 +835,8 @@ particle="Chi"  rotationmatrix="ZN"  factor="-2" >
 (0.), 
 (0.), 
 (0.), 
-(0.5*vL3^2*SLHA::GAUGE[2.]^2+0.5*vuR^2*SLHA::GAUGE[2.]^2+SLHA::MSOFT[2.]^2), 
-(0.7071067811865475*vuR*SLHA::GAUGE[2.]*SLHA::HMIX[1.]+0.7071067811865475*vdR*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]-0.5*vE3*vL3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
+(0.5*vL3^2*SLHA::GAUGE[2.]^2+0.5*vu^2*SLHA::GAUGE[2.]^2+SLHA::MSOFT[2.]^2), 
+(0.7071067811865475*vu*SLHA::GAUGE[2.]*SLHA::HMIX[1.]+0.7071067811865475*vd*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]-0.5*vE3*vL3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
 (0.), 
@@ -816,17 +852,17 @@ particle="Chi"  rotationmatrix="ZN"  factor="-2" >
 (0.), 
 (0.), 
 (0.), 
-(0.7071067811865475*vuR*SLHA::GAUGE[2.]*SLHA::HMIX[1.]+0.7071067811865475*vdR*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]-0.5*vE3*vL3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
-(0.5*vdR^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+0.5*vE3^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
+(0.7071067811865475*vu*SLHA::GAUGE[2.]*SLHA::HMIX[1.]+0.7071067811865475*vd*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]-0.5*vE3*vL3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
+(0.5*vd^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2+0.5*vE3^2*SLHA::YE[3.,1.]^2+0.5*vE3^2*SLHA::YE[3.,2.]^2+0.5*vE3^2*SLHA::YE[3.,3.]^2), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
-(-0.5*vdR*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,1.]), 
-(-0.5*vdR*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,2.]), 
-(0.7071067811865475*vL3*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]-0.5*vdR*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
+(-0.5*vd*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,1.]), 
+(-0.5*vd*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,2.]), 
+(0.7071067811865475*vL3*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]-0.5*vd*vE3*SLHA::GAUGE[2.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
 (0.), 
@@ -835,15 +871,15 @@ particle="Chi"  rotationmatrix="ZN"  factor="-2" >
 (0.), 
 (0.), 
 (0.), 
-(0.5*vdR^2*SLHA::GAUGE[2.]^2+SLHA::MSOFT[2.]^2), 
-(0.7071067811865475*vdR*SLHA::GAUGE[2.]*SLHA::HMIX[1.]+0.7071067811865475*vuR*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]), 
+(0.5*vd^2*SLHA::GAUGE[2.]^2+SLHA::MSOFT[2.]^2), 
+(0.7071067811865475*vd*SLHA::GAUGE[2.]*SLHA::HMIX[1.]+0.7071067811865475*vu*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]), 
 (0.), 
 (0.), 
 (0.), 
 (0.), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,1.]), 
 (-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,2.]), 
-(0.5*vL3*vuR*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
+(0.5*vL3*vu*SLHA::GAUGE[2.]^2-0.7071067811865475*vE3*SLHA::HMIX[1.]*SLHA::YE[3.,3.]), 
 (0.), 
 (0.), 
 (0.), 
@@ -852,54 +888,54 @@ particle="Chi"  rotationmatrix="ZN"  factor="-2" >
 (0.), 
 (0.), 
 (0.), 
-(0.7071067811865475*vdR*SLHA::GAUGE[2.]*SLHA::HMIX[1.]+0.7071067811865475*vuR*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]), 
-(0.5*vuR^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2) 
+(0.7071067811865475*vd*SLHA::GAUGE[2.]*SLHA::HMIX[1.]+0.7071067811865475*vu*SLHA::GAUGE[2.]*SLHA::MSOFT[2.]), 
+(0.5*vu^2*SLHA::GAUGE[2.]^2+SLHA::HMIX[1.]^2) 
 </mass-squared_matrix> 
  
 <mass-squared_matrix 
 particle="Fd"  rotationmatrix1="ZDL"  rotationmatrix2="ZDR"  factor="-12" >     
-(0.5*vdR^2*SLHA::YD[1.,1.]^2+0.5*vdR^2*SLHA::YD[2.,1.]^2+0.5*vdR^2*SLHA::YD[3.,1.]^2), 
-(0.5*vdR^2*SLHA::YD[1.,1.]*SLHA::YD[1.,2.]+0.5*vdR^2*SLHA::YD[2.,1.]*SLHA::YD[2.,2.]+0.5*vdR^2*SLHA::YD[3.,1.]*SLHA::YD[3.,2.]), 
-(0.5*vdR^2*SLHA::YD[1.,1.]*SLHA::YD[1.,3.]+0.5*vdR^2*SLHA::YD[2.,1.]*SLHA::YD[2.,3.]+0.5*vdR^2*SLHA::YD[3.,1.]*SLHA::YD[3.,3.]), 
-(0.5*vdR^2*SLHA::YD[1.,1.]*SLHA::YD[1.,2.]+0.5*vdR^2*SLHA::YD[2.,1.]*SLHA::YD[2.,2.]+0.5*vdR^2*SLHA::YD[3.,1.]*SLHA::YD[3.,2.]), 
-(0.5*vdR^2*SLHA::YD[1.,2.]^2+0.5*vdR^2*SLHA::YD[2.,2.]^2+0.5*vdR^2*SLHA::YD[3.,2.]^2), 
-(0.5*vdR^2*SLHA::YD[1.,2.]*SLHA::YD[1.,3.]+0.5*vdR^2*SLHA::YD[2.,2.]*SLHA::YD[2.,3.]+0.5*vdR^2*SLHA::YD[3.,2.]*SLHA::YD[3.,3.]), 
-(0.5*vdR^2*SLHA::YD[1.,1.]*SLHA::YD[1.,3.]+0.5*vdR^2*SLHA::YD[2.,1.]*SLHA::YD[2.,3.]+0.5*vdR^2*SLHA::YD[3.,1.]*SLHA::YD[3.,3.]), 
-(0.5*vdR^2*SLHA::YD[1.,2.]*SLHA::YD[1.,3.]+0.5*vdR^2*SLHA::YD[2.,2.]*SLHA::YD[2.,3.]+0.5*vdR^2*SLHA::YD[3.,2.]*SLHA::YD[3.,3.]), 
-(0.5*vdR^2*SLHA::YD[1.,3.]^2+0.5*vdR^2*SLHA::YD[2.,3.]^2+0.5*vdR^2*SLHA::YD[3.,3.]^2) 
+(0.5*vd^2*SLHA::YD[1.,1.]^2+0.5*vd^2*SLHA::YD[2.,1.]^2+0.5*vd^2*SLHA::YD[3.,1.]^2), 
+(0.5*vd^2*SLHA::YD[1.,1.]*SLHA::YD[1.,2.]+0.5*vd^2*SLHA::YD[2.,1.]*SLHA::YD[2.,2.]+0.5*vd^2*SLHA::YD[3.,1.]*SLHA::YD[3.,2.]), 
+(0.5*vd^2*SLHA::YD[1.,1.]*SLHA::YD[1.,3.]+0.5*vd^2*SLHA::YD[2.,1.]*SLHA::YD[2.,3.]+0.5*vd^2*SLHA::YD[3.,1.]*SLHA::YD[3.,3.]), 
+(0.5*vd^2*SLHA::YD[1.,1.]*SLHA::YD[1.,2.]+0.5*vd^2*SLHA::YD[2.,1.]*SLHA::YD[2.,2.]+0.5*vd^2*SLHA::YD[3.,1.]*SLHA::YD[3.,2.]), 
+(0.5*vd^2*SLHA::YD[1.,2.]^2+0.5*vd^2*SLHA::YD[2.,2.]^2+0.5*vd^2*SLHA::YD[3.,2.]^2), 
+(0.5*vd^2*SLHA::YD[1.,2.]*SLHA::YD[1.,3.]+0.5*vd^2*SLHA::YD[2.,2.]*SLHA::YD[2.,3.]+0.5*vd^2*SLHA::YD[3.,2.]*SLHA::YD[3.,3.]), 
+(0.5*vd^2*SLHA::YD[1.,1.]*SLHA::YD[1.,3.]+0.5*vd^2*SLHA::YD[2.,1.]*SLHA::YD[2.,3.]+0.5*vd^2*SLHA::YD[3.,1.]*SLHA::YD[3.,3.]), 
+(0.5*vd^2*SLHA::YD[1.,2.]*SLHA::YD[1.,3.]+0.5*vd^2*SLHA::YD[2.,2.]*SLHA::YD[2.,3.]+0.5*vd^2*SLHA::YD[3.,2.]*SLHA::YD[3.,3.]), 
+(0.5*vd^2*SLHA::YD[1.,3.]^2+0.5*vd^2*SLHA::YD[2.,3.]^2+0.5*vd^2*SLHA::YD[3.,3.]^2) 
 </mass-squared_matrix> 
  
 <mass-squared_matrix 
 particle="Fu"  rotationmatrix1="ZUL"  rotationmatrix2="ZUR"  factor="-12" >     
-(0.5*vuR^2*SLHA::YU[1.,1.]^2+0.5*vuR^2*SLHA::YU[2.,1.]^2+0.5*vuR^2*SLHA::YU[3.,1.]^2), 
-(0.5*vuR^2*SLHA::YU[1.,1.]*SLHA::YU[1.,2.]+0.5*vuR^2*SLHA::YU[2.,1.]*SLHA::YU[2.,2.]+0.5*vuR^2*SLHA::YU[3.,1.]*SLHA::YU[3.,2.]), 
-(0.5*vuR^2*SLHA::YU[1.,1.]*SLHA::YU[1.,3.]+0.5*vuR^2*SLHA::YU[2.,1.]*SLHA::YU[2.,3.]+0.5*vuR^2*SLHA::YU[3.,1.]*SLHA::YU[3.,3.]), 
-(0.5*vuR^2*SLHA::YU[1.,1.]*SLHA::YU[1.,2.]+0.5*vuR^2*SLHA::YU[2.,1.]*SLHA::YU[2.,2.]+0.5*vuR^2*SLHA::YU[3.,1.]*SLHA::YU[3.,2.]), 
-(0.5*vuR^2*SLHA::YU[1.,2.]^2+0.5*vuR^2*SLHA::YU[2.,2.]^2+0.5*vuR^2*SLHA::YU[3.,2.]^2), 
-(0.5*vuR^2*SLHA::YU[1.,2.]*SLHA::YU[1.,3.]+0.5*vuR^2*SLHA::YU[2.,2.]*SLHA::YU[2.,3.]+0.5*vuR^2*SLHA::YU[3.,2.]*SLHA::YU[3.,3.]), 
-(0.5*vuR^2*SLHA::YU[1.,1.]*SLHA::YU[1.,3.]+0.5*vuR^2*SLHA::YU[2.,1.]*SLHA::YU[2.,3.]+0.5*vuR^2*SLHA::YU[3.,1.]*SLHA::YU[3.,3.]), 
-(0.5*vuR^2*SLHA::YU[1.,2.]*SLHA::YU[1.,3.]+0.5*vuR^2*SLHA::YU[2.,2.]*SLHA::YU[2.,3.]+0.5*vuR^2*SLHA::YU[3.,2.]*SLHA::YU[3.,3.]), 
-(0.5*vuR^2*SLHA::YU[1.,3.]^2+0.5*vuR^2*SLHA::YU[2.,3.]^2+0.5*vuR^2*SLHA::YU[3.,3.]^2) 
+(0.5*vu^2*SLHA::YU[1.,1.]^2+0.5*vu^2*SLHA::YU[2.,1.]^2+0.5*vu^2*SLHA::YU[3.,1.]^2), 
+(0.5*vu^2*SLHA::YU[1.,1.]*SLHA::YU[1.,2.]+0.5*vu^2*SLHA::YU[2.,1.]*SLHA::YU[2.,2.]+0.5*vu^2*SLHA::YU[3.,1.]*SLHA::YU[3.,2.]), 
+(0.5*vu^2*SLHA::YU[1.,1.]*SLHA::YU[1.,3.]+0.5*vu^2*SLHA::YU[2.,1.]*SLHA::YU[2.,3.]+0.5*vu^2*SLHA::YU[3.,1.]*SLHA::YU[3.,3.]), 
+(0.5*vu^2*SLHA::YU[1.,1.]*SLHA::YU[1.,2.]+0.5*vu^2*SLHA::YU[2.,1.]*SLHA::YU[2.,2.]+0.5*vu^2*SLHA::YU[3.,1.]*SLHA::YU[3.,2.]), 
+(0.5*vu^2*SLHA::YU[1.,2.]^2+0.5*vu^2*SLHA::YU[2.,2.]^2+0.5*vu^2*SLHA::YU[3.,2.]^2), 
+(0.5*vu^2*SLHA::YU[1.,2.]*SLHA::YU[1.,3.]+0.5*vu^2*SLHA::YU[2.,2.]*SLHA::YU[2.,3.]+0.5*vu^2*SLHA::YU[3.,2.]*SLHA::YU[3.,3.]), 
+(0.5*vu^2*SLHA::YU[1.,1.]*SLHA::YU[1.,3.]+0.5*vu^2*SLHA::YU[2.,1.]*SLHA::YU[2.,3.]+0.5*vu^2*SLHA::YU[3.,1.]*SLHA::YU[3.,3.]), 
+(0.5*vu^2*SLHA::YU[1.,2.]*SLHA::YU[1.,3.]+0.5*vu^2*SLHA::YU[2.,2.]*SLHA::YU[2.,3.]+0.5*vu^2*SLHA::YU[3.,2.]*SLHA::YU[3.,3.]), 
+(0.5*vu^2*SLHA::YU[1.,3.]^2+0.5*vu^2*SLHA::YU[2.,3.]^2+0.5*vu^2*SLHA::YU[3.,3.]^2) 
 </mass-squared_matrix> 
  
 <mass-squared_matrix 
 particle="VP, VZ"  rotationmatrix="ZZ"  factor="3" >
-(0.25*vdR^2*SLHA::GAUGE[1.]^2+vE3^2*SLHA::GAUGE[1.]^2+0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vuR^2*SLHA::GAUGE[1.]^2), 
+(0.25*vd^2*SLHA::GAUGE[1.]^2+vE3^2*SLHA::GAUGE[1.]^2+0.25*vL3^2*SLHA::GAUGE[1.]^2+0.25*vu^2*SLHA::GAUGE[1.]^2), 
 (0.), 
 (0.), 
-(-0.25*vdR^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]+0.25*vL3^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]-0.25*vuR^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]), 
+(-0.25*vd^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]+0.25*vL3^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]-0.25*vu^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]), 
 (0.), 
-(0.25*vdR^2*SLHA::GAUGE[2.]^2+0.25*vL3^2*SLHA::GAUGE[2.]^2+0.25*vuR^2*SLHA::GAUGE[2.]^2), 
-(0.), 
-(0.), 
+(0.25*vd^2*SLHA::GAUGE[2.]^2+0.25*vL3^2*SLHA::GAUGE[2.]^2+0.25*vu^2*SLHA::GAUGE[2.]^2), 
 (0.), 
 (0.), 
-(0.25*vdR^2*SLHA::GAUGE[2.]^2+0.25*vL3^2*SLHA::GAUGE[2.]^2+0.25*vuR^2*SLHA::GAUGE[2.]^2), 
-(0.), 
-(-0.25*vdR^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]+0.25*vL3^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]-0.25*vuR^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]), 
 (0.), 
 (0.), 
-(0.25*vdR^2*SLHA::GAUGE[2.]^2+0.25*vL3^2*SLHA::GAUGE[2.]^2+0.25*vuR^2*SLHA::GAUGE[2.]^2) 
+(0.25*vd^2*SLHA::GAUGE[2.]^2+0.25*vL3^2*SLHA::GAUGE[2.]^2+0.25*vu^2*SLHA::GAUGE[2.]^2), 
+(0.), 
+(-0.25*vd^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]+0.25*vL3^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]-0.25*vu^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]), 
+(0.), 
+(0.), 
+(0.25*vd^2*SLHA::GAUGE[2.]^2+0.25*vL3^2*SLHA::GAUGE[2.]^2+0.25*vu^2*SLHA::GAUGE[2.]^2) 
 </mass-squared_matrix> 
  
 </Vevacious_stuff> 
