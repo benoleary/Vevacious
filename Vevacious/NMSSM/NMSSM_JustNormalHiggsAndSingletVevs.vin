@@ -4,6 +4,7 @@
 
 <tadpoles> 
 { 
+<!-- vd -->
 (0.125*vd^3*SLHA::GAUGE[1.]^2) 
 +(-0.125*vd*vu^2*SLHA::GAUGE[1.]^2) 
 +(0.125*vd^3*SLHA::GAUGE[2.]^2) 
@@ -14,6 +15,7 @@
 +(-0.5*vS^2*vu*SLHA::NMSSMRUN[1.]*SLHA::NMSSMRUN[2.]) 
 +(-0.7071067811865475*vS*vu*SLHA::NMSSMRUN[3.]) 
 ; 
+<!-- vu -->
 (-0.125*vd^2*vu*SLHA::GAUGE[1.]^2) 
 +(0.125*vu^3*SLHA::GAUGE[1.]^2) 
 +(-0.125*vd^2*vu*SLHA::GAUGE[2.]^2) 
@@ -24,6 +26,7 @@
 +(-0.5*vd*vS^2*SLHA::NMSSMRUN[1.]*SLHA::NMSSMRUN[2.]) 
 +(-0.7071067811865475*vd*vS*SLHA::NMSSMRUN[3.]) 
 ; 
+<!-- vS -->
 (0.5*vd^2*vS*SLHA::NMSSMRUN[1.]^2) 
 +(0.5*vS*vu^2*SLHA::NMSSMRUN[1.]^2) 
 +(-1.*vd*vS*vu*SLHA::NMSSMRUN[1.]*SLHA::NMSSMRUN[2.]) 

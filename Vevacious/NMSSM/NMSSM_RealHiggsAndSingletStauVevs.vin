@@ -57,6 +57,7 @@
 
 <tadpoles> 
 { 
+<!-- vdR -->
 (0.125*vdR^3*SLHA::GAUGE[1.]^2) 
 +(-0.25*vdR*vE3^2*SLHA::GAUGE[1.]^2) 
 +(0.125*vdR*vL3^2*SLHA::GAUGE[1.]^2) 
@@ -77,6 +78,7 @@
 +(0.5*vdR*vE3^2*SLHA::YE[3., 3.]^2) 
 +(0.5*vdR*vL3^2*SLHA::YE[3., 3.]^2) 
 ; 
+<!-- vuR -->
 (-0.125*vdR^2*vuR*SLHA::GAUGE[1.]^2) 
 +(0.25*vE3^2*vuR*SLHA::GAUGE[1.]^2) 
 +(-0.125*vL3^2*vuR*SLHA::GAUGE[1.]^2) 
@@ -91,6 +93,7 @@
 +(-0.7071067811865475*vdR*vS*SLHA::NMSSMRUN[3.]) 
 +(-0.5*vE3*vL3*vS*SLHA::NMSSMRUN[1.]*SLHA::YE[3., 3.]) 
 ; 
+<!-- vS -->
 (0.5*vdR^2*vS*SLHA::NMSSMRUN[1.]^2) 
 +(0.5*vS*vuR^2*SLHA::NMSSMRUN[1.]^2) 
 +(-1.*vdR*vS*vuR*SLHA::NMSSMRUN[1.]*SLHA::NMSSMRUN[2.]) 
@@ -100,6 +103,7 @@
 +(vS*SLHA::NMSSMRUN[10.]) 
 +(-0.5*vE3*vL3*vuR*SLHA::NMSSMRUN[1.]*SLHA::YE[3., 3.]) 
 ; 
+<!-- vL3 -->
 (0.125*vdR^2*vL3*SLHA::GAUGE[1.]^2) 
 +(-0.25*vE3^2*vL3*SLHA::GAUGE[1.]^2) 
 +(0.125*vL3^3*SLHA::GAUGE[1.]^2) 
@@ -115,6 +119,7 @@
 +(0.5*vdR^2*vL3*SLHA::YE[3., 3.]^2) 
 +(0.5*vE3^2*vL3*SLHA::YE[3., 3.]^2) 
 ; 
+<!-- vE3 -->
 (-0.25*vdR^2*vE3*SLHA::GAUGE[1.]^2) 
 +(0.5*vE3^3*SLHA::GAUGE[1.]^2) 
 +(-0.25*vE3*vL3^2*SLHA::GAUGE[1.]^2) 
