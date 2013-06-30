@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersionString( "1.0.0" );
+  std::string const VevaciousRunner::vevaciousVersionString( "1.0.3" );
   std::string const
   VevaciousRunner::vevaciousVersionName( "vevaciousVersion" );
   std::string const
@@ -770,10 +770,17 @@ namespace Vevacious
 "foundSaddles = []\n"
 "try:\n"
 "    minuitObject.migrad()\n"
+"    candidateDescent = SteepestDescent( minuitObject.values )\n"
+"    if ( 0.0 > candidateDescent[ 0 ] ):\n"
+"        warningMessage = (\n"
+"                     \"Input VEVs seem to correspond to a saddle point!\" )\n"
+"        warningMessages.append( warningMessage )\n"
+"        print( warningMessage )\n"
 "except minuit.MinuitError as minuitError:\n"
 "    warningMessage = ( \"PyMinuit had problems starting at input VEVs! \"\n"
-"                     + VPD"
-<<               PotentialMinimizer::userVevsAsMathematica << "( vevValues )\n"
+"                     + VPD."
+<<                        PotentialMinimizer::userVevsAsMathematica << "( VPD."
+<<                                 PotentialMinimizer::inputVevsPoint << " )\n"
 "                       + \" [minuit.MinuitError: \"\n"
 "                       + str( minuitError )\n"
 "                       + \"]. PyMinuit stopped at \"\n"
@@ -796,10 +803,6 @@ namespace Vevacious
 "               + \" Minuit's estimate of how much deeper it should go is \"\n"
 "                 + str( VPD." << PotentialMinimizer::energyScaleFourth << "\n"
 "                        * minuitObject.edm ) )\n"
-"    warningMessages.append( warningMessage )\n"
-"    print( warningMessage )\n"
-"if ( 0 != len( foundSaddles ) ):\n"
-"    warningMessage = \"PyMinuit rolled from input VEVs to a saddle point!\"\n"
 "    warningMessages.append( warningMessage )\n"
 "    print( warningMessage )\n"
 "rolledInputAsDictionary = minuitObject.values.copy()\n"
