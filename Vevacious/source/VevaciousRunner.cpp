@@ -15,12 +15,11 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersionString( "1.0.3" );
+  std::string const VevaciousRunner::vevaciousVersionString( "1.0.4" );
   std::string const
   VevaciousRunner::vevaciousVersionName( "vevaciousVersion" );
   std::string const
-  VevaciousRunner::vevaciousDocumentation( "[still unpublished]" );
-  // VevaciousRunner::vevaciousDocumentation( "arXiv:1305.????" );
+  VevaciousRunner::vevaciousDocumentation( "arXiv:1307.1477 (hep-ph)" );
   double const VevaciousRunner::lifetimeFactor( ( 4.0 * 44.0 * log( 10.0 ) )
                                                 + log( 0.0001 ) );
   // The age of the Universe is pretty close to 10^(44)/TeV. The equation used

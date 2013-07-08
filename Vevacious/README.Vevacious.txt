@@ -22,7 +22,7 @@
  *      You should have received a copy of the GNU General Public License    *
  *      (in HoTTMiLC/GNU_public_license.txt ) along with Vevacious. If not,  *
  *      see <http://www.gnu.org/licenses/>.                                  *
- *      A full list of the files of HoTTMiLC is at the end of this file.     *
+ *      A full list of the files of Vevacious is at the end of this file.    *
 \*****************************************************************************/
 
  Now that the legalese preamble is out of the way, the description of the code
@@ -31,8 +31,8 @@
  Vevacious is a program written in C++ to try to find the global minimum of a
  loop-corrected potential. It is designed to be used in conjuction with SARAH
  by Florian Staub and utilizes HOM4PS2 by Tsung-Lin Lee, Tien-Yien Li, and
- Chih-Hsiung Tsai, and PyMinuit by Jim Pivarski, implementing the MINUIT
- algorithms by Fred James.
+ Chih-Hsiung Tsai, PyMinuit by Jim Pivarski, implementing the MINUIT
+ algorithms by Fred James, and CosmoTransitions, by Carroll (Max) Wainwright.
  
  Vevacious is an implementation of the process of attempting to find the global
  minimum of a potential as decided upon by the collaboration of
@@ -42,14 +42,17 @@
  Florian Staub (florian.staub@googlemail.com). This README file was written by
  Ben O'Leary.
  
- Unfortunately, automating the full installation of the above codes is beyond
- my capabilities, so one has to follow the installation instructions given
- after the code description below (or wing it oneself).
+ A manual describing the physics and process of Vevacious is available from
+ http://arxiv.org/abs/1307.1477 and there is a quickstart guide available from
+ http://vevacious.hepforge.org/ following the appropriate link. An rough
+ version of the installation instructions is also contained in this README
+ file, below the description of the process.
  
  Vevacious runs in 2 stages: first it prepares the tree-level tadpole equation
  system and then solves it with HOM4PS2, and second, it uses the tree-level
  solutions as starting points for minimizing the 1-loop-level potential with
- PyMinuit.
+ PyMinuit, including, if a deeper minimum than that desired was found,
+ calculating a tunneling time or an upper bound using CosmoTransitions.
  
  The first part writes a system of tadpole equations for a given set of
  parameters (provided in SLHA format, presumably from a version of SPheno
@@ -112,29 +115,38 @@
     (giving the path where the C++ MINUIT code was _built_, *not* installed -
     it needs the .o object files rather than the .a library file...). The
     LD_LIBRARY_PATH and PYTHONPATH environment variables then need to be set.
- 5) Download and compile the LesHouchesParserClasses (LHPC) C++ library. The
+ 5) Download CosmoTransitions. The files are available at
+    http://chasm.ucsc.edu/cosmotransitions/
+    (link last checked 2013-07-08). The installation is as simple as unpacking
+    the zipped file.
+ 6) Download and compile the LesHouchesParserClasses (LHPC) C++ library. The
     files are available at
     http://www.hepforge.org/downloads/lhpc
     (link last checked 2013-05-14) or
     https://github.com/benoleary/LesHouchesParserClasses_CPP
     (link last checked 2013-05-14). The installation should just be
     downloading, unzipping, and then running make.
- 6) Compile Vevacious. The Makefile should be edited to have the correct paths
+ 7) Compile Vevacious. The Makefile should be edited to have the correct paths
     to the header files and library file of LHPC (these are
     /path/to/unzipped/LHPC/include/ and /path/to/unzipped/LHPC/lib/ by
     default). LHPC version 0.8.4 or higher is required.
 
- Once Vevacious is installed, it can be run as is. Various parameters for each
- execution can be specified: for the list, see the
- Vevacious/bin/VevaciousInitialization.xml file, where the various tags <XYZ>
- can be over-ridden by being given as arguments (e.g. --XYZ=ABC will over-ride
- whatever value is given between <XYZ> and </XYZ> in the .ini file). A
- different initialization file can be given with the option
- --input=other_filename as well (and direct arguments will over-ride any given
- in that file too).
+ Once Vevacious is installed, it can be run as is, as long as the paths are set
+ correctly. Various parameters for each execution can be specified: for the
+ list, see the Vevacious/bin/VevaciousInitialization.xml file, where the
+ various tags <XYZ> can be over-ridden by being given as arguments
+ (e.g. --XYZ=ABC will over-ride whatever value is given between <XYZ> and
+ </XYZ> in the .ini file). A different initialization file can be given with
+ the option --input=other_filename as well (and direct arguments will over-ride
+ any given in that file too). The XML file shows what paths must be specified.
 
 
 CHANGELOG:
+ * 8th July 2013: version 1.0.4
+ - Updated citation text, as Vevacious has now got a manual on the arXiv!
+   [arXiv:1307.1477 (hep-ph)]
+ - Updated README
+
  * 28th June 2013: version 1.0.3
  - Fixed default Vevacious.py to correctly handle PyMinuit exceptions, and to
    correctly warn when the input VEVs seem to be giving a saddle point.
@@ -329,25 +341,33 @@ The C++ files of Vevacious are:
  find the global minimum of the loop-corrected potential.
  
  <> Some example files are also given:
- Vevacious/bin/VevaciousInitialization.xml which is a default initialization
+ * Vevacious/bin/VevaciousInitialization.xml which is a default initialization
  file, which uses paths that need to be changed.
- Various files in Vevacious/MSSM/:
- Vevacious.in.XYZ is a model file for XYZ pregenerated from a beta version of
- SARAH4. In principle most VEVs should be taken as complex, which would require
- them to be written in the form vReal + i * vImag, but these examples, because
- of computational limitations, assume only real VEVs. The differences are which
- fields are allowed to have non-zero (real) VEVs:
- * XYZ = MSSM:
-     just the neutral components of the Higgs doublets
- * XYZ = realStauVevs_MSSM:
-     the neutral components of the Higgs doublets,
-     stau_L,
-     stau_R.
- * XYZ = realStauAndStopVevs_MSSM:
-     the neutral components of the Higgs doublets,
-     stau_L,
-     stau_R,
-     stop_L (1 color),
-     stop_R (the same color as stop_L).
- 
+ * Various files in Vevacious/MSSM/:
+ ** MSSM_XYZ.vin is a model file for the MSSM using the VEVs specified by XYZ.
+ For example, MSSM_RealHiggsAndStauVevs.vin is a model file for the MSSM
+ allowing VEVs for the staus as well as the Higgs, with the assumption that
+ they are all real.
+ *** MSSM_JustNormalHiggsVevs.vin: just the normal vd and vu are allowed to be
+ non-zero.
+ *** MSSM_RealHiggsAndStauVevs.vin: in addition to the normal vd and vu, stau_L
+ and stau_R are allowed to have non-zero VEVs.
+ *** MSSM_RealHiggsAndStauAndStopVevs.vin: as MSSM_RealHiggsAndStauVevs.vin,
+ but one color of stop_L and the same color of stop_R are allowed non-zero
+ VEVs.
+ ** pure_SLHA_XYZ.vin: versions of the above, but allowing pure SLHA2 input
+ without requiring the additional information given by SPhenoMSSM.
+ ** XYZ.slha.in is an input file for SPhenoMSSM (the SPheno made by SARAH for
+ the model MSSM), XYZ.slha.out is an output spectrum from that input.
+ *** XYZ = SPS1ap: the CMSSM parameter point SPS1a'
+ *** XYZ = CMSSM_CCB: an example charge- and color-breaking global minimum
+ CMSSM parameter point (corresponding to the best-fit point of arXiv:1204.4199)
+ *** XYZ = NUHM1_CCB: an example charge- and color-breaking global minimum
+ NUHM1 (Non-Universal Higgs Mass CMSSM with 1 additional mass for the Higgses,
+ rather than 2) parameter point (corresponding to the "low" best-fit point of
+ arXiv:1207.7315)
+ * Various files in Vevacious/NMSSM/:
+ As above, but for the NMSSM, though with only one example CNMSSM parameter
+ point, corresponding to P1 of arXiv:0801.4321, which has a global minimum with
+ the wrong Z mass, but still zero stau and stop VEVs.
  
