@@ -144,6 +144,21 @@
 
 
 CHANGELOG:
+ * 1st August 2013: version 1.0.5
+ - Makefile now makes ./lib/libVevacious.a as a static library as well, which
+   should make it easier to make custom C++ programs that use the Vevacious
+   classes.
+ - Default Python now also checks to see if a tree-level analysis of metastable
+   turned into a 1-loop stable result, & if so, doubles the VEVs of the
+   tree-level minimum as a new starting point for PyMinuit, & then compares the
+   point to which PyMinuit rolled from this new starting point to the input
+   minimum (as basins of attraction can sometimes move so far with loop
+   corrections that a tree-level CCB minimum can get caught in the input
+   minimum's basin of attraction).
+ - Default Python now also now restricts PyMinuit to a hypercube of each field
+   being within a hundred times the scale of the SLHAfile in magnitude (rather
+   than a thousand).
+
  * 8th July 2013: version 1.0.4
  - Updated citation text, as Vevacious has now got a manual on the arXiv!
    [arXiv:1307.1477 (hep-ph)]

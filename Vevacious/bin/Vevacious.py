@@ -12,6 +12,13 @@
 #      Copyright 2012 Ben O'Leary, Florian Staub,
 #                     Jose' Eliel Camargo Molina, Werner Porod
 #
+# (B.O'L. would like to apologize about the state of this file: ideally it
+# would be a lot neater, and respect modern programming practices. However,
+# it ended up easier to try to keep all this in one file. Maybe a later
+# version will tidy it up properly, maybe splitting it into separate 
+# files...)
+#
+#
 from __future__ import division
 import math
 import numpy
@@ -78,11 +85,11 @@ foundSaddles = []
 minuitObject = minuit.Minuit( effectivePotentialFunction )
 # There is a possibility of MINUIT trying to roll off to infinity but
 # generating an overflow error in calculating the potential before throwing
-# an exception. Here limits are set on the VEVs of one thousand times
+# an exception. Here limits are set on the VEVs of one hundred times
 # the energy scale, which is probably way beyond where the potential should
 # be trusted anyway.
 for vevVariable in minuitObject.values:
-    minuitObject.limits[ vevVariable ] = ( -1.0E+3, 1.0E+3 )
+    minuitObject.limits[ vevVariable ] = ( -100.0, 100.0 )
 
 
 def VevsHaveCorrectSigns( vevValues ):
@@ -156,9 +163,21 @@ def DisplacePoint( pointDictionary, displacementList, scaleFactor ):
                                            * displacementList[ vevIndex ] )
     return returnDictionary
 
+
+# the global minimum of the tree-level potential is also recorded, in case
+# loop corrections move around basins of attraction too far.
+globalTreeMinimum = pointsToTry[ 0 ]
+globalTreeMinimumDepth = VPD.FunctionFromDictionary( VPD.TreeLevelPotential,
+
+                                                    globalTreeMinimum )
 for vevValueSet in pointsToTry:
     if ( VevsHaveCorrectSigns( vevValueSet ) ):
         TryToMinimize( vevValueSet )
+treeLevelDepth = VPD.FunctionFromDictionary( VPD.TreeLevelPotential,
+                                             vevValueSet )
+if ( treeLevelDepth < globalTreeMinimum ):
+    globalTreeMinimum = vevValueSet.copy()
+    globalTreeMinimumDepth = treeLevelDepth
 
 for saddleSplitNudge in VPD.saddleSplitNudges:
     if ( 0 < len( foundSaddles ) ):
@@ -217,9 +236,15 @@ minuitObject.values = VPD.inputVevsPoint.copy()
 foundSaddles = []
 try:
     minuitObject.migrad()
+    candidateDescent = SteepestDescent( minuitObject.values )
+    if ( 0.0 > candidateDescent[ 0 ] ):
+        warningMessage = (
+                     "Input VEVs seem to correspond to a saddle point!" )
+        warningMessages.append( warningMessage )
+        print( warningMessage )
 except minuit.MinuitError as minuitError:
     warningMessage = ( "PyMinuit had problems starting at input VEVs! "
-                     + VPDUserVevsAsMathematica( vevValues )
+                     + VPD.UserVevsAsMathematica( VPD.inputVevsPoint )
                        + " [minuit.MinuitError: "
                        + str( minuitError )
                        + "]. PyMinuit stopped at "
@@ -237,10 +262,6 @@ except minuit.MinuitError as minuitError:
                + " Minuit's estimate of how much deeper it should go is "
                  + str( VPD.energyScaleFourth
                         * minuitObject.edm ) )
-    warningMessages.append( warningMessage )
-    print( warningMessage )
-if ( 0 != len( foundSaddles ) ):
-    warningMessage = "PyMinuit rolled from input VEVs to a saddle point!"
     warningMessages.append( warningMessage )
     print( warningMessage )
 rolledInputAsDictionary = minuitObject.values.copy()
@@ -323,13 +344,83 @@ globalMinimumPointAsArray = VPD.VevDictionaryToArray(
 distanceSquaredFromInputToGlobalMinimum = numpy.sum( (
                       globalMinimumPointAsArray - rolledInputAsArray )**2 )
 
+# this is a check that there wasn't a weird expansion of the basin of
+# attraction of the loop input minimum to include the tree minimum that
+# should have rolled to an undesired loop minimum that moved, with its
+# basin of attraction, quite far away.
+if ( ( rollingToleranceSquared * rolledInputLengthSquared )
+     > distanceSquaredFromInputToGlobalMinimum ):
+    globalTreeMinimumAsArray = VPD.VevDictionaryToArray( globalTreeMinimum )
+    if ( ( rollingToleranceSquared * rolledInputLengthSquared )
+         < numpy.sum( ( globalTreeMinimumAsArray
+                        - rolledInputAsArray )**2 ) ):
+        warningMessage = ( "Initially judged stable at 1-loop level, but"
+                          + " (possibly) metastable at tree level!"
+                          + " Adding scaled tree-level global minimum as"
+                          + " an extra PyMinuit starting point." )
+        warningMessages.append( warningMessage )
+        print( warningMessage )
+        for vevKey in globalTreeMinimum.keys():
+            globalTreeMinimum[ vevKey ] = ( 2.0
+                                            * globalTreeMinimum[ vevKey ] )
+        minuitObject.values = globalTreeMinimum.copy()
+        try:
+            minuitObject.migrad()
+        except minuit.MinuitError as minuitError:
+            warningMessage = ( "PyMinuit had problems starting at"
+                               + " doubled VEVs of tree-level global"
+                               + " minimum! "
+                               + VPD.UserVevsAsMathematica( VPD.inputVevsPoint )
+                               + " [minuit.MinuitError: "
+                               + str( minuitError )
+                               + "]. PyMinuit stopped at "
+                          + VPD.UserVevsAsMathematica( minuitObject.values )
+                               + " with relative depth "
+               + str( ( VPD.energyScaleFourth
+                        * VPD.FunctionFromDictionary( VPD.LoopCorrectedPotential,
+                                                    minuitObject.values ) )
+                      - potentialAtVevOrigin )
+                               + " at one-loop level and "
+                 + str( VPD.energyScaleFourth
+                        * VPD.FunctionFromDictionary( VPD.TreeLevelPotential,
+                                                    minuitObject.values ) )
+                               + " at tree level."
+               + " Minuit's estimate of how much deeper it should go is "
+                 + str( VPD.energyScaleFourth
+                        * minuitObject.edm ) )
+            warningMessages.append( warningMessage )
+            print( warningMessage )
+        globalMinimumPointAsDictionary = minuitObject.values.copy()
+        globalMinimumPointAsArray = VPD.VevDictionaryToArray( minuitObject.values )
+        globalMinimumDepthValue = minuitObject.fval
+        distanceSquaredFromInputToGlobalMinimum = numpy.sum( (
+                      globalMinimumPointAsArray - rolledInputAsArray )**2 )
+        actionNeedsToBeCalculated = True
+        print( "scaled point rolled to "
+                       + VPD.UserVevsAsMathematica( minuitObject.values )
+               + " [distanceSquaredFromInputToGlobalMinimum = "
+               + str( distanceSquaredFromInputToGlobalMinimum )
+         + " ; ( rollingToleranceSquared * rolledInputLengthSquared ) = "
+            + str( ( rollingToleranceSquared * rolledInputLengthSquared ) )
+                       + "] with relative depth "
+               + str( ( VPD.energyScaleFourth
+                        * VPD.FunctionFromDictionary( VPD.LoopCorrectedPotential,
+                                                    minuitObject.values ) )
+                      - potentialAtVevOrigin ) )
+        if ( globalMinimumDepthValue >= rolledInputDepth ):
+            globalMinimumPointAsDictionary = rolledInputAsDictionary
+            globalMinimumPointAsArray = rolledInputAsArray
+            globalMinimumDepthValue = rolledInputDepth
+            distanceSquaredFromInputToGlobalMinimum = 0.0
+            actionNeedsToBeCalculated = False
+
 # If the input vacuum is the global minimum, actionValue is set to -1.0.
 # Non-negative values of actionValue indicate the current upper bound on
 # the action after the last approximation. It starts stupidly high
 # (the current age of the Universe corresponds to an action of about 400)
 # so that the first requested bounding estimate will be calculated.
 if ( ( rollingToleranceSquared * rolledInputLengthSquared )
-     > distanceSquaredFromInputToGlobalMinimum ):
+     >= distanceSquaredFromInputToGlobalMinimum ):
     stabilityVerdict = "stable"
     actionValue = -1.0
     tunnelingTime = -1.0
@@ -448,7 +539,7 @@ if ( actionNeedsToBeCalculated
 # No matter if there were serious errors or not, an output file is written:
 outputFile = open( VPD.outputFile, "w" )
 outputFile.write( "<Vevacious_result>\n"
-                  + "  <reference version=\"0.3.0\" citation=\"[still unpublished]\" />\n"
+                  + "  <reference version=\"1.0.5\" citation=\"arXiv:1307.1477 (hep-ph)\" />\n"
              + "  <stability> " + stabilityVerdict + " </stability>\n"
                   + "  <global_minimum   relative_depth=\""
                       + str( ( globalMinimumDepthValue * VPD.energyScaleFourth ) - potentialAtVevOrigin ) + "\" "
