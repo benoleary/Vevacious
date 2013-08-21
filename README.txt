@@ -144,6 +144,15 @@
 
 
 CHANGELOG:
+ * 21st August: version 1.0.6
+ - Makefile fixed so that it works properly (the libraries were in the wrong
+   official order, but some compilers don't mind, such as that which was used
+   to test 1.0.5).
+ - Warning! The website at chasm.uscs.edu does not seem to exist any longer, so 
+   it appears to be impossible to get CosmoTransitions officially! Please email
+   Ben O'Leary if Dr C. Wainwright (the author of CosmoTransitions) cannot help
+   you.
+
  * 1st August 2013: version 1.0.5
  - Makefile now makes ./lib/libVevacious.a as a static library as well, which
    should make it easier to make custom C++ programs that use the Vevacious
