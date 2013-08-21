@@ -148,6 +148,11 @@ CHANGELOG:
  - Makefile fixed so that it works properly (the libraries were in the wrong
    official order, but some compilers don't mind, such as that which was used
    to test 1.0.5).
+ - Example model files renamed to clarify (a bit) which require non-standard
+   SLHA blocks (by the prefix "SARAH-SPheno"), and which can be used with
+   standard flavor-violation-accommodating SLHA2 blocks alone.
+ - Example model files that should work with SLHA files adhering just to the
+   SLHA1 conventions have been added.
  - Warning! The website at chasm.uscs.edu does not seem to exist any longer, so 
    it appears to be impossible to get CosmoTransitions officially! Please email
    Ben O'Leary if Dr C. Wainwright (the author of CosmoTransitions) cannot help
