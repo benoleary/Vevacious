@@ -15,20 +15,11 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersionString( "1.0.6" );
+  std::string const VevaciousRunner::vevaciousVersionString( "1.0.7" );
   std::string const
   VevaciousRunner::vevaciousVersionName( "vevaciousVersion" );
   std::string const
   VevaciousRunner::vevaciousDocumentation( "arXiv:1307.1477 (hep-ph)" );
-  double const VevaciousRunner::lifetimeFactor( ( 4.0 * 44.0 * log( 10.0 ) )
-                                                + log( 0.0001 ) );
-  // The age of the Universe is pretty close to 10^(44)/TeV. The equation used
-  // for the tunneling time t is t^(-4) = A exp( -B ), where B is the action &
-  // A is a dimensionful factor depending on the solitonic solutions. It is
-  // expected to be of the order of (0.1 TeV)^4. For a given t, B = ln( A t^4 )
-  // and if t is r * 10^(44)/TeV, then
-  // B = 4 ln( r ) + 4 ln( 10^(44) ) + ln( A * TeV^(-4) ), explaining the above
-  // form of lifetimeFactor.
   std::string const
   VevaciousRunner::pointsToTry( "pointsToTry" );
   std::string const
@@ -42,9 +33,9 @@ namespace Vevacious
   std::string const VevaciousRunner::pathToCosmotransitionsVariableName(
                                                     "pathToCosmotransitions" );
   std::string const
-  VevaciousRunner::directActionBoundVariableName( "directActionBound" );
-  std::string const
-  VevaciousRunner::deformedActionBoundVariableName( "deformedActionBound" );
+  VevaciousRunner::directLifetimeBoundVariableName( "directLifetimeBound" );
+  std::string const VevaciousRunner::deformedLifetimeBoundVariableName(
+                                                     "deformedLifetimeBound" );
   std::string const VevaciousRunner::defaultPythonFilename( "Vevacious.py" );
   std::string const VevaciousRunner::treeLevelExtremaHeader(
          "import VevaciousParameterDependent as VPD\n\npointsToTry = []\n\n" );
@@ -73,8 +64,8 @@ namespace Vevacious
                      1.0 ),
     rollingTolerance( 0.2 ),
     pathToCosmotransitions( "./" ),
-    directActionBound( 0.1 ),
-    deformedActionBound( directActionBound )
+    directLifetimeBound( 0.1 ),
+    deformedLifetimeBound( directLifetimeBound )
   {
     BOL::AsciiXmlParser xmlParser;
     bool xmlOpened( xmlParser.openRootElementOfFile( modelFilename ) );
@@ -143,12 +134,12 @@ namespace Vevacious
                                                               "0.1" ) ) ),
     pathToCosmotransitions( argumentParser.fromTag( "ct_path",
                                                     "./CosmoTransitions/" ) ),
-    directActionBound( actionFromLifetime( BOL::StringParser::stringToDouble(
+    directLifetimeBound( BOL::StringParser::stringToDouble(
                                          argumentParser.fromTag( "direct_time",
-                                                                 "0.1" ) ) ) ),
-    deformedActionBound( actionFromLifetime( BOL::StringParser::stringToDouble(
+                                                                 "0.1" ) ) ),
+    deformedLifetimeBound( BOL::StringParser::stringToDouble(
                                        argumentParser.fromTag( "deformed_time",
-                                                               "0.1" ) ) ) )
+                                                               "0.1" ) ) )
   {
     setMinuitNudgesOffSaddlePoints( argumentParser.fromTag( "saddle_nudges",
                                                             "1.0, 1.0" ) );
@@ -297,8 +288,8 @@ namespace Vevacious
 << rollingToleranceVariableName << " = " << rollingTolerance << "\n"
 << pathToCosmotransitionsVariableName << " = \"" << pathToCosmotransitions
 <<                                                                       "\"\n"
-<< directActionBoundVariableName << " = " << directActionBound << "\n"
-<< deformedActionBoundVariableName << " = " << deformedActionBound << "\n"
+<< directLifetimeBoundVariableName << " = " << directLifetimeBound << "\n"
+<< deformedLifetimeBoundVariableName << " = " << deformedLifetimeBound << "\n"
 << potentialMinimizer.prepareParameterDependentPython( sarahInterpreter );
     outputFile.close();
   }
@@ -993,11 +984,58 @@ namespace Vevacious
 "            distanceSquaredFromInputToGlobalMinimum = 0.0\n"
 "            actionNeedsToBeCalculated = False\n"
 "\n"
+"\n"
+"# The decay width per unit volume, following Sidney Coleman, is of the form\n"
+"# A exp( -[bounce action] ), where A is a solitonic solution that is\n"
+"# usually actually just estimated on dimensional grounds, as since the\n"
+"# action needs to be about 400 for a tunneling time of about 14 billion\n"
+"# years, so getting the action right to a per-cent is more important than\n"
+"# getting the A factor right within a factor of 3! Hence we just take A to\n"
+"# be the scale from the SLHA file to the fourth power, which should be\n"
+"# about the same size as the largest dimensionful Lagrangian parameter\n"
+"# entering the effective potential (to stabilize loop corrections), so\n"
+"# coincidentally should be the same order of magnitude as one would expect\n"
+"# the solitonic solutions to be. The user can modify this here, if they\n"
+"# feel that it should be something else, e.g. 0.1 times this value, or that\n"
+"# instead it should be of the order of the electroweak VEV of 246 GeV.\n"
+"# fourthRootOfSolitonicFactorA should be in units of GeV (as it is A^(1/4)\n"
+"fourthRootOfSolitonicFactorA = VPD." << PotentialMinimizer::energyScaleFourth
+<<                                                                         "\n"
+"\n"
+"# The age of the known Universe is pretty close to exactly (10^(41))/GeV.\n"
+"ageOfTheKnownUniverseInInverseGev = 1.0E+41\n"
+"\n"
+"# The tunneling time calculation action thresholds are initially turned\n"
+"# off, but if positive lifetime thresholds were given, the action\n"
+"# thresholds get set correctly.\n"
+"directActionThreshold = -1\n"
+"deformedActionThreshold = -1\n"
+"# The tunneling time should be something like\n"
+"# (decay width / unit volume)^(1/4), which explains the factor of 4.0 in\n"
+"# the following thresholds on the bounce action.\n"
+"# (This is from:\n"
+"# Gamma_threshold / unit volume = t_threshold^(-4) = A exp( -B_threshold )\n"
+"# -B_threshold = ln( 1 / ( A t_threshold^4 ) )\n"
+"# B_threshold = 4 ln( A^(1/4) t_threshold )\n"
+"# hence the factor of 4 for the threshold actions.)\n"
+"if ( 0.0 < VPD." << directLifetimeBoundVariableName << " ):\n"
+"    directActionThreshold = ( 4.0 * math.log( VPD."
+<<                                      directLifetimeBoundVariableName << "\n"
+"                                        * ageOfTheKnownUniverseInInverseGev\n"
+"                                         * fourthRootOfSolitonicFactorA ) )\n"
+"if ( 0.0 < VPD." << deformedLifetimeBoundVariableName << " ):\n"
+"    deformedActionThreshold = ( 4.0 * math.log( VPD."
+<<                                    deformedLifetimeBoundVariableName << "\n"
+"                                        * ageOfTheKnownUniverseInInverseGev\n"
+"                                         * fourthRootOfSolitonicFactorA ) )\n"
+"\n"
+"\n"
 "# If the input vacuum is the global minimum, actionValue is set to -1.0.\n"
 "# Non-negative values of actionValue indicate the current upper bound on\n"
 "# the action after the last approximation. It starts stupidly high\n"
-"# (the current age of the Universe corresponds to an action of about 400)\n"
-"# so that the first requested bounding estimate will be calculated.\n"
+"# (the current age of the Universe corresponds to an action of about 400,\n"
+"# for an A factor of (100 GeV)^4) so that the first requested bounding\n"
+"# estimate will be calculated.\n"
 "if ( ( rollingToleranceSquared * rolledInputLengthSquared )\n"
 "     >= distanceSquaredFromInputToGlobalMinimum ):\n"
 "    stabilityVerdict = \"stable\"\n"
@@ -1011,8 +1049,8 @@ namespace Vevacious
 "tunnelingResolution = 20\n"
 "\n"
 "if ( actionNeedsToBeCalculated\n"
-"     and ( ( 0.0 < VPD." << directActionBoundVariableName << " )\n"
-"           or ( 0.0 < VPD." << deformedActionBoundVariableName << " ) ) ):\n"
+"     and ( ( 0.0 < directActionThreshold )\n"
+"           or ( 0.0 < deformedActionThreshold ) ) ):\n"
 "    firstStepPoint = ( ( rolledInputAsArray\n"
 "                         * ( 1.0 - ( 1.0 / tunnelingResolution ) ) )\n"
 "                       + ( globalMinimumPointAsArray\n"
@@ -1033,8 +1071,8 @@ namespace Vevacious
 "        print( warningMessage )\n"
 "\n"
 "if ( actionNeedsToBeCalculated\n"
-"     and ( ( 0.0 < VPD." << directActionBoundVariableName << " )\n"
-"           or ( 0.0 < VPD." << deformedActionBoundVariableName << " ) ) ):\n"
+"     and ( ( 0.0 < directActionThreshold )\n"
+"           or ( 0.0 < deformedActionThreshold ) ) ):\n"
 "    import sys\n"
 "    sys.path.append( VPD." << pathToCosmotransitionsVariableName << " )\n"
 "    import pathDeformation as CPD\n"
@@ -1084,9 +1122,8 @@ namespace Vevacious
 "        else:\n"
 "            return None\n"
 "\n"
-"    if ( ( 0.0 < VPD." << directActionBoundVariableName << " )\n"
-"         and ( actionValue > VPD." << directActionBoundVariableName
-<<                                                                    " ) ):\n"
+"    if ( ( 0.0 < directActionThreshold )\n"
+"         and ( actionValue > directActionThreshold ) ):\n"
 "        quickTunneler = CPD.fullTunneling( V = PotentialFromMatrix,\n"
 "                                           dV = GradientFromMatrix,\n"
 "                                           phi = arrayOfArrays,\n"
@@ -1095,14 +1132,13 @@ namespace Vevacious
 "        quickTunneler.tunnel1D( xtol = 1e-4, phitol = 1e-6 )\n"
 "        actionValue = quickTunneler.findAction()\n"
 "        actionType = \"direct_path_bound\"\n"
-"        if( actionValue < VPD." << directActionBoundVariableName << " ):\n"
+"        if( actionValue < directActionThreshold ):\n"
 "            stabilityVerdict = \"short-lived\"\n"
 "            actionNeedsToBeCalculated = False\n"
 "\n"
 "    if ( actionNeedsToBeCalculated\n"
-"         and ( 0.0 < VPD." << deformedActionBoundVariableName << " )\n"
-"         and ( actionValue > VPD." + deformedActionBoundVariableName
-<<                                                                    " ) ):\n"
+"         and ( 0.0 < deformedActionThreshold )\n"
+"         and ( actionValue > deformedActionThreshold ) ):\n"
 "        fullTunneler = CPD.fullTunneling( V = PotentialFromMatrix,\n"
 "                                          dV = GradientFromMatrix,\n"
 "                                          phi = arrayOfArrays,\n"
@@ -1115,7 +1151,7 @@ namespace Vevacious
 "        fullTunneler.run( maxiter = 20 )\n"
 "        actionValue = fullTunneler.findAction()\n"
 "        actionType = \"full_deformed_path\"\n"
-"        if ( actionValue < VPD." << deformedActionBoundVariableName << " ):\n"
+"        if ( actionValue < deformedActionThreshold ):\n"
 "            stabilityVerdict = \"short-lived\"\n"
 "            actionNeedsToBeCalculated = False\n"
 "\n"
@@ -1142,13 +1178,16 @@ namespace Vevacious
 "# We don't want an overflow error when calculating the tunneling time.\n"
 "    if ( 1000.0 < actionValue ):\n"
 "        actionValue = 1000.0\n"
-"    tunnelingTime = ( math.exp( 0.25 * actionValue ) * 1.0e-43 )\n"
+"# The tunneling time should be something like\n"
+"# (decay width / unit volume)^(1/4), which explains the factor of 0.25 in\n"
+"# the exponential here.\n"
+"    tunnelingTime = ( math.exp( 0.25 * actionValue )\n"
+"                      / ( ageOfTheKnownUniverseInInverseGev\n"
+"                          * fourthRootOfSolitonicFactorA ) )\n"
 "    if ( 1000000.0 < tunnelingTime ):\n"
 "        tunnelingTime = 1000000.0\n"
-"# The tunneling time is capped at a million times the current age of the\n"
-"# known Universe.\n"
-"# This code assumes that the age of the Universe is (10^(44))/TeV, and that\n"
-"# the solitonic solution factor (Sidney Coleman\'s \"A\") is (0.1 TeV)^4.\n"
+"# The tunneling time is given in units of the current age of the known\n"
+"# Universe, and is capped at one million.\n"
 "outputFile.write( \"\\n  <lifetime  action_calculation=\\\"\" + actionType\n"
 "                  + \"\\\" > \" + str( tunnelingTime ) + \" </lifetime>\" )\n"
 "# Each warning is printed as an XML element:\n"

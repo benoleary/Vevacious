@@ -96,35 +96,38 @@
  should allow a successful installation:
  1) Download SARAH. The files are available at
     http://sarah.hepforge.org/
-    (link last checked 2013-05-14). The installation is as simple as unpacking
+    (link last checked 2013-08-29). The installation is as simple as unpacking
     the gzipped tarball.
  2) Download HOM4PS2. The files are available at
     http://www.math.nsysu.edu.tw/~leetsung/works/HOM4PS_soft_files/HOM4PS_Linux.htm
-    (link last checked 2013-05-14). The installation is as simple as unpacking
+    (link last checked 2013-08-29). The installation is as simple as unpacking
     the gzipped tarball.
  3) Ensure that Python is installed. PyMinuit requires at least version 2.4 or
     later. I shouldn't have to get into any specifics of how to install Python
     here... Internet search engines are your friends.
  4) Download and install PyMinuit. The instructions are available at
     http://code.google.com/p/pyminuit/wiki/HowToInstall
-    (link last checked 2013-05-14). The installation involves downloading and
+    (link last checked 2013-08-29). The installation involves downloading and
     compiling one of the C++ implementations of MINUIT (such as the standalone
     version 1.7.9 or the CERN ROOT version, both available from
     http://lcgapp.cern.ch/project/cls/work-packages/mathlibs/minuit/
-    (link last checked 2013-05-14)), then running the PyMinuit setup script
+    (link last checked 2013-08-29)), then running the PyMinuit setup script
     (giving the path where the C++ MINUIT code was _built_, *not* installed -
     it needs the .o object files rather than the .a library file...). The
     LD_LIBRARY_PATH and PYTHONPATH environment variables then need to be set.
  5) Download CosmoTransitions. The files are available at
-    http://chasm.ucsc.edu/cosmotransitions/
-    (link last checked 2013-07-08). The installation is as simple as unpacking
+    http://chasm.uchicago.edu/cosmotransitions/
+    (link last checked 2013-08-29). The installation is as simple as unpacking
     the zipped file.
+    (CosmoTransitions was previously at http://chasm.ucsc.edu/cosmotransitions/
+    but has since moved. Hosting on HepForge at some point in the future has
+    been suggested, but as of 2013-08-29, it is not there.)
  6) Download and compile the LesHouchesParserClasses (LHPC) C++ library. The
     files are available at
     http://www.hepforge.org/downloads/lhpc
-    (link last checked 2013-05-14) or
+    (link last checked 2013-08-29) or
     https://github.com/benoleary/LesHouchesParserClasses_CPP
-    (link last checked 2013-05-14). The installation should just be
+    (link last checked 2013-08-29). The installation should just be
     downloading, unzipping, and then running make.
  7) Compile Vevacious. The Makefile should be edited to have the correct paths
     to the header files and library file of LHPC (these are
@@ -142,6 +145,16 @@
 
 
 CHANGELOG:
+ * 29th August: version 1.0.7
+ - The A factor for calculating the tunneling time has changed to be the fourth
+   power of renormalization scale as given by the SLHA file rather than the old
+   hard-coded (100 GeV)^4 by default, and the default Vevacious.py now
+   explicitly calculates the actions from the tunneling time thresholds. This
+   now allows the user to edit Vevacious.py to change the calculation of the
+   A factor if so desired.
+ - CosmoTransitions is now at http://chasm.uchicago.edu/cosmotransitions/ as
+   Dr Wainwright has kindly let me know.
+
  * 21st August: version 1.0.6
  - Makefile fixed so that it works properly (the libraries were in the wrong
    official order, but some compilers don't mind, such as that which was used

@@ -68,12 +68,12 @@ namespace Vevacious
     void setPathToCosmotransitions( std::string const& pathToCosmotransitions )
     { this->pathToCosmotransitions.assign( pathToCosmotransitions ); }
     void setLifetimeForDirectPath( double directLifetimeBound )
-    { directActionBound = actionFromLifetime( directLifetimeBound ); }
+    { this->directLifetimeBound = directLifetimeBound; }
     void setLifetimeForDirectPath( std::string const& directLifetimeBound )
     { setLifetimeForDirectPath(
                   BOL::StringParser::stringToDouble( directLifetimeBound ) ); }
     void setLifetimeForDeformedPath( double deformedLifetimeBound )
-    { deformedActionBound = actionFromLifetime( deformedLifetimeBound ); }
+    { this->deformedLifetimeBound = deformedLifetimeBound; }
     void setLifetimeForDeformedPath( std::string const& deformedLifetimeBound )
     { setLifetimeForDeformedPath(
                 BOL::StringParser::stringToDouble( deformedLifetimeBound ) ); }
@@ -118,8 +118,8 @@ namespace Vevacious
     static std::string const rollingToleranceVariableName;
     static std::string const quarticActionBoundVariableName;
     static std::string const pathToCosmotransitionsVariableName;
-    static std::string const directActionBoundVariableName;
-    static std::string const deformedActionBoundVariableName;
+    static std::string const directLifetimeBoundVariableName;
+    static std::string const deformedLifetimeBoundVariableName;
     static std::string const defaultPythonFilename;
     static std::string const treeLevelExtremaHeader;
     static BOL::StringParser const slhaIndexMaker;
@@ -138,14 +138,13 @@ namespace Vevacious
     std::vector< double > saddleNudgeList;
     double rollingTolerance;
     std::string pathToCosmotransitions;
-    double directActionBound;
-    double deformedActionBound;
+    double directLifetimeBound;
+    double deformedLifetimeBound;
 
     void calculateTreeLevelExtrema( std::string const& slhaFilename );
     void writeDefaultPythonProgram() const;
     std::string
     prepareToRunPythonCommand( std::string const& pythonFilename ) const;
-    double actionFromLifetime( double lifetimeValue ) const;
   };
 
 
@@ -239,7 +238,7 @@ namespace Vevacious
      std::string systemCommand( prepareToRunPythonCommand( pythonFilename ) );
      if( ( 0 < deformationPatience )
          &&
-         ( 0.0 < deformedActionBound ) )
+         ( 0.0 < deformedLifetimeBound ) )
      {
        std::string forkedCommand( "bash " + systemCommand );
        BOL::WaitingOnSubprocessExecutor subprocessExecutor( forkedCommand,
@@ -277,16 +276,6 @@ namespace Vevacious
       systemCommand.append( pythonFilename );
     }
     return systemCommand;
-  }
-
-  inline double
-  VevaciousRunner::actionFromLifetime( double lifetimeValue ) const
-  {
-    if( !( 0.0 < lifetimeValue ) )
-    {
-      return -1.0;
-    }
-    return ( ( 4.0 * log( lifetimeValue ) ) + lifetimeFactor );
   }
 
 } /* namespace Vevacious */
