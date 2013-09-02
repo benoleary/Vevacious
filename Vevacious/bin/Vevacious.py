@@ -414,11 +414,56 @@ if ( ( rollingToleranceSquared * rolledInputLengthSquared )
             distanceSquaredFromInputToGlobalMinimum = 0.0
             actionNeedsToBeCalculated = False
 
+
+# The decay width per unit volume, following Sidney Coleman, is of the form
+# A exp( -[bounce action] ), where A is a solitonic solution that is
+# usually actually just estimated on dimensional grounds, as since the
+# action needs to be about 400 for a tunneling time of about 14 billion
+# years, so getting the action right to a per-cent is more important than
+# getting the A factor right within a factor of 3! Hence we just take A to
+# be the scale from the SLHA file to the fourth power, which should be
+# about the same size as the largest dimensionful Lagrangian parameter
+# entering the effective potential (to stabilize loop corrections), so
+# coincidentally should be the same order of magnitude as one would expect
+# the solitonic solutions to be. The user can modify this here, if they
+# feel that it should be something else, e.g. 0.1 times this value, or that
+# instead it should be of the order of the electroweak VEV of 246 GeV.
+# fourthRootOfSolitonicFactorA should be in units of GeV (as it is
+# A^(1/4)).
+fourthRootOfSolitonicFactorA = VPD.energyScaleFourth
+
+# The age of the known Universe is pretty close to exactly (10^(41))/GeV.
+ageOfTheKnownUniverseInInverseGev = 1.0E+41
+
+# The tunneling time calculation action thresholds are initially turned
+# off, but if positive lifetime thresholds were given, the action
+# thresholds get set correctly.
+directActionThreshold = -1
+deformedActionThreshold = -1
+# The tunneling time should be something like
+# (decay width / unit volume)^(1/4), which explains the factor of 4.0 in
+# the following thresholds on the bounce action.
+# (This is from:
+# Gamma_threshold / unit volume = t_threshold^(-4) = A exp( -B_threshold )
+# -B_threshold = ln( 1 / ( A t_threshold^4 ) )
+# B_threshold = 4 ln( A^(1/4) t_threshold )
+# hence the factor of 4 for the threshold actions.)
+if ( 0.0 < VPD.directLifetimeBound ):
+    directActionThreshold = ( 4.0 * math.log( VPD.directLifetimeBound
+                                        * ageOfTheKnownUniverseInInverseGev
+                                         * fourthRootOfSolitonicFactorA ) )
+if ( 0.0 < VPD.deformedLifetimeBound ):
+    deformedActionThreshold = ( 4.0 * math.log( VPD.deformedLifetimeBound
+                                        * ageOfTheKnownUniverseInInverseGev
+                                         * fourthRootOfSolitonicFactorA ) )
+
+
 # If the input vacuum is the global minimum, actionValue is set to -1.0.
 # Non-negative values of actionValue indicate the current upper bound on
 # the action after the last approximation. It starts stupidly high
-# (the current age of the Universe corresponds to an action of about 400)
-# so that the first requested bounding estimate will be calculated.
+# (the current age of the Universe corresponds to an action of about 400,
+# for an A factor of (100 GeV)^4) so that the first requested bounding
+# estimate will be calculated.
 if ( ( rollingToleranceSquared * rolledInputLengthSquared )
      >= distanceSquaredFromInputToGlobalMinimum ):
     stabilityVerdict = "stable"
@@ -432,8 +477,8 @@ if ( ( rollingToleranceSquared * rolledInputLengthSquared )
 tunnelingResolution = 20
 
 if ( actionNeedsToBeCalculated
-     and ( ( 0.0 < VPD.directActionBound )
-           or ( 0.0 < VPD.deformedActionBound ) ) ):
+     and ( ( 0.0 < directActionThreshold )
+           or ( 0.0 < deformedActionThreshold ) ) ):
     firstStepPoint = ( ( rolledInputAsArray
                          * ( 1.0 - ( 1.0 / tunnelingResolution ) ) )
                        + ( globalMinimumPointAsArray
@@ -453,8 +498,8 @@ if ( actionNeedsToBeCalculated
         print( warningMessage )
 
 if ( actionNeedsToBeCalculated
-     and ( ( 0.0 < VPD.directActionBound )
-           or ( 0.0 < VPD.deformedActionBound ) ) ):
+     and ( ( 0.0 < directActionThreshold )
+           or ( 0.0 < deformedActionThreshold ) ) ):
     import sys
     sys.path.append( VPD.pathToCosmotransitions )
     import pathDeformation as CPD
@@ -503,8 +548,8 @@ if ( actionNeedsToBeCalculated
         else:
             return None
 
-    if ( ( 0.0 < VPD.directActionBound )
-         and ( actionValue > VPD.directActionBound ) ):
+    if ( ( 0.0 < directActionThreshold )
+         and ( actionValue > directActionThreshold ) ):
         quickTunneler = CPD.fullTunneling( V = PotentialFromMatrix,
                                            dV = GradientFromMatrix,
                                            phi = arrayOfArrays,
@@ -513,13 +558,13 @@ if ( actionNeedsToBeCalculated
         quickTunneler.tunnel1D( xtol = 1e-4, phitol = 1e-6 )
         actionValue = quickTunneler.findAction()
         actionType = "direct_path_bound"
-        if( actionValue < VPD.directActionBound ):
+        if( actionValue < directActionThreshold ):
             stabilityVerdict = "short-lived"
             actionNeedsToBeCalculated = False
 
     if ( actionNeedsToBeCalculated
-         and ( 0.0 < VPD.deformedActionBound )
-         and ( actionValue > VPD.deformedActionBound ) ):
+         and ( 0.0 < deformedActionThreshold )
+         and ( actionValue > deformedActionThreshold ) ):
         fullTunneler = CPD.fullTunneling( V = PotentialFromMatrix,
                                           dV = GradientFromMatrix,
                                           phi = arrayOfArrays,
@@ -532,14 +577,14 @@ if ( actionNeedsToBeCalculated
         fullTunneler.run( maxiter = 20 )
         actionValue = fullTunneler.findAction()
         actionType = "full_deformed_path"
-        if ( actionValue < VPD.deformedActionBound ):
+        if ( actionValue < deformedActionThreshold ):
             stabilityVerdict = "short-lived"
             actionNeedsToBeCalculated = False
 
 # No matter if there were serious errors or not, an output file is written:
 outputFile = open( VPD.outputFile, "w" )
 outputFile.write( "<Vevacious_result>\n"
-                  + "  <reference version=\"1.0.5\" citation=\"arXiv:1307.1477 (hep-ph)\" />\n"
+                  + "  <reference version=\"1.0.7\" citation=\"arXiv:1307.1477 (hep-ph)\" />\n"
              + "  <stability> " + stabilityVerdict + " </stability>\n"
                   + "  <global_minimum   relative_depth=\""
                       + str( ( globalMinimumDepthValue * VPD.energyScaleFourth ) - potentialAtVevOrigin ) + "\" "
@@ -552,13 +597,16 @@ if ( 0.0 <= actionValue ):
 # We don't want an overflow error when calculating the tunneling time.
     if ( 1000.0 < actionValue ):
         actionValue = 1000.0
-    tunnelingTime = ( math.exp( 0.25 * actionValue ) * 1.0e-43 )
+# The tunneling time should be something like
+# (decay width / unit volume)^(1/4), which explains the factor of 0.25 in
+# the exponential here.
+    tunnelingTime = ( math.exp( 0.25 * actionValue )
+                      / ( ageOfTheKnownUniverseInInverseGev
+                          * fourthRootOfSolitonicFactorA ) )
     if ( 1000000.0 < tunnelingTime ):
         tunnelingTime = 1000000.0
-# The tunneling time is capped at a million times the current age of the
-# known Universe.
-# This code assumes that the age of the Universe is (10^(44))/TeV, and that
-# the solitonic solution factor (Sidney Coleman's "A") is (0.1 TeV)^4.
+# The tunneling time is given in units of the current age of the known
+# Universe, and is capped at one million.
 outputFile.write( "\n  <lifetime  action_calculation=\"" + actionType
                   + "\" > " + str( tunnelingTime ) + " </lifetime>" )
 # Each warning is printed as an XML element:

@@ -998,7 +998,8 @@ namespace Vevacious
 "# the solitonic solutions to be. The user can modify this here, if they\n"
 "# feel that it should be something else, e.g. 0.1 times this value, or that\n"
 "# instead it should be of the order of the electroweak VEV of 246 GeV.\n"
-"# fourthRootOfSolitonicFactorA should be in units of GeV (as it is A^(1/4)\n"
+"# fourthRootOfSolitonicFactorA should be in units of GeV (as it is\n"
+"# A^(1/4)).\n"
 "fourthRootOfSolitonicFactorA = VPD." << PotentialMinimizer::energyScaleFourth
 <<                                                                         "\n"
 "\n"
