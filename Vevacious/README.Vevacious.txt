@@ -145,6 +145,11 @@
 
 
 CHANGELOG:
+ * 9th September: version 1.0.8
+ - Example model files where the stop VEVs are allowed to be non-zero have been
+   corrected (unfortunately the D-term from SU(3)_c had been generated wrongly
+   and this carried through into the mass matrices).
+
  * 29th August: version 1.0.7
  - The A factor for calculating the tunneling time has changed to be the fourth
    power of renormalization scale as given by the SLHA file rather than the old
