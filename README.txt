@@ -147,6 +147,13 @@
 
 
 CHANGELOG:
+ * 11th September: version 1.0.9
+ - Default Python program fixed to correctly find the tree-level global minimum
+   for the purposes of checking to see if the basin of attraction of the
+   one-loop minima has moved significantly.
+ - Added example model file for just Higgs VEVs and stop VEVs (without allowing
+   stau VEVs), though just the SARAH-SPhenoMSSM style of SLHA is expected.
+
  * 9th September: version 1.0.8
  - Example model files where the stop VEVs are allowed to be non-zero have been
    corrected (unfortunately the D-term from SU(3)_c had been generated wrongly

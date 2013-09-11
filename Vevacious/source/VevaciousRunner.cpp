@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersionString( "1.0.8" );
+  std::string const VevaciousRunner::vevaciousVersionString( "1.0.9" );
   std::string const
   VevaciousRunner::vevaciousVersionName( "vevaciousVersion" );
   std::string const
@@ -709,16 +709,16 @@ namespace Vevacious
 "globalTreeMinimum = pointsToTry[ 0 ]\n"
 "globalTreeMinimumDepth = VPD." << PotentialMinimizer::functionFromDictionary
 <<                  "( VPD." << PotentialMinimizer::treeLevelPotential << ",\n"
-"\n                                                    globalTreeMinimum )\n"
+"                                                        globalTreeMinimum )\n"
 "for vevValueSet in " << pointsToTry << ":\n"
 "    if ( VevsHaveCorrectSigns( vevValueSet ) ):\n"
 "        TryToMinimize( vevValueSet )\n"
-"treeLevelDepth = VPD." << PotentialMinimizer::functionFromDictionary
+"        treeLevelDepth = VPD." << PotentialMinimizer::functionFromDictionary
 <<                  "( VPD." << PotentialMinimizer::treeLevelPotential << ",\n"
 "                                             vevValueSet )\n"
-"if ( treeLevelDepth < globalTreeMinimum ):\n"
-"    globalTreeMinimum = vevValueSet.copy()\n"
-"    globalTreeMinimumDepth = treeLevelDepth\n"
+"        if ( treeLevelDepth < globalTreeMinimumDepth ):\n"
+"            globalTreeMinimum = vevValueSet.copy()\n"
+"            globalTreeMinimumDepth = treeLevelDepth\n"
 "\n"
 "for saddleSplitNudge in VPD." << saddleSplitNudges << ":\n"
 "    if ( 0 < len( foundSaddles ) ):\n"
