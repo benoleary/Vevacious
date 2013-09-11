@@ -168,16 +168,15 @@ def DisplacePoint( pointDictionary, displacementList, scaleFactor ):
 # loop corrections move around basins of attraction too far.
 globalTreeMinimum = pointsToTry[ 0 ]
 globalTreeMinimumDepth = VPD.FunctionFromDictionary( VPD.TreeLevelPotential,
-
-                                                    globalTreeMinimum )
+                                                        globalTreeMinimum )
 for vevValueSet in pointsToTry:
     if ( VevsHaveCorrectSigns( vevValueSet ) ):
         TryToMinimize( vevValueSet )
-treeLevelDepth = VPD.FunctionFromDictionary( VPD.TreeLevelPotential,
+        treeLevelDepth = VPD.FunctionFromDictionary( VPD.TreeLevelPotential,
                                              vevValueSet )
-if ( treeLevelDepth < globalTreeMinimum ):
-    globalTreeMinimum = vevValueSet.copy()
-    globalTreeMinimumDepth = treeLevelDepth
+        if ( treeLevelDepth < globalTreeMinimumDepth ):
+            globalTreeMinimum = vevValueSet.copy()
+            globalTreeMinimumDepth = treeLevelDepth
 
 for saddleSplitNudge in VPD.saddleSplitNudges:
     if ( 0 < len( foundSaddles ) ):
@@ -584,7 +583,7 @@ if ( actionNeedsToBeCalculated
 # No matter if there were serious errors or not, an output file is written:
 outputFile = open( VPD.outputFile, "w" )
 outputFile.write( "<Vevacious_result>\n"
-                  + "  <reference version=\"1.0.7\" citation=\"arXiv:1307.1477 (hep-ph)\" />\n"
+                  + "  <reference version=\"1.0.9\" citation=\"arXiv:1307.1477 (hep-ph)\" />\n"
              + "  <stability> " + stabilityVerdict + " </stability>\n"
                   + "  <global_minimum   relative_depth=\""
                       + str( ( globalMinimumDepthValue * VPD.energyScaleFourth ) - potentialAtVevOrigin ) + "\" "
