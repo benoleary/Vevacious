@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersionString( "1.0.9" );
+  std::string const VevaciousRunner::vevaciousVersionString( "1.0.10" );
   std::string const
   VevaciousRunner::vevaciousVersionName( "vevaciousVersion" );
   std::string const
@@ -707,6 +707,8 @@ namespace Vevacious
 "# the global minimum of the tree-level potential is also recorded, in case\n"
 "# loop corrections move around basins of attraction too far.\n"
 "globalTreeMinimum = pointsToTry[ 0 ]\n"
+"for vevKey in globalTreeMinimum.keys():\n"
+"    globalTreeMinimum[ vevKey ] = 0.0\n"
 "globalTreeMinimumDepth = VPD." << PotentialMinimizer::functionFromDictionary
 <<                  "( VPD." << PotentialMinimizer::treeLevelPotential << ",\n"
 "                                                        globalTreeMinimum )\n"

@@ -167,6 +167,8 @@ def DisplacePoint( pointDictionary, displacementList, scaleFactor ):
 # the global minimum of the tree-level potential is also recorded, in case
 # loop corrections move around basins of attraction too far.
 globalTreeMinimum = pointsToTry[ 0 ]
+for vevKey in globalTreeMinimum.keys():
+    globalTreeMinimum[ vevKey ] = 0.0
 globalTreeMinimumDepth = VPD.FunctionFromDictionary( VPD.TreeLevelPotential,
                                                         globalTreeMinimum )
 for vevValueSet in pointsToTry:
@@ -583,7 +585,7 @@ if ( actionNeedsToBeCalculated
 # No matter if there were serious errors or not, an output file is written:
 outputFile = open( VPD.outputFile, "w" )
 outputFile.write( "<Vevacious_result>\n"
-                  + "  <reference version=\"1.0.9\" citation=\"arXiv:1307.1477 (hep-ph)\" />\n"
+                  + "  <reference version=\"1.0.10\" citation=\"arXiv:1307.1477 (hep-ph)\" />\n"
              + "  <stability> " + stabilityVerdict + " </stability>\n"
                   + "  <global_minimum   relative_depth=\""
                       + str( ( globalMinimumDepthValue * VPD.energyScaleFourth ) - potentialAtVevOrigin ) + "\" "

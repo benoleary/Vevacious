@@ -205,8 +205,9 @@ namespace Vevacious
   void TadpoleSolver::runHomotopy()
   // this makes a note of the current working directory in
   // originalWorkingDirectory, then changes directory to hom4ps2Directory,
-  // then runs HOM4PS2 with absoluteHom4ps2InputFilename as input, with
-  // homotopyType as well, then returns to originalWorkingDirectory.
+  // then runs HOM4PS2 with relativeHom4ps2InputFilename as input (because it
+  // is already in the HOM4PS2 directory), with homotopyType as well, then
+  // returns to originalWorkingDirectory.
   {
     char originalWorkingDirectory[ PATH_MAX ];
     if( NULL == getcwd( originalWorkingDirectory,
@@ -232,7 +233,7 @@ namespace Vevacious
     std::string systemCommand( "rm ./bin/input.num" );
     BOL::UsefulStuff::runSystemCommand( systemCommand );
     systemCommand.assign( "/bin/bash -c \"./hom4ps2 "
-                          + absoluteHom4ps2InputFilename + " <<< "
+                          + relativeHom4ps2InputFilename + " <<< "
                           + homotopyType + "\"" );
     BOL::UsefulStuff::runSystemCommand( systemCommand );
     // at this point, we are in the directory with hom4ps2 & data.roots.

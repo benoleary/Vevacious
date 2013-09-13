@@ -145,6 +145,14 @@
 
 
 CHANGELOG:
+ * 13th September: version 1.0.10
+ - Fixed bug when trying to use a relative path for the hom4ps2_dir input.
+ - Fixed bug that sometimes a point that has a negative value for a VEV that
+   should be positive (as declared by the <taken_positive> element of the
+   <input_vevs> element of the model file) was taken as the global minimum at
+   tree level, leading to misleading warnings about apparent change from
+   metastable to stable going from tree to one loop.
+
  * 11th September: version 1.0.9
  - Default Python program fixed to correctly find the tree-level global minimum
    for the purposes of checking to see if the basin of attraction of the
