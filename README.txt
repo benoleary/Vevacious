@@ -147,6 +147,11 @@
 
 
 CHANGELOG:
+ * 16th September: version 1.0.11
+ - Fixed bug that max_saddle_nudges was being set to 2 if not explicitly given,
+   when it should be however not be used to resize saddle_nudges unless
+   explicitly given.
+
  * 13th September: version 1.0.10
  - Fixed bug when trying to use a relative path for the hom4ps2_dir input.
  - Fixed bug that sometimes a point that has a negative value for a VEV that

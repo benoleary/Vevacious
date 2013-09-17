@@ -72,9 +72,14 @@ int main( int argumentCount,
   vevaciousRunner.setMinuitNudgesOffSaddlePoints(
                                        argumentParser.fromTag( "saddle_nudges",
                                                                "1.0, 2.0" ) );
-  vevaciousRunner.setMaximumMinuitNudgesOffSaddlePoints(
-                                   argumentParser.fromTag( "max_saddle_nudges",
-                                                         "2" ) );
+  std::string
+  maxSaddleNudgesInput( argumentParser.fromTag( "max_saddle_nudges",
+                                                "" ) );
+  if( !(maxSaddleNudgesInput.empty()) )
+  {
+    vevaciousRunner.setMaximumMinuitNudgesOffSaddlePoints(
+                                                        maxSaddleNudgesInput );
+  }
   vevaciousRunner.setMinuitRollingTolerance( argumentParser.fromTag(
                                                               "roll_tolerance",
                                                                      "0.1" ) );
