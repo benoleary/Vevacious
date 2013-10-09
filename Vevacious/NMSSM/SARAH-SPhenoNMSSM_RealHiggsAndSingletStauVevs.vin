@@ -11,7 +11,10 @@
 <Vevacious_stuff>
 
 <input_vevs vdR="SLHA::HMIX[102]" vuR="SLHA::HMIX[103]" vS="SLHA::NMSSMRUN[5]" vL3="0" vE3="0" >
- <taken_positive> vuR vE3 </taken_positive>
+ <!-- taken_positive does lead to faster calculations, but there is a risk that
+      minima may be missed because not all sign combinations were found by
+      HOM4PS2. uncomment the XML element at your own risk! -->
+ <!-- <taken_positive> vuR vE3 </taken_positive> -->
 </input_vevs> 
 
 <polynomial_part> 

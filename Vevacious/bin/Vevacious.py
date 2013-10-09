@@ -33,6 +33,7 @@ numberOfVevs = len( namesOfVevs )
 stepSize = ( 1.0 / VPD.energyScale )
 rollingToleranceSquared = ( VPD.rollingTolerance * VPD.rollingTolerance )
 
+effectivePotentialFunction = VPD.TreeLevelPotential
 effectivePotentialFunction = VPD.LoopCorrectedPotential
 # one could replace VPD.LoopCorrectedPotential
 # with VPD.TreeLevelPotential for a
@@ -475,7 +476,7 @@ if ( ( rollingToleranceSquared * rolledInputLengthSquared )
 
 # The resolution of the tunneling path needs to be set
 # (low-ish by default for speed):
-tunnelingResolution = 20
+tunnelingResolution = 50
 
 if ( actionNeedsToBeCalculated
      and ( ( 0.0 < directActionThreshold )
@@ -551,14 +552,16 @@ if ( actionNeedsToBeCalculated
 
     if ( ( 0.0 < directActionThreshold )
          and ( actionValue > directActionThreshold ) ):
-        quickTunneler = CPD.fullTunneling( V = PotentialFromMatrix,
+        quickTunneler = CPD.fullTunneling( phi = arrayOfArrays,
+                                           V = PotentialFromMatrix,
                                            dV = GradientFromMatrix,
-                                           phi = arrayOfArrays,
-                                           quickTunneling = False,
-                                           npoints = tunnelingResolution )
+                                           alpha = 3,
+                                           npoints = tunnelingResolution,
+                                           quickTunneling = False )
         quickTunneler.tunnel1D( xtol = 1e-4, phitol = 1e-6 )
         actionValue = quickTunneler.findAction()
         actionType = "direct_path_bound"
+        print( "direct action = " + str( actionValue ) )
         if( actionValue < directActionThreshold ):
             stabilityVerdict = "short-lived"
             actionNeedsToBeCalculated = False
@@ -566,18 +569,20 @@ if ( actionNeedsToBeCalculated
     if ( actionNeedsToBeCalculated
          and ( 0.0 < deformedActionThreshold )
          and ( actionValue > deformedActionThreshold ) ):
-        fullTunneler = CPD.fullTunneling( V = PotentialFromMatrix,
-                                          dV = GradientFromMatrix,
-                                          phi = arrayOfArrays,
-                                          quickTunneling = False,
-                                          npoints = tunnelingResolution )
+        fullTunneler = CPD.fullTunneling( phi = arrayOfArrays,
+                                           V = PotentialFromMatrix,
+                                           dV = GradientFromMatrix,
+                                           alpha = 3,
+                                           npoints = tunnelingResolution,
+                                           quickTunneling = False )
 # setting a maximum of 20 path deformation iterations before giving up on
 # finding the optimal path may seem defeatist, but I have rarely seen it
 # converge if it hasn't within the first few iterations. an action is still
 # calculated, though it may not be the minimum action possible.
-        fullTunneler.run( maxiter = 20 )
+        fullTunneler.run( maxiter = 200 )
         actionValue = fullTunneler.findAction()
         actionType = "full_deformed_path"
+        print( "deformed action = " + str( actionValue ) )
         if ( actionValue < deformedActionThreshold ):
             stabilityVerdict = "short-lived"
             actionNeedsToBeCalculated = False
@@ -585,7 +590,7 @@ if ( actionNeedsToBeCalculated
 # No matter if there were serious errors or not, an output file is written:
 outputFile = open( VPD.outputFile, "w" )
 outputFile.write( "<Vevacious_result>\n"
-                  + "  <reference version=\"1.0.10\" citation=\"arXiv:1307.1477 (hep-ph)\" />\n"
+                  + "  <reference version=\"1.0.11\" citation=\"arXiv:1307.1477 (hep-ph)\" />\n"
              + "  <stability> " + stabilityVerdict + " </stability>\n"
                   + "  <global_minimum   relative_depth=\""
                       + str( ( globalMinimumDepthValue * VPD.energyScaleFourth ) - potentialAtVevOrigin ) + "\" "

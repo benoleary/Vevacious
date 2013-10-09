@@ -145,10 +145,19 @@
 
 
 CHANGELOG:
- * 16th September: version 1.0.11
+ * 9th October: version 1.0.11
+ - Fixed that default Vevacious.py was using the number of spatial dimensions
+   for a finite-temperature tunneling time calculation rather than the correct
+   zero-temperature calculation number of dimensions.
  - Fixed bug that max_saddle_nudges was being set to 2 if not explicitly given,
    when it should be however not be used to resize saddle_nudges unless
    explicitly given.
+ - Changed default homotopy_type from 1 (polyhedral) to 2 (linear) as it seems
+   to be faster for SUSY potentials, and thus I reckon that it's better for
+   generic QFT potentials.
+ - Removed taken_positive from provided model files, as occasionally it leads
+   to global minima being missed because HOM4PS2 did not find all the sign
+   combinations.
 
  * 13th September: version 1.0.10
  - Fixed bug when trying to use a relative path for the hom4ps2_dir input.

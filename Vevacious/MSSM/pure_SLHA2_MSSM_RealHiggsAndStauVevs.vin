@@ -42,7 +42,10 @@ A further issue of this particular model file is that the tadpole equations for
 -->
 
 <input_vevs vd="( SLHA::HMIX[3] / math.sqrt( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )" vu="( ( SLHA::HMIX[3] * SLHA::HMIX[2] ) / math.sqrt( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )" vL3 ="0" vE3 = "0" >
- <taken_positive> vd, vE3 </taken_positive>
+ <!-- taken_positive does lead to faster calculations, but there is a risk that
+      minima may be missed because not all sign combinations were found by
+      HOM4PS2. uncomment the XML element at your own risk! -->
+ <!-- <taken_positive> vd, vE3 </taken_positive> -->
 </input_vevs> 
 
 <tadpoles> 

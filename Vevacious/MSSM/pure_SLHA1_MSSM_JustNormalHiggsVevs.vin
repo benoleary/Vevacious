@@ -34,7 +34,10 @@ Due to the limitations of Vevacious and Ben's programming skills, the tadpole
 -->
 
 <input_vevs vd="( SLHA::HMIX[3] / math.sqrt( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )" vu="( ( SLHA::HMIX[3] * SLHA::HMIX[2] ) / math.sqrt( SLHA::HMIX[2] * SLHA::HMIX[2] + 1.0 ) )"  >
-  <taken_positive> vd </taken_positive>
+ <!-- taken_positive does lead to faster calculations, but there is a risk that
+      minima may be missed because not all sign combinations were found by
+      HOM4PS2. uncomment the XML element at your own risk! -->
+ <!-- <taken_positive> vd </taken_positive> -->
 </input_vevs> 
 
 <tadpoles> 

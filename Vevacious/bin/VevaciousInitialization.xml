@@ -20,9 +20,11 @@
   ./HOM4PS2/
   </hom4ps2_dir>
 
-  <!-- homotopy_type is 1 for polyhedral homotopy or 2 for linear homotopy. -->
+  <!-- homotopy_type is 1 for polyhedral homotopy or 2 for linear homotopy.
+       actually, for generic QFT potentials, linear homotopy is probably the
+       faster option. -->
   <homotopy_type>
-  1
+  2
   </homotopy_type>
 
   <!-- imaginary_tolerance is the tolerance for imaginary parts of VEVs found

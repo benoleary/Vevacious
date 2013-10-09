@@ -10,7 +10,10 @@
  
 <Vevacious_stuff> 
 <input_vevs vd="SLHA::HMIX[102]" vu="SLHA::HMIX[103]" vL3="0" vE3="0" vQ3="0" vT3="0" >
-  <taken_positive> vd, vE3, vT3 </taken_positive>
+ <!-- taken_positive does lead to faster calculations, but there is a risk that
+      minima may be missed because not all sign combinations were found by
+      HOM4PS2. uncomment the XML element at your own risk! -->
+ <!-- <taken_positive> vd, vE3, vT3 </taken_positive> -->
 </input_vevs>
 
 <tadpoles> 
