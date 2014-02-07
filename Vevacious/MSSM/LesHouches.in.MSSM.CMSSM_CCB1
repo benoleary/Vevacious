@@ -1,0 +1,42 @@
+Block MODSEL                 # Select model
+ 1 1                      # mSugra
+ 6 3 # flavor violation in both squark and slepton sectors
+Block SMINPUTS               # Standard Model inputs
+ 2   1.166390E-05       # G_F, Fermi constant
+ 3   1.190000E-01       # alpha_s(MZ) SM MSbar
+ 4   9.118760E+01       # Z-boson pole mass
+ 5   4.200000E+00       # m_b(mb) SM MSbar
+ 6   1.729000E+02       # m_top(pole)
+ 7   1.777000E+00       # m_tau(pole)
+Block MINPAR                 # Input parameters
+ 1   1.165000E+03       # m0
+ 2   1.110000E+03       # m12
+ 4   1                  # sign(mu)
+ 5  -2.969100E+03       # A0
+Block EXTPAR                 # Input parameters
+25   3.930000E+01       # tanb
+Block VCKMIN               # input CKM mixing matrix parameters
+     1    0.22535e+00   # lambda
+     2    0.811e+00   # A
+     3    0.131e+00   # rhobar
+     4    0.345e+00   # etabar (no phases used in SOFTSUSY yet though)
+Block SPhenoInput       # SPheno specific input
+ 1  -1                  # error level
+ 2   0                  # SPA conventions
+ 7   1                  # 1 to not use 2-loop Higgs potential parameters
+11   1                  # calculate branching ratios
+12   1.00000000E-04     # write only branching ratios larger than this value
+21   0                  # calculate cross section 
+55   1			# 0 to display only tree-level SUSY-scale results
+530  1			# 1 to display extra tree-level SUSY-scale results
+Block SOFTSUSY # SOFTSUSY specific inputs
+ # 1 <TOLERANCE> # desired fractional accuracy in output
+ # 2 <MIXING> # quark mixing option
+ # 3 <PRINTOUT> # gives additional verbose output during calculation
+ # 4 <QEWSB> # change electroweak symmetry breaking scale
+   5 1.0 #<INCLUDE_2_LOOP_SCALAR_CORRECTIONS> # Full 2-loop running in RGEs
+ # 6 <PRECISION> # number of significant figures in SLHA output
+   7 1.0 #<numHiggsLoops> # number of loops in REWSB/mh calculation
+ #10 <forceSlha1> # if =1, tries to force output into SLHA 1 format
+ #11 <m32> # set gravitino mass
+ #12 <printSpectra> # Prints spectrum even when point is theoretically excluded if=1

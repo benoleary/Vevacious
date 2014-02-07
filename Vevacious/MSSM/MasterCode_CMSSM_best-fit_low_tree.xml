@@ -1,0 +1,12 @@
+<Vevacious_result>
+  <reference version="0.3.0" citation="[still unpublished]" />
+  <stability> stable </stability>
+  <global_minimum   relative_depth="-63242823.1815" vdR="15.2577804637" vE3="0.0" vL3="0.0" vQ3="0.0" vT3="0.0" vuR="246.110420025" />
+  <input_minimum   relative_depth="-63242823.1815" vdR="15.2577804637" vE3="0.0" vL3="0.0" vQ3="0.0" vT3="0.0" vuR="246.110420025" />
+  <lifetime  action_calculation="unnecessary" > -1.0 </lifetime>
+  <warning>
+  2 extremum/a with at least one descending or flat direction remained after all nudging:
+ { vdR -> ( 0.210291855296 ), vE3 -> ( -7.47945705371e-07 ), vL3 -> ( -2.82170731225e-07 ), vQ3 -> ( -4.20982360083e-07 ), vT3 -> ( -6.90647539159e-07 ), vuR -> ( 5.97914159357 ) }
+ { vdR -> ( -0.209056879157 ), vE3 -> ( -1.21031007438e-06 ), vL3 -> ( -4.55202098237e-07 ), vQ3 -> ( -6.95649760019e-07 ), vT3 -> ( -1.14016529551e-06 ), vuR -> ( -5.91697889831 ) }
+  </warning>
+</Vevacious_result>

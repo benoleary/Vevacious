@@ -31,8 +31,7 @@ namespace Vevacious
   class VevaciousRunner
   {
   public:
-    static std::string const vevaciousVersionString;
-    static std::string const vevaciousVersionName;
+    static std::string const vevaciousVersion;
     static std::string const vevaciousDocumentation;
 
     VevaciousRunner( std::string const& modelFilename,
@@ -67,16 +66,11 @@ namespace Vevacious
       = BOL::StringParser::stringToDouble( rollingTolerance ); }
     void setPathToCosmotransitions( std::string const& pathToCosmotransitions )
     { this->pathToCosmotransitions.assign( pathToCosmotransitions ); }
-    void setLifetimeForDirectPath( double directLifetimeBound )
-    { this->directLifetimeBound = directLifetimeBound; }
-    void setLifetimeForDirectPath( std::string const& directLifetimeBound )
-    { setLifetimeForDirectPath(
-                  BOL::StringParser::stringToDouble( directLifetimeBound ) ); }
-    void setLifetimeForDeformedPath( double deformedLifetimeBound )
-    { this->deformedLifetimeBound = deformedLifetimeBound; }
-    void setLifetimeForDeformedPath( std::string const& deformedLifetimeBound )
-    { setLifetimeForDeformedPath(
-                BOL::StringParser::stringToDouble( deformedLifetimeBound ) ); }
+    void setLifetimeThreshold( double lifetimeThreshold )
+    { this->lifetimeThreshold = lifetimeThreshold; }
+    void setLifetimeThreshold( std::string const& lifetimeThreshold )
+    { setLifetimeThreshold(
+                    BOL::StringParser::stringToDouble( lifetimeThreshold ) ); }
     void appendTreeLevelExtrema( std::string const& slhaFilename,
                                  std::string const solutionsFilename
                                  = "VevaciousTreeLevelExtrema.py" );
@@ -111,15 +105,6 @@ namespace Vevacious
 
 
   protected:
-    static double const lifetimeFactor;
-    static std::string const pointsToTry;
-    static std::string const resultsFilenameVariableName;
-    static std::string const saddleSplitNudges;
-    static std::string const rollingToleranceVariableName;
-    static std::string const quarticActionBoundVariableName;
-    static std::string const pathToCosmotransitionsVariableName;
-    static std::string const directLifetimeBoundVariableName;
-    static std::string const deformedLifetimeBoundVariableName;
     static std::string const defaultPythonFilename;
     static std::string const treeLevelExtremaHeader;
     static BOL::StringParser const slhaIndexMaker;
@@ -138,8 +123,7 @@ namespace Vevacious
     std::vector< double > saddleNudgeList;
     double rollingTolerance;
     std::string pathToCosmotransitions;
-    double directLifetimeBound;
-    double deformedLifetimeBound;
+    double lifetimeThreshold;
 
     void calculateTreeLevelExtrema( std::string const& slhaFilename );
     void writeDefaultPythonProgram() const;
@@ -222,23 +206,16 @@ namespace Vevacious
   }
 
   inline bool VevaciousRunner::runPython( std::string const pythonFilename,
-                                    int const deformationPatience )
+                                          int const deformationPatience )
    // this does the same as runPython( std::string const pythonFilename ), but
    // killing the Python subprocess after deformationPatience seconds if it
    // takes that long. it returns true if the subprocess finished without
    // having to be killed, false if the subprocess took too long.
    {
-    // debugging:
-    /**/std::cout << std::endl << "debugging:"
-    << std::endl
-    << "VevaciousRunner::runPython( \"" << pythonFilename << "\", "
-    << deformationPatience << " ) called.";
-    std::cout << std::endl;/**/
-
      std::string systemCommand( prepareToRunPythonCommand( pythonFilename ) );
      if( ( 0 < deformationPatience )
          &&
-         ( 0.0 < deformedLifetimeBound ) )
+         ( 0.0 < lifetimeThreshold ) )
      {
        std::string forkedCommand( "bash " + systemCommand );
        BOL::WaitingOnSubprocessExecutor subprocessExecutor( forkedCommand,
