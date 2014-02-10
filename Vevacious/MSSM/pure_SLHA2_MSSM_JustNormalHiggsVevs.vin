@@ -314,7 +314,7 @@ particle="Fu"  rotationmatrix1="ZUL"  rotationmatrix2="ZUR"  factor="-12" >
 </mass-squared_matrix> 
  
 <mass-squared_matrix 
-particle="VP, VZ"  rotationmatrix="ZZ"  factor="3" >
+particle="VP, VZ"  rotationmatrix="ZZ"  factor="3"  spin="vector" >
 (0.25*vd^2*SLHA::GAUGE[1.]^2+0.25*vu^2*SLHA::GAUGE[1.]^2), 
 (-0.25*vd^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]-0.25*vu^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]), 
 (-0.25*vd^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]-0.25*vu^2*SLHA::GAUGE[1.]*SLHA::GAUGE[2.]), 
@@ -322,7 +322,7 @@ particle="VP, VZ"  rotationmatrix="ZZ"  factor="3" >
 </mass-squared_matrix> 
  
 <mass-squared_matrix 
-particle="VWm"  rotationmatrix="ZW"  factor="3" >
+particle="VWm"  rotationmatrix="ZW"  factor="3"  spin="vector" >
 (0.25*vd^2*SLHA::GAUGE[2.]^2+0.25*vu^2*SLHA::GAUGE[2.]^2), 
 (0.), 
 (0.), 

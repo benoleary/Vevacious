@@ -15,64 +15,25 @@
 
 namespace Vevacious
 {
-  std::string const PotentialMinimizer::namesOfVevs( "namesOfVevs" );
-  std::string const PotentialMinimizer::internalVevNamesToUserNames(
-                                               "internalVevNamesToUserNames" );
-  std::string const
-  PotentialMinimizer::vevsTakenPositive( "vevsTakenPositive" );
-  std::string const PotentialMinimizer::energyScale( "energyScale" );
-  std::string const
-  PotentialMinimizer::energyScaleFourth( "energyScaleFourth" );
-  std::string const
-  PotentialMinimizer::userVevsAsMathematica( "UserVevsAsMathematica" );
-  std::string const
-  PotentialMinimizer::userVevsAsXml( "UserVevsAsXml" );
-  std::string const
-  PotentialMinimizer::vevDictionaryToArray( "VevDictionaryToArray" );
-  std::string const PotentialMinimizer::vevOrigin( "vevOrigin" );
-  std::string const PotentialMinimizer::inputVevsPoint( "inputVevsPoint" );
-  std::string const
-  PotentialMinimizer::functionFromDictionary( "FunctionFromDictionary" );
-  std::string const
-  PotentialMinimizer::functionFromArray( "FunctionFromArray" );
-  std::string const
-  PotentialMinimizer::loopCorrectedPotential( "LoopCorrectedPotential" );
-  std::string const
-  PotentialMinimizer::treeLevelPotential( "TreeLevelPotential" );
-
-  std::string const
-  PotentialMinimizer::inverseScaleSquared( "inverseScaleSquared" );
-  std::string const
-  PotentialMinimizer::inverseScaleFourthed( "inverseScaleFourthed" );
-  std::string const PotentialMinimizer::loopFactor( "loopFactor" );
   std::string const PotentialMinimizer::overallFactorAttributeName( "factor" );
   std::string const
   PotentialMinimizer::subtractionConstantAttributeName( "constant" );
   std::string const
+  PotentialMinimizer::spinTypeAttributeName( "spin" );
+  std::string const
   PotentialMinimizer::defaultSubtractionConstantString( "1.5" );
-  std::string const
-  PotentialMinimizer::massSquaredEigenvalueNameBase( "MassesSquared" );
-  std::string const
-  PotentialMinimizer::massCorrectionNameBase( "MassCorrection" );
-  std::string const PotentialMinimizer::polynomialPartFunctionName(
-                                                "PolynomimalPartOfPotential" );
-  std::string const
-  PotentialMinimizer::massSquaredCorrections( "MassSquaredCorrections" );
-  std::string const
-  PotentialMinimizer::loopCorrectionFunctionName( "LoopCorrectionSum" );
-  std::string const PotentialMinimizer::loopCorrectedPotentialFunctionName(
-                                                    "LoopCorrectedPotential" );
 
 
   PotentialMinimizer::PotentialMinimizer() :
     sarahParser( false ),
     attributeFinder(),
-    readSubtractionConstant( "" ),
     pythonCode(),
     polynomialPartOfPotential( "" ),
     factoredMassSquaredMatrices(),
-    correctionFunctions(),
-    stringParser()
+    massesSquaredFunctions(),
+    stringParser(),
+    argumentsWithoutBrackets( "" ),
+    argumentsWithBrackets( "()" )
   {
     pythonCode.precision( 17 );
     stringParser.precision( 17 );
@@ -88,232 +49,70 @@ namespace Vevacious
 
 
   void PotentialMinimizer::addMassSquaredMatrix(
-                 std::map< std::string, std::string > const& factorAndConstant,
+                      std::map< std::string, std::string > const& attributeMap,
                                          std::string const& massSquaredMatrix )
   {
     attributeFinder
-    = factorAndConstant.find( subtractionConstantAttributeName );
-    if( factorAndConstant.end() != attributeFinder )
+    = attributeMap.find( subtractionConstantAttributeName );
+    std::string subtractionConstant( defaultSubtractionConstantString );
+    if( attributeMap.end() != attributeFinder )
     {
-      readSubtractionConstant.assign( BOL::StringParser::trimFromFrontAndBack(
+      subtractionConstant.assign( BOL::StringParser::trimFromFrontAndBack(
                                                        attributeFinder->second,
                                                                     "\"\'" ) );
     }
-    else
+    attributeFinder = attributeMap.find( spinTypeAttributeName );
+    std::string spinType( "" );
+    if( attributeMap.end() != attributeFinder )
     {
-      readSubtractionConstant.assign( defaultSubtractionConstantString );
+      spinType.assign( BOL::StringParser::trimFromFrontAndBack(
+                                                       attributeFinder->second,
+                                                                    "\"\'" ) );
     }
-    attributeFinder = factorAndConstant.find( overallFactorAttributeName );
-    if( factorAndConstant.end() != attributeFinder )
+    attributeFinder = attributeMap.find( overallFactorAttributeName );
+    if( attributeMap.end() != attributeFinder )
     {
-      factoredMassSquaredMatrices.push_back( StringTriple() );
+      factoredMassSquaredMatrices.push_back( StringQuadruple() );
       factoredMassSquaredMatrices.back().first.first.assign(
               BOL::StringParser::trimFromFrontAndBack( attributeFinder->second,
                                                        "\"\'" ) );
       factoredMassSquaredMatrices.back().first.second.assign(
-          readSubtractionConstant );
-      factoredMassSquaredMatrices.back().second.assign( massSquaredMatrix );
+                                                         subtractionConstant );
+      factoredMassSquaredMatrices.back().second.first.assign( spinType );
+      factoredMassSquaredMatrices.back().second.second.assign(
+                                                           massSquaredMatrix );
       SarahInterpreter::removeNewlinesFrom(
-                                   factoredMassSquaredMatrices.back().second );
+                            factoredMassSquaredMatrices.back().second.second );
     }
-  }
-
-  void PotentialMinimizer::prepareBasePython(
-                                           SarahInterpreter& sarahInterpreter )
-  {
-    std::vector< char > const&
-    vevsOrderedBySolution( sarahInterpreter.getVevsOrderedBySolutions() );
-    pythonCode.clear();
-    pythonCode.str( "" );
-    pythonCode <<
-"# Unfortunately due to UTF32 issues, PyMinuit is restricted to\n"
-"# single-character variable names, so Vevacious internally renames the\n"
-"# VEVs:\n"
-"# " << sarahInterpreter.getHumanReadableVevNameMap() << "\n"
-<< namesOfVevs << " = [ "
-<<             sarahInterpreter.getInternalVevNamesAsQuotedCharList() << " ]\n"
-<< internalVevNamesToUserNames << " = { ";
-    for( std::vector< char >::const_iterator
-         whichName( vevsOrderedBySolution.begin() );
-         vevsOrderedBySolution.end() > whichName;
-         ++whichName )
-    {
-      if( vevsOrderedBySolution.begin() != whichName )
-      {
-        pythonCode << ", ";
-      }
-      pythonCode << "\'" << *whichName << "\': \""
-      << sarahInterpreter.getUserVevName( *whichName ) << "\"";
-    }
-    pythonCode << " }\n"
-<< vevsTakenPositive << " = " << sarahInterpreter.getPositiveInternalVevs()
-<<                                                                         "\n"
-"\n"
-<< energyScaleFourth << " = ( " << energyScale << " * " << energyScale << " * "
-<<                                energyScale << " * " << energyScale << " )\n"
-<< inverseScaleSquared << " = ( 1.0 / ( " << energyScale << " * "
-<<                                                      energyScale << " ) )\n"
-<< inverseScaleFourthed << " = ( 1.0 / " << energyScaleFourth << " )\n"
-"\n"
-"\n"
-"\n"
-"def " << userVevsAsMathematica << "( vevDictionary ):\n"
-"    return \"{ ";
-    for( std::vector< char >::const_iterator
-         whichName( vevsOrderedBySolution.begin() );
-         vevsOrderedBySolution.end() > whichName;
-         ++whichName )
-    {
-      if( vevsOrderedBySolution.begin() != whichName )
-      {
-        pythonCode << ", ";
-      }
-      pythonCode << sarahInterpreter.getUserVevName( *whichName )
-      << " -> ( \" + str( " << energyScale << " * vevDictionary[ \'"
-      << *whichName << "\' ] ) + \" )";
-    }
-    pythonCode << " }\"\n"
-"\n"
-"def " << userVevsAsXml << "( vevDictionary ):\n"
-"    return \"";
-    for( std::vector< char >::const_iterator
-         whichName( vevsOrderedBySolution.begin() );
-         vevsOrderedBySolution.end() > whichName;
-         ++whichName )
-    {
-      if( vevsOrderedBySolution.begin() != whichName )
-      {
-        pythonCode << " ";
-      }
-      pythonCode << sarahInterpreter.getUserVevName( *whichName )
-      << "=\\\"\" + str( " << energyScale << " * vevDictionary[ \'"
-      << *whichName << "\' ] ) + \"\\\"";
-    }
-    pythonCode << "\"\n"
-"\n"
-<< vevOrigin << " = { ";
-    for( std::vector< char >::const_iterator
-         whichName( vevsOrderedBySolution.begin() );
-         vevsOrderedBySolution.end() > whichName;
-         ++whichName )
-    {
-      if( vevsOrderedBySolution.begin() != whichName )
-      {
-        pythonCode << ", ";
-      }
-      pythonCode << "\'" << *whichName << "\': 0.0";
-    }
-    pythonCode << " }\n"
-"\n"
-<< inputVevsPoint << " = { ";
-    for( std::vector< char >::const_iterator
-         whichName( vevsOrderedBySolution.begin() );
-         vevsOrderedBySolution.end() > whichName;
-         ++whichName )
-    {
-      if( vevsOrderedBySolution.begin() != whichName )
-      {
-        pythonCode << ", ";
-      }
-      pythonCode << "\'" << *whichName << "\': ( "
-      << sarahInterpreter.getInputVevValue( *whichName ) << " / "
-      << energyScale << " )";
-    }
-    pythonCode << " }\n"
-"\n"
-"def " << vevDictionaryToArray << "( vevDictionary ):\n"
-"    return numpy.array( [ ";
-    for( std::vector< char >::const_iterator
-         whichName( vevsOrderedBySolution.begin() );
-         vevsOrderedBySolution.end() > whichName;
-         ++whichName )
-    {
-      if( vevsOrderedBySolution.begin() != whichName )
-      {
-        pythonCode << ", ";
-      }
-      pythonCode << "vevDictionary[ \'" << *whichName << "\' ]";
-    }
-    pythonCode << " ] )\n"
-"\n"
-"def " << functionFromDictionary
-<<                              "( FunctionFromArguments, vevDictionary ):\n"
-"    return FunctionFromArguments( \n";
-    for( std::vector< char >::const_iterator
-         whichName( vevsOrderedBySolution.begin() );
-         vevsOrderedBySolution.end() > whichName;
-         ++whichName )
-    {
-      if( vevsOrderedBySolution.begin() != whichName )
-      {
-        pythonCode << ", ";
-      }
-      pythonCode
-      << *whichName << " = vevDictionary[ \'" << *whichName << "\' ]";
-    }
-    pythonCode << " )\n"
-"\n"
-"def " << functionFromArray << "( FunctionFromArguments, vevArray ):\n"
-"    return FunctionFromArguments( \n";
-    for( unsigned int whichVev( 0 );
-         vevsOrderedBySolution.size() > whichVev;
-         ++whichVev )
-    {
-      if( 0 < whichVev )
-      {
-        pythonCode << ", ";
-      }
-      pythonCode << vevsOrderedBySolution[ whichVev ] << " = vevArray[ "
-      << whichVev << " ]";
-    }
-    pythonCode << " )\n"
-"\n"
-<< loopFactor << " = ( 1.0 / ( 64.0 * math.pi * math.pi ) )\n"
-"\n"
-"# The loop corrections are scaled to the energy scale, since the masses are\n"
-"# scaled to the energy scale:\n"
-"def " << massSquaredCorrections << "( massSquaredValues,\n"
-"                                      overallFactor,\n"
-"                                      subtractionConstant ):\n"
-"    summedCorrection = 0.0\n"
-"    for massSquaredValue in massSquaredValues:\n"
-"        massSquaredMagnitude = abs( massSquaredValue )\n"
-"        if( ( 1.0E-6 * " << inverseScaleSquared
-<<                                             " ) < massSquaredMagnitude ):\n"
-"            summedCorrection += ( massSquaredMagnitude\n"
-"                                  * massSquaredMagnitude \n"
-"                                  * ( math.log( massSquaredMagnitude )\n"
-"                                      - subtractionConstant ) )\n"
-"    return ( overallFactor * summedCorrection )\n"
-"\n";
   }
 
   void PotentialMinimizer::prepareLoopCorrections(
                                            SarahInterpreter& sarahInterpreter )
   {
-    correctionFunctions.clear();
+    massesSquaredFunctions.clear();
     std::string massSquaredMatrix( "" );
     std::string overallFactor( "" );
     std::string subtractionConstant( "" );
     std::string massSquaredFunctionName( "" );
     BOL::VectorlikeArray< std::string > massTerms;
-    for( std::vector< StringTriple >::iterator
-         whichTriple( factoredMassSquaredMatrices.begin() );
-         factoredMassSquaredMatrices.end() > whichTriple;
-         ++whichTriple )
+    for( std::vector< StringQuadruple >::iterator
+         whichQuadruple( factoredMassSquaredMatrices.begin() );
+         factoredMassSquaredMatrices.end() > whichQuadruple;
+         ++whichQuadruple )
     {
       massTerms.clearEntries();
-      BOL::StringParser::parseByChar( sarahInterpreter( whichTriple->second ),
+      BOL::StringParser::parseByChar( sarahInterpreter(
+                                               whichQuadruple->second.second ),
                                       massTerms,
                                       ',' );
       stringParser.clear();
       stringParser.str( "" );
       stringParser
-      << massSquaredEigenvalueNameBase << ( correctionFunctions.size() + 1 );
+      << "MassesSquared" << ( massesSquaredFunctions.size() + 1 );
       massSquaredFunctionName.assign( stringParser.str() );
       pythonCode <<
-"# The masses-squared from this function are scaled to the energy scale:\n"
-"def " << massSquaredFunctionName << argumentsString << ":\n"
+"# The masses-squared from this function are in GeV^2:\n"
+"def " << massSquaredFunctionName << argumentsWithBrackets << ":\n"
 "    massSquaredElementArray = numpy.array( [ ";
       for( int whichTerm( 0 );
            massTerms.getSize() > whichTerm;
@@ -329,51 +128,157 @@ namespace Vevacious
         << " )";
       }
       pythonCode << " ] )\n"
-"    massSquaredElementArray *= " << inverseScaleSquared << "\n"
 "    massSquaredMatrix = massSquaredElementArray.reshape( math.sqrt(\n"
 "                                       massSquaredElementArray.size ), -1 )\n"
 "    return numpy.linalg.eigvalsh( massSquaredMatrix )\n"
 "\n";
-      stringParser.clear();
-      stringParser.str( "" );
       stringParser
-      << massCorrectionNameBase << ( correctionFunctions.size() + 1 );
-      // the corrections are named "MassCorrection1(" + arguments + ")",
-      // "MassCorrection2(" + arguments + ")" & so on.
-      correctionFunctions.push_back( stringParser.str() );
+      << ", " << whichQuadruple->first.first
+      << ", " << whichQuadruple->first.second
+      << ", " << whichQuadruple->second.first << " ]";
+      massesSquaredFunctions.push_back( "[ " + stringParser.str() );
       // all the corrections have to be noted for later.
-      pythonCode <<
-"def " << stringParser.str() << argumentsString << ":\n"
-"    return " << massSquaredCorrections << "( " << massSquaredFunctionName
-<< argumentsString << ", ( " << whichTriple->first.first << " ) , ( "
-<< whichTriple->first.second << " ) )\n"
-"\n";
     }
     pythonCode <<
-"def " << loopCorrectionFunctionName << argumentsString << ":\n"
-"    return ( 0.0";
-    if( !(correctionFunctions.empty()) )
+"\n"
+"\n"
+"MassesSquareds = [ \n";
+    for( std::vector< std::string >::iterator
+         whichMassesSquared( massesSquaredFunctions.begin() );
+         massesSquaredFunctions.end() > whichMassesSquared;
+         ++whichMassesSquared )
     {
-      pythonCode << " + " << loopFactor  << " * ( ";
-      for( std::vector< std::string >::iterator
-           whichCorrection( correctionFunctions.begin() );
-           correctionFunctions.end() > whichCorrection;
-           ++whichCorrection )
-        // each correction must be added:
+      if( whichMassesSquared > massesSquaredFunctions.begin() )
       {
-        if( whichCorrection > correctionFunctions.begin() )
-        {
-          pythonCode << " + ";
-        }
-        pythonCode << *whichCorrection << argumentsString;
+        pythonCode << ",\n                   ";
       }
-      pythonCode << " )";
+      pythonCode << *whichMassesSquared;
+    }
+    pythonCode << " ]\n"
+"\n"
+"def LoopCorrectedPotential( " << argumentsWithoutBrackets
+<<                                              ", temperatureValue = 0.0 ):\n"
+"    loopCorrections = 0.0\n"
+"    for MassesSquared in MassesSquareds:\n"
+"        loopCorrections += MassSquaredCorrections( MassesSquared[ 0 ]"
+<<                                               argumentsWithBrackets << ",\n"
+"                                                   MassesSquared[ 1 ],\n"
+"                                                   MassesSquared[ 2 ] )\n"
+"    return ( PolynomimalPartOfPotential" << argumentsWithBrackets << "\n"
+"             + ( loopFactor * loopCorrections ) )\n"
+"\n"
+"\n"
+"def LoopAndThermalCorrectedPotential( " << argumentsWithoutBrackets
+<<                                                    ", temperatureValue ):\n"
+"    loopCorrections = 0.0\n"
+"    thermalCorrections = 0.0\n"
+"    temperatureSquared = ( temperatureValue * temperatureValue )\n"
+"    for MassesSquared in MassesSquareds:\n"
+"        massesSquaredValues = MassesSquared[ 0 ]"
+<<                                                argumentsWithBrackets << "\n"
+"        loopCorrections += MassSquaredCorrections( massesSquaredValues,\n"
+"                                                   MassesSquared[ 1 ],\n"
+"                                                   MassesSquared[ 2 ] )\n"
+"        if ( temperatureValue > 0.0 ):\n"
+"            adjustedOverallFactor = MassesSquared[ 1 ]\n"
+"            if ( MassesSquared[ 3 ] is \"vector\" ):\n"
+"                adjustedOverallFactor = ( ( 2.0 * adjustedOverallFactor )\n"
+"                                          / 3.0 )\n"
+"            thermalCorrections += ThermalCorrections( massesSquaredValues,\n"
+"                                                     adjustedOverallFactor,\n"
+"                                                      temperatureSquared )\n"
+"    return ( PolynomimalPartOfPotential" << argumentsWithBrackets << "\n"
+"             + ( loopFactor * loopCorrections )\n"
+"          + ( thermalFactor * temperatureValue**4 * thermalCorrections ) )\n"
+"\n\n"
+"# PotentialScaler class:\n"
+"\n"
+"class PotentialScaler:\n"
+"    \"\"\"\n"
+"    This class exists solely to provide a function that is a scaled version\n"
+"    of the function given to the constructor for PyMinuit, and a set of\n"
+"    functions using arrays that the CosmoTransitions objects want to use.\n"
+"    \"\"\"\n"
+"\n"
+"    def __init__( self, FunctionToScale, temperatureValue = 0.0 ):\n"
+"        self.FunctionToScale = FunctionToScale\n"
+"        self.functionAtOrigin = FunctionToScale( ";
+    std::vector< char > const&
+    vevsOrderedBySolution( sarahInterpreter.getVevsOrderedBySolutions() );
+    for( unsigned int whichVev( 0 );
+        vevsOrderedBySolution.size() > whichVev;
+        ++whichVev )
+    {
+      if( 0 < whichVev )
+      {
+        pythonCode << ", ";
+      }
+      pythonCode << "0.0";
     }
     pythonCode << " )\n"
+"        self.temperatureValue = temperatureValue\n"
+"        \n"
+"    def ScaledFunctionFromScaledArguments( self, " << argumentsWithoutBrackets
+<<                                                                      " ):\n"
+"        functionValue = ( self.FunctionToScale( ";
+    for( std::vector< char >::const_iterator
+         whichName( vevsOrderedBySolution.begin() );
+         vevsOrderedBySolution.end() > whichName;
+         ++whichName )
+    {
+      pythonCode << "( " << *whichName << " * energyScale )\n"
+      << "                                                ";
+    }
+    pythonCode << "self.temperatureValue )\n"
+"                          - self.functionAtOrigin )\n"
+"        return ( inverseScaleFourthed\n"
+"                 * functionValue )\n"
 "\n"
-"def " << loopCorrectedPotentialFunctionName << argumentsString << ":\n"
-"    return ( " << polynomialPartFunctionName << argumentsString << " + "
-<< loopCorrectionFunctionName << argumentsString << " )";
+"    def PotentialFromArray( self, pointAsArray ):\n"
+"        return FunctionFromArray( self.FunctionToScale,\n"
+"                                  pointAsArray,\n"
+"                                  self.temperatureValue )\n"
+"\n"
+"    def PotentialFromMatrix( self, arrayOfArrays ):\n"
+"        if ( ( numberOfFields, ) == arrayOfArrays.shape ):\n"
+"            return self.PotentialFromArray( arrayOfArrays )\n"
+"        elif ( ( len( arrayOfArrays ), numberOfFields )\n"
+"               == arrayOfArrays.shape ):\n"
+"            returnArray = numpy.zeros( len( arrayOfArrays ) )\n"
+"            for whichIndex in range( len( arrayOfArrays ) ):\n"
+"                returnArray[ whichIndex ] = self.PotentialFromArray(\n"
+"                                              arrayOfArrays[ whichIndex ] )\n"
+"            return returnArray\n"
+"        else:\n"
+"            return None\n"
+"\n"
+"    def GradientFromArray( self, pointAsArray ):\n"
+"        potentialAtPoint = self.PotentialFromArray( pointAsArray )\n"
+"        gradientArray = numpy.zeros( len( pointAsArray ) )\n"
+"        for whichField in range( len( pointAsArray ) ):\n"
+"            displacedPoint = pointAsArray.copy()\n"
+"            displacedPoint[ whichField ] += numericalStepSize\n"
+"            gradientArray[ whichField ] = ( ( self.PotentialFromArray(\n"
+"                                                           displacedPoint )\n"
+"                                              - potentialAtPoint )\n"
+"                                            / numericalStepSize )\n"
+"        return gradientArray\n"
+"\n"
+"    def GradientFromMatrix( self, arrayOfArrays ):\n"
+"        if ( ( numberOfFields, ) == arrayOfArrays.shape ):\n"
+"            return self.GradientFromArray( arrayOfArrays )\n"
+"        elif ( ( len( arrayOfArrays ), numberOfFields )\n"
+"               == arrayOfArrays.shape ):\n"
+"            returnMatrix = arrayOfArrays.copy()\n"
+"            for whichIndex in range( len( arrayOfArrays ) ):\n"
+"                returnMatrix[ whichIndex ] = self.GradientFromArray(\n"
+"                                              arrayOfArrays[ whichIndex ] )\n"
+"            return returnMatrix\n"
+"        else:\n"
+"            return None\n"
+"\n"
+"# End of PotentialScaler class\n"
+"\n";
   }
 
 } /* namespace Vevacious */

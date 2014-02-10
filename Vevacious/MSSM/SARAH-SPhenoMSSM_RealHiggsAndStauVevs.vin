@@ -855,7 +855,7 @@ particle="Fu"  rotationmatrix1="ZUL"  rotationmatrix2="ZUR"  factor="-12" >
 </mass-squared_matrix> 
  
 <mass-squared_matrix 
-particle="VP, VZ"  rotationmatrix="ZZ"  factor="3" >
+particle="VP, VZ"  rotationmatrix="ZZ"  factor="3"  spin="vector" >
 (0.25*vdR^2*SLHA::GAUGE[1.]^2+vER3^2*SLHA::GAUGE[1.]^2+0.25*vLR3^2*SLHA::GAUGE[1.]^2+0.25*vuR^2*SLHA::GAUGE[1.]^2), 
 (0.), 
 (0.), 

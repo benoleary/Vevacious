@@ -54,28 +54,20 @@ namespace Vevacious
     void setPolynomialPartOfPotential(
                                 std::string const& polynomialPartOfPotential );
     void addMassSquaredMatrix(
-                 std::map< std::string, std::string > const& factorAndConstant,
+                      std::map< std::string, std::string > const& attributeMap,
                                std::string const& massSquaredMatrix );
     std::string
     prepareParameterDependentPython( SarahInterpreter& sarahInterpreter );
 
 
   protected:
-    typedef std::pair< std::pair< std::string, std::string >, std::string >
-    StringTriple;
+    typedef std::pair< std::string, std::string > StringPair;
+    typedef std::pair< StringPair, StringPair > StringQuadruple;
 
-    static std::string const inverseScaleSquared;
-    static std::string const inverseScaleFourthed;
-    static std::string const loopFactor;
     static std::string const overallFactorAttributeName;
     static std::string const subtractionConstantAttributeName;
+    static std::string const spinTypeAttributeName;
     static std::string const defaultSubtractionConstantString;
-    static std::string const massSquaredEigenvalueNameBase;
-    static std::string const massCorrectionNameBase;
-    static std::string const polynomialPartFunctionName;
-    static std::string const massSquaredCorrections;
-    static std::string const loopCorrectionFunctionName;
-    static std::string const loopCorrectedPotentialFunctionName;
 
     static bool isOrderedLongToShort(
                         std::pair< std::string, std::string > const& firstPair,
@@ -83,15 +75,14 @@ namespace Vevacious
 
     BOL::AsciiXmlParser sarahParser;
     std::map< std::string, std::string >::const_iterator attributeFinder;
-    std::string readSubtractionConstant;
     std::stringstream pythonCode;
     std::string polynomialPartOfPotential;
-    std::vector< StringTriple > factoredMassSquaredMatrices;
-    std::vector< std::string > correctionFunctions;
+    std::vector< StringQuadruple > factoredMassSquaredMatrices;
+    std::vector< std::string > massesSquaredFunctions;
     std::stringstream stringParser;
-    std::string argumentsString;
+    std::string argumentsWithoutBrackets;
+    std::string argumentsWithBrackets;
 
-    void prepareBasePython( SarahInterpreter& sarahInterpreter );
     void preparePolynomialPartOfPotential( SarahInterpreter& sarahInterpreter );
     void prepareLoopCorrections( SarahInterpreter& sarahInterpreter );
     void prepareMinimizations( SarahInterpreter& sarahInterpreter );
@@ -113,11 +104,9 @@ namespace Vevacious
                                            SarahInterpreter& sarahInterpreter )
   {
     // the function names should explain the process well enough...
-    sarahInterpreter.setVevScalingString( energyScale );
-    argumentsString.assign( "( "
-                     + sarahInterpreter.getInternalVevNamesAsUnquotedCharList()
-                            + " )" );
-    prepareBasePython( sarahInterpreter );
+    argumentsWithoutBrackets.assign(
+                    sarahInterpreter.getInternalVevNamesAsUnquotedCharList() );
+    argumentsWithBrackets.assign( "( " + argumentsWithoutBrackets + " )" );
     preparePolynomialPartOfPotential( sarahInterpreter );
     prepareLoopCorrections( sarahInterpreter );
     return pythonCode.str();
@@ -138,13 +127,12 @@ namespace Vevacious
     specificPolynomialPart( sarahInterpreter( polynomialPartOfPotential,
                                               false ) );
     pythonCode
-    << "def " << treeLevelPotential << argumentsString << ":\n"
-    << "    return ( " << inverseScaleFourthed << " * ( "
-    <<                                   specificTreeLevelPotential << " ) )\n"
+    << "def TreeLevelPotential( " << argumentsWithoutBrackets
+    << ", temperatureValue = 0.0 ):\n"
+    << "    return ( " << specificTreeLevelPotential << " )\n"
     << "\n"
-    << "def " << polynomialPartFunctionName << argumentsString << ":\n"
-    << "    return ( " << inverseScaleFourthed << " * ( "
-    <<                                       specificPolynomialPart << " ) )\n"
+    << "def PolynomimalPartOfPotential" << argumentsWithBrackets << ":\n"
+    << "    return ( " << specificPolynomialPart << " )\n"
     << "\n";
   }
 

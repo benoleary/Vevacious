@@ -38,8 +38,7 @@ namespace Vevacious
     void setVevNames( std::map< std::string, std::string > const& inputVevs );
     void sortVevsToMatchSolutions(
                            std::vector< char > const& vevsOrderedBySolutions );
-    std::string replaceUserVevNames( std::string const& inputString,
-                                   std::string const& vevScalingString ) const;
+    std::string replaceUserVevNames( std::string const& inputString ) const;
     std::string const& getHumanReadableVevNameMap() const;
     char getInternalVevName( std::string const& userVevName ) const;
     std::string const& getInternalVevNamesAsQuotedCharList() const;

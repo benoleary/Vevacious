@@ -22,7 +22,6 @@ namespace Vevacious
     treeBlockPrefix( "TREE" ),
     loopBlockPrefix( "LOOP" ),
     vevRenamer(),
-    vevScalingString( "" ),
     argumentString( "" ),
     returnString( "" ),
     nextCharPosition( 0 ),
@@ -105,17 +104,8 @@ namespace Vevacious
                                                              argumentString,
                                                              writingTadpole,
                                                              "0.0" ) );
-    if( writingTadpole )
-    {
-      argumentString.assign( "" );
-    }
-    else
-    {
-      argumentString.assign( vevScalingString );
-    }
     std::string slhaAndVevReplacedString( vevRenamer.replaceUserVevNames(
-                                                          slhaReplacedString,
-                                                            argumentString ) );
+                                                        slhaReplacedString ) );
     if( writingTadpole
         &&
         ( std::string::npos

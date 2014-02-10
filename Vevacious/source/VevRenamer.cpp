@@ -106,35 +106,22 @@ namespace Vevacious
   }
 
   std::string
-  VevRenamer::replaceUserVevNames( std::string const& inputString,
-                                   std::string const& vevScalingString ) const
+  VevRenamer::replaceUserVevNames( std::string const& inputString ) const
   {
     std::string returnString( inputString );
     size_t vevNamePosition( 0 );
-    std::string scaledInternalVev( "" );
     for( std::list< std::pair< std::string, char > >::const_iterator
          whichVev( inputVevNamesToInternalVevNames.begin() );
          inputVevNamesToInternalVevNames.end() != whichVev;
          ++whichVev )
     {
       vevNamePosition = returnString.find( whichVev->first );
-      if( vevScalingString.empty() )
-      {
-        scaledInternalVev.assign(  1,
-                                   whichVev->second );
-      }
-      else
-      {
-        scaledInternalVev.assign( "( " );
-        scaledInternalVev.append(  1,
-                                   whichVev->second );
-        scaledInternalVev.append( " * " + vevScalingString + " )" );
-      }
       while( std::string::npos != vevNamePosition )
       {
         returnString.replace( vevNamePosition,
                               whichVev->first.size(),
-                              scaledInternalVev );
+                              1,
+                              whichVev->second );
         vevNamePosition = returnString.find( whichVev->first,
                                              vevNamePosition );
       }
