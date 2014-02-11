@@ -84,8 +84,8 @@ int main( int argumentCount,
                                                               "roll_tolerance",
                                                                      "0.1" ) );
   vevaciousRunner.setLifetimeThreshold( argumentParser.fromTag(
-                                                               "deformed_time",
-                                                                   "0.217" ) );
+                                                          "lifetime_threshold",
+                                                                "0.1" ) );
   // negative arguments (as doubles or std::strings representing doubles) for
   // setLifetimeForDirectPath or setLifetimeForDeformedPath means that the
   // relevant tunneling time calculation will be skipped.
