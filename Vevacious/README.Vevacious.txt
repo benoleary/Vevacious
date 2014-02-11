@@ -145,7 +145,45 @@
 
 
 CHANGELOG:
- * 9th October: version 1.0.11
+ * 11th February 2014: version 1.1.00
+ ~ Major update!
+ - Added functionality to calculate survival probability against tunneling to
+   panic vacua at non-zero temperatures.
+   -- Default Python program now
+      >> takes tree-level extrema from parsed results of HOM4PS2 as starting
+         points for PyMinuit using the zero-temperature loop-corrected
+         potential
+      >> sorts minima and from those minima deeper than the DSB minimum it
+         chooses the nearest as the panic vacuum
+      >> checks for exclusion based on tunneling time at zero temperature with
+         a direct path between the minima
+      >> finds a temperature between 2^-1/2 & 1 times the critical temperature
+         at which the panic vacuum becomes less deep than the DSB vacuum (or
+         where the DSB vacuum rolls to at the temperature)
+      >> checks for exclusion based on the survival probability against thermal
+         tunneling along a direct path between the minima at this temperature
+         and at half this temperature
+      >> fits a guess at the temperature dependence of the direct-path thermal
+         action based on the actions at the above temperatures and finds the
+         optimal tunneling temperature according to the fitted function
+      >> checks for exclusion based on the survival probability against thermal
+         tunneling along a direct path between the minima at the estimated
+         optimal temperature
+      >> checks for exclusion based on tunneling time at zero temperature with
+         an optimal deformed path between the minima
+      >> checks for exclusion based on the survival probability against thermal
+         tunneling along an optimal deformed path between the minima at the
+         estimated optimal temperature
+      >> stops the above calculation if at any stage the parameter point is
+         excluded
+ - Most boilerplate Python code is now in VevaciousParameterDependent.py so
+   that the main Python program (defaulting to Vevacious.py) can be neater.
+ - Model files now need that the mass-squared matrices for vectors have the XML
+   element spin="vector" so that thermal corrections can be calculated
+   correctly. All bundled example .vin files have this included, and Florian
+   will incorporate this into the next update of SARAH.
+
+ * 9th October 2013: version 1.0.11
  - Fixed that default Vevacious.py was using the number of spatial dimensions
    for a finite-temperature tunneling time calculation rather than the correct
    zero-temperature calculation number of dimensions.
@@ -159,7 +197,7 @@ CHANGELOG:
    to global minima being missed because HOM4PS2 did not find all the sign
    combinations.
 
- * 13th September: version 1.0.10
+ * 13th September 2013: version 1.0.10
  - Fixed bug when trying to use a relative path for the hom4ps2_dir input.
  - Fixed bug that sometimes a point that has a negative value for a VEV that
    should be positive (as declared by the <taken_positive> element of the
@@ -167,7 +205,7 @@ CHANGELOG:
    tree level, leading to misleading warnings about apparent change from
    metastable to stable going from tree to one loop.
 
- * 11th September: version 1.0.9
+ * 11th September 2013: version 1.0.9
  - Default Python program fixed to correctly find the tree-level global minimum
    for the purposes of checking to see if the basin of attraction of the
    one-loop minima has moved significantly. (The code was not correctly
@@ -176,12 +214,12 @@ CHANGELOG:
  - Added example model file for just Higgs VEVs and stop VEVs (without allowing
    stau VEVs), though just the SARAH-SPhenoMSSM style of SLHA is expected.
 
- * 9th September: version 1.0.8
+ * 9th September 2013: version 1.0.8
  - Example model files where the stop VEVs are allowed to be non-zero have been
    corrected (unfortunately the D-term from SU(3)_c had been generated wrongly
    and this carried through into the mass matrices).
 
- * 29th August: version 1.0.7
+ * 29th August 2013: version 1.0.7
  - The A factor for calculating the tunneling time has changed to be the fourth
    power of renormalization scale as given by the SLHA file rather than the old
    hard-coded (100 GeV)^4 by default, and the default Vevacious.py now
@@ -191,7 +229,7 @@ CHANGELOG:
  - CosmoTransitions is now at http://chasm.uchicago.edu/cosmotransitions/ as
    Dr Wainwright has kindly let me know.
 
- * 21st August: version 1.0.6
+ * 21st August 2013: version 1.0.6
  - Makefile fixed so that it works properly (the libraries were in the wrong
    official order, but some compilers don't mind, such as that which was used
    to test 1.0.5).
@@ -205,7 +243,7 @@ CHANGELOG:
    Ben O'Leary if Dr C. Wainwright (the author of CosmoTransitions) cannot help
    you.
 
- * 1st August: version 1.0.5
+ * 1st August 2013: version 1.0.5
  - Makefile now makes ./lib/libVevacious.a as a static library as well, which
    should make it easier to make custom C++ programs that use the Vevacious
    classes.

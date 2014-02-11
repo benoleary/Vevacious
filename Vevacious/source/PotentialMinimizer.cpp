@@ -135,14 +135,14 @@ namespace Vevacious
       stringParser
       << ", " << whichQuadruple->first.first
       << ", " << whichQuadruple->first.second
-      << ", " << whichQuadruple->second.first << " ]";
+      << ", \"" << whichQuadruple->second.first << "\" ]";
       massesSquaredFunctions.push_back( "[ " + stringParser.str() );
       // all the corrections have to be noted for later.
     }
     pythonCode <<
 "\n"
 "\n"
-"MassesSquareds = [ \n";
+"MassesSquareds = [ ";
     for( std::vector< std::string >::iterator
          whichMassesSquared( massesSquaredFunctions.begin() );
          massesSquaredFunctions.end() > whichMassesSquared;
@@ -174,9 +174,8 @@ namespace Vevacious
 "    thermalCorrections = 0.0\n"
 "    temperatureSquared = ( temperatureValue * temperatureValue )\n"
 "    for MassesSquared in MassesSquareds:\n"
-"        massesSquaredValues = MassesSquared[ 0 ]"
-<<                                                argumentsWithBrackets << "\n"
-"        loopCorrections += MassSquaredCorrections( massesSquaredValues,\n"
+"        massesSquared = MassesSquared[ 0 ]" << argumentsWithBrackets << "\n"
+"        loopCorrections += MassSquaredCorrections( massesSquared,\n"
 "                                                   MassesSquared[ 1 ],\n"
 "                                                   MassesSquared[ 2 ] )\n"
 "        if ( temperatureValue > 0.0 ):\n"
@@ -184,13 +183,15 @@ namespace Vevacious
 "            if ( MassesSquared[ 3 ] is \"vector\" ):\n"
 "                adjustedOverallFactor = ( ( 2.0 * adjustedOverallFactor )\n"
 "                                          / 3.0 )\n"
-"            thermalCorrections += ThermalCorrections( massesSquaredValues,\n"
+"            thermalCorrections += ThermalCorrections( massesSquared,\n"
 "                                                     adjustedOverallFactor,\n"
 "                                                      temperatureSquared )\n"
 "    return ( PolynomimalPartOfPotential" << argumentsWithBrackets << "\n"
 "             + ( loopFactor * loopCorrections )\n"
-"          + ( thermalFactor * temperatureValue**4 * thermalCorrections ) )\n"
-"\n\n"
+"             + ( thermalFactor * temperatureSquared * temperatureSquared\n"
+"                 * thermalCorrections ) )\n"
+"\n"
+"\n"
 "# PotentialScaler class:\n"
 "\n"
 "class PotentialScaler:\n"
@@ -209,13 +210,9 @@ namespace Vevacious
         vevsOrderedBySolution.size() > whichVev;
         ++whichVev )
     {
-      if( 0 < whichVev )
-      {
-        pythonCode << ", ";
-      }
-      pythonCode << "0.0";
+      pythonCode << "0.0, ";
     }
-    pythonCode << " )\n"
+    pythonCode << " 0.0 )\n"
 "        self.temperatureValue = temperatureValue\n"
 "        \n"
 "    def ScaledFunctionFromScaledArguments( self, " << argumentsWithoutBrackets
@@ -226,10 +223,11 @@ namespace Vevacious
          vevsOrderedBySolution.end() > whichName;
          ++whichName )
     {
-      pythonCode << "( " << *whichName << " * energyScale )\n"
-      << "                                                ";
+      pythonCode
+      << *whichName << " = ( " << *whichName
+      << " * energyScale ),\n                                                ";
     }
-    pythonCode << "self.temperatureValue )\n"
+    pythonCode << "temperatureValue = self.temperatureValue )\n"
 "                          - self.functionAtOrigin )\n"
 "        return ( inverseScaleFourthed\n"
 "                 * functionValue )\n"
