@@ -2154,7 +2154,7 @@ namespace Vevacious
 "                  + outputText )"
 "# Each warning is printed as an XML element:\n"
 "for warningMessage in vcs.warningMessages:\n"
-"    outputText.write( \"\\n  <warning>\\n  \"\n"
+"    outputFile.write( \"\\n  <warning>\\n  \"\n"
 "                      + warningMessage\n"
 "                      + \"\\n  </warning>\" )\n"
 "outputFile.write( \"\\n</Vevacious_result>\\n\" )\n"
