@@ -1,6 +1,0 @@
-<Vevacious_result>
-  <stability> unstable </stability>
-  <global_minimum   depth="-3.22123135171e+13" vdR="4647.56984003" vLR3="5256.46589002" vRR3="5716.25352838" vuLr3="2536.31050403" vuR="4570.29514504" vuRr3="2675.79583567" />
-  <input_minimum   depth="3.38373053907e+11" vdR="6.19344184821" vLR3="0.0" vRR3="0.0" vuLr3="0.0" vuR="241.262751235" vuRr3="0.0" />
-  <lifetime  action_calculation="direct_path_bound" > 5.12696600185e-14 </lifetime>
-</Vevacious_result>

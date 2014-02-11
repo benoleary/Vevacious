@@ -1,7 +1,0 @@
-<Vevacious_result>
- <reference version="0.3.0" citation="[still unpublished]" />
- <stability> metastable </stability>
- <global_minimum   relative_depth="-214597760269.0" vdR="5256.21972931" vE3="6084.0140005" vL3="5873.85217115" vQ3="2176.91589273" vT3="2311.94041636" vuR="2888.77671235" />
-  <input_minimum   relative_depth="-108624241.156" vdR="15.2592069347" vE3="0.0" vL3="0.0" vQ3="0.0" vT3="0.0" vuR="243.571602552" />
-  <lifetime  action_calculation="full_deformed_path" > 1000000.0 </lifetime>
-</Vevacious_result>

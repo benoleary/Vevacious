@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersion( "1.1.00" );
+  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta1" );
   std::string const
   VevaciousRunner::vevaciousDocumentation( "arXiv:1307.1477 (hep-ph)" );
   std::string const VevaciousRunner::defaultPythonFilename( "Vevacious.py" );

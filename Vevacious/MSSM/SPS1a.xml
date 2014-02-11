@@ -1,7 +1,0 @@
-<Vevacious_result>
-  <reference version="0.3.0" citation="[still unpublished]" />
-  <stability> stable </stability>
-  <global_minimum   relative_depth="-89467096.7282" vdR="24.2105258503" vE3="0.0" vL3="0.0" vQ3="0.0" vT3="0.0" vuR="241.15863401" />
-  <input_minimum   relative_depth="-89467096.7282" vdR="24.2105258503" vE3="0.0" vL3="0.0" vQ3="0.0" vT3="0.0" vuR="241.15863401" />
-  <lifetime  action_calculation="unnecessary" > -1.0 </lifetime>
-</Vevacious_result>

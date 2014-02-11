@@ -122,6 +122,9 @@
     (CosmoTransitions was previously at http://chasm.ucsc.edu/cosmotransitions/
     but has since moved. Hosting on HepForge at some point in the future has
     been suggested, but as of 2013-08-29, it is not there.)
+    WARNING! CosmoTransitions v1.0.2 no longer works with the most recent
+    versions of SciPy and NumPy! Replacing "integrate.inf" with "numpy.inf"
+    in the CosmoTransitions code fixes this.
  6) Download and compile the LesHouchesParserClasses (LHPC) C++ library. The
     files are available at
     http://www.hepforge.org/downloads/lhpc
@@ -145,7 +148,7 @@
 
 
 CHANGELOG:
- * 11th February 2014: version 1.1.00
+ * 11th February 2014: version 1.1.00beta1
  ~ Major update!
  - Added functionality to calculate survival probability against tunneling to
    panic vacua at non-zero temperatures.
@@ -182,6 +185,23 @@ CHANGELOG:
    element spin="vector" so that thermal corrections can be calculated
    correctly. All bundled example .vin files have this included, and Florian
    will incorporate this into the next update of SARAH.
+ - The functions VevaciousRunner::setLifetimeForDirectPath and
+   VevaciousRunner::setLifetimeForDeformedPath (both variants of each) have
+   been removed in favor of a single function
+   VevaciousRunner::setLifetimeThreshold which sets a single threshold (because
+   I cannot remember what I was thinking when I set it up so that direct and
+   deformed paths would have separate thresholds).
+ - Many static strings in VevaciousRunner and PotentialMinimizer have been
+   removed in favor of just having their values written into the function that
+   writes the Python code.
+ - VevaciousRunner::prepareParameterDependentPython and
+   VevaciousRunner::writeDefaultPythonProgram have had bits of the boilerplate
+   Python code swapped around between them, along with
+   PotentialMinimizer::prepareLoopCorrections.
+ - Fields are no longer scaled to the energy scale except within the Python, so
+   VevRenamer and SarahInterpreter were changed to reflect that.
+ ~ Not ready to be 1.1.00 yet, as VevaciousRunner::appendResultsToSlha needs to
+   be updated to account for thermal results.
 
  * 9th October 2013: version 1.0.11
  - Fixed that default Vevacious.py was using the number of spatial dimensions
