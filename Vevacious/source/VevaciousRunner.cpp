@@ -1360,12 +1360,15 @@ namespace Vevacious
   // & appends the results & warnings in custom SLHA blocks to the end of the
   // file name slhaFilename.
   {
-    double stabiltyResult( -2.0 );
-    // -2 will do as an error code for the SLHA block for the moment.
+    double stabiltyResult( -99.0 );
+    // -99 will do as an error code for the SLHA block for the moment.
+    bool thermallyExcluded( false );
     std::string stabilityVerdict( "error" );
     std::map< std::string, std::string > inputMinimumDepthAndVevs;
     std::map< std::string, std::string > globalMinimumDepthAndVevs;
-    std::string lifetimeBound( "-2.0" );
+    double calculatedLifetime( -99.0 );
+    std::string thermalSurvival( "-99.0" );
+    double exclusionTemperature( -99.0 );
     std::string actionCalculation( "error" );
     std::string warningLine( "" );
     std::string warningBlock( "" );
@@ -1379,23 +1382,13 @@ namespace Vevacious
         {
           stabilityVerdict.assign(
                               resultParser.getTrimmedCurrentElementContent() );
-          if( 0 == stabilityVerdict.compare( "stable" ) )
-          {
-            stabiltyResult = 1.0;
-          }
-          else if( 0 == stabilityVerdict.compare( "long-lived" ) )
-          {
-            stabiltyResult = 0.0;
-          }
-          else if( 0 == stabilityVerdict.compare( "short-lived" ) )
-          {
-            stabiltyResult = -1.0;
-          }
         }
         else if( resultParser.currentElementNameMatches(
                                                         "thermal_stability" ) )
         {
-          // DO SOMETHING!
+          thermallyExcluded
+          = ( 0 == resultParser.getTrimmedCurrentElementContent().compare(
+                                                "low_survival_probability" ) );
         }
         else if( resultParser.currentElementNameMatches( "global_minimum" ) )
         {
@@ -1409,7 +1402,7 @@ namespace Vevacious
         }
         else if( resultParser.currentElementNameMatches( "lifetime" ) )
         {
-          lifetimeBound = slhaDoubleFromQuotedString(
+          calculatedLifetime = doubleFromQuotedString(
                               resultParser.getTrimmedCurrentElementContent() );
           std::map< std::string, std::string >::const_iterator
           actionFinder( resultParser.getCurrentElementAttributes().find(
@@ -1422,16 +1415,53 @@ namespace Vevacious
                                                                     "\'\"" ) );
           }
         }
+        else if( resultParser.currentElementNameMatches(
+                                                    "tunneling_temperature" ) )
+        {
+          exclusionTemperature = doubleFromQuotedString(
+                              resultParser.getTrimmedCurrentElementContent() );
+          std::map< std::string, std::string >::const_iterator
+          actionFinder( resultParser.getCurrentElementAttributes().find(
+                                                      "survival_probability" ) );
+          if( resultParser.getCurrentElementAttributes().end()
+              != actionFinder )
+          {
+            thermalSurvival
+            = BOL::StringParser::trimFromFrontAndBack( actionFinder->second,
+                                                       "\'\"" );
+          }
+        }
         else if( resultParser.currentElementNameMatches( "warning" ) )
         {
           warningLine.assign( resultParser.getTrimmedCurrentElementContent() );
           Vevacious::SarahInterpreter::removeNewlinesFrom( warningLine );
-          warningBlock.append( " "
-                               + slhaIndexMaker.intToString( ++warningNumber )
-                               + "    " + warningLine + "\n" );
+          warningBlock.append( " " );
+          warningBlock.append( slhaIndexMaker.intToString( ++warningNumber ) );
+          warningBlock.append( "    " );
+          warningBlock.append( warningLine );
+          warningBlock.append( "\n" );
         }
       }
       resultParser.closeFile();
+
+      if( 0 == stabilityVerdict.compare( "stable" ) )
+      {
+        stabiltyResult = 1.0;
+      }
+      else if( 0 == stabilityVerdict.compare( "long-lived" ) )
+      {
+        stabiltyResult = 0.0;
+        if ( thermallyExcluded )
+        {
+          stabiltyResult = -2.0;
+          stabilityVerdict.append( "_but_thermally_excluded" );
+        }
+      }
+      else if( 0 == stabilityVerdict.compare( "short-lived" ) )
+      {
+        stabiltyResult = -1.0;
+      }
+
       std::fstream outputFile( slhaFilename.c_str() );
       if( !(outputFile.good()) )
       {
@@ -1452,20 +1482,25 @@ namespace Vevacious
       << "BLOCK VEVACIOUSRESULTS # results from Vevacious version "
       << vevaciousVersion << ", documented in " << vevaciousDocumentation
       << "\n"
-      << "    0   0    " << slhaDoubleMaker.doubleToString( stabiltyResult );
-      if( !properFormatRatherThanSspReadable )
-      {
-        outputFile << " # ";
-      }
-      outputFile
-      << "    " << stabilityVerdict << "    # stability of input\n"
-      << "    0   1    " << lifetimeBound;
-      if( !properFormatRatherThanSspReadable )
-      {
-        outputFile << " # ";
-      }
-      outputFile << "    " << actionCalculation
-      << "    # tunneling time in Universe ages / calculation type\n";
+      << writeVevaciousResultsBlockLine( 0,
+                                         0,
+                                         stabiltyResult,
+                                         stabilityVerdict,
+                                         properFormatRatherThanSspReadable )
+      << "    # stability of input\n"
+      << writeVevaciousResultsBlockLine( 0,
+                                         1,
+                                         calculatedLifetime,
+                                         actionCalculation,
+                                         properFormatRatherThanSspReadable )
+      << "    # tunneling time in Universe ages / calculation type\n"
+      << writeVevaciousResultsBlockLine( 0,
+                                         2,
+                                         exclusionTemperature,
+                                         thermalSurvival,
+                                         properFormatRatherThanSspReadable )
+      << "    # estimated best tunneling temperature"
+      << " / survival probability at this temperature\n";
       int vevNumber( -1 );
       for( std::map< std::string, std::string >::const_iterator
            whichVev( inputMinimumDepthAndVevs.begin() );
@@ -1473,24 +1508,20 @@ namespace Vevacious
            ++whichVev )
       {
         outputFile
-        << "    1 " << slhaIndexMaker.intToString( ++vevNumber ) << "    "
-        << slhaDoubleFromQuotedString( whichVev->second );
-        if( !properFormatRatherThanSspReadable )
-        {
-          outputFile << " # ";
-        }
-        outputFile << "    "
-        << whichVev->first;
+        << writeVevaciousResultsBlockLine( 1,
+                                           (++vevNumber),
+                                    doubleFromQuotedString( whichVev->second ),
+                                           whichVev->first,
+                                           properFormatRatherThanSspReadable );
         if( inputMinimumDepthAndVevs.begin() == whichVev )
         {
           outputFile
-          << "    # input potential energy density difference from all VEVs ="
-          <<                                                          " 0.0\n";
+          << "    # DSB vacuum potential energy\n";
         }
         else
         {
           outputFile
-          << "    # input VEV\n";
+          << "    # DSB vacuum VEV\n";
         }
       }
       vevNumber = -1;
@@ -1500,24 +1531,20 @@ namespace Vevacious
            ++whichVev )
       {
         outputFile
-        << "    2 " << slhaIndexMaker.intToString( ++vevNumber ) << "    "
-        << slhaDoubleFromQuotedString( whichVev->second );
-        if( !properFormatRatherThanSspReadable )
-        {
-          outputFile << " # ";
-        }
-        outputFile << "    "
-        << whichVev->first;
+        << writeVevaciousResultsBlockLine( 2,
+                                           (++vevNumber),
+                                    doubleFromQuotedString( whichVev->second ),
+                                           whichVev->first,
+                                           properFormatRatherThanSspReadable );
         if( globalMinimumDepthAndVevs.begin() == whichVev )
         {
           outputFile
-          << "    # global minimum potential energy density difference from"
-          <<                                               " all VEVs = 0.0\n";
+          << "    # panic vacuum potential\n";
         }
         else
         {
           outputFile
-          << "    # global minimum VEV\n";
+          << "    # panic vacuum VEV\n";
         }
       }
       if( properFormatRatherThanSspReadable
@@ -1657,7 +1684,7 @@ namespace Vevacious
 "    thermalStabilityVerdict = \"stable\"\n"
 "    exclusionTemperatureString = \"unnecessary\"\n"
 "    quantumTunnelingTimeInUniverseAgesString = \"-1.0\"\n"
-"    thermalTunnelingSurvivalProbabilityString = \"0.0\"\n"
+"    thermalTunnelingSurvivalProbabilityString = \"1.0\"\n"
 "else:\n"
 "# The deepest minimum found by vcs.RollExtrema is recorded as\n"
 "# vcs.globalMinimum and it may happen to correspond to the DSB minimum.\n"
@@ -2051,14 +2078,14 @@ namespace Vevacious
 "        quantumTunnelingTimeInInverseGev = (\n"
 "                                      vcs.QuantumTunnelingTimeInInverseGev(\n"
 "                                                   currentQuantumAction ) )\n"
-"        print( \"quantumTunnelingTimeInInverseGev = \"\n"
+"        print( \"Zero-temperature tunneling time in 1/GeV = \"\n"
 "              + str( quantumTunnelingTimeInInverseGev ) )\n"
-"        print( \"vcs.ageOfKnownUniverseInInverseGev = \"\n"
+"        print( \"Age of known Universe in 1/Gev = \"\n"
 "               + str( vcs.ageOfKnownUniverseInInverseGev ) )\n"
 "        quantumTunnelingTimeInUniverseAges = (\n"
 "                                           quantumTunnelingTimeInInverseGev\n"
 "                                     / vcs.ageOfKnownUniverseInInverseGev )\n"
-"        print( \"quantumTunnelingTimeInUniverseAges = \"\n"
+"        print( \"Tunneling time in Universe-ages = \"\n"
 "              + str( quantumTunnelingTimeInUniverseAges ) )\n"
 "        quantumTunnelingTimeInSeconds = str(\n"
 "                                            vcs.ageOfKnownUniverseInSeconds\n"
@@ -2068,7 +2095,6 @@ namespace Vevacious
 "               + \" seconds (age of known Universe = \"\n"
 "               + str( vcs.ageOfKnownUniverseInSeconds )\n"
 "               + \" seconds).\\n\\n\" )\n"
-"        print( \"thermallyExcluded = \" + str( thermallyExcluded ) )\n"
 "        if ( currentQuantumAction < vcs.quantumActionThreshold ):\n"
 "            quantumStabilityVerdict = \"short-lived\"\n"
 "        elif ( not ( thermallyExcluded\n"
@@ -2099,14 +2125,14 @@ namespace Vevacious
 "                                                        deformPath = True,\n"
 "                                                  thermalNotQuantum = True,\n"
 "                                                        maxiter2 = 3 )\n"
-"            print( \"currentThermalAction = \"\n"
+"            print( \"Final 3-dimensional action  at this temperature = \"\n"
 "                   + str( currentThermalAction )\n"
 "                   + \" GeV.\\n\\n\" )\n"
 "            if ( currentThermalAction < vcs.thermalActionThreshold ):\n"
 "                thermalStabilityVerdict = \"low_survival_probability\"\n"
 "\n"
 "        exclusionTemperatureString = str( exclusionTemperature )\n"
-"        print( \"temperature for basing thermal tunneling exclusion = \"\n"
+"        print( \"Temperature for basing thermal tunneling exclusion = \"\n"
 "               + exclusionTemperatureString\n"
 "               + \" GeV.\\n\\n\" )\n"
 "\n"
@@ -2148,7 +2174,7 @@ namespace Vevacious
 "               + thermalTunnelingSurvivalProbabilityString\n"
 "               + \"\\\" > \"\n"
 "               + exclusionTemperatureString\n"
-"               + \" </lifetime>\" )\n"
+"               + \" </tunneling_temperature>\" )\n"
 "outputFile = open( VPD.outputFile, \"w\" )\n"
 "outputFile.write( \"<Vevacious_result>\\n\"\n"
 "                  + outputText )"
@@ -2159,7 +2185,7 @@ namespace Vevacious
 "                      + \"\\n  </warning>\" )\n"
 "outputFile.write( \"\\n</Vevacious_result>\\n\" )\n"
 "outputFile.close()\n"
-"print( \"Result summary (not recapping warnings)\\n:\""
+"print( \"Result summary (not recapping warnings):\\n\""
 "       + outputText )\n"
 "\n";
     outputFile.close();

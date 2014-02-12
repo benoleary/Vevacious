@@ -110,8 +110,12 @@ namespace Vevacious
     static BOL::StringParser const slhaIndexMaker;
     static BOL::StringParser const slhaDoubleMaker;
 
-    static std::string slhaDoubleFromQuotedString(
-                                             std::string const& quotedString );
+    static double doubleFromQuotedString( std::string const& quotedString );
+    static std::string writeVevaciousResultsBlockLine( int const firstIndex,
+                                                       int const secondIndex,
+                                                       double floatValue,
+                                                std::string const& givenString,
+                                bool const properFormatRatherThanSspReadable );
 
     SarahInterpreter sarahInterpreter;
     TadpoleSolver tadpoleSolver;
@@ -229,12 +233,34 @@ namespace Vevacious
      return true;
    }
 
-  inline std::string VevaciousRunner::slhaDoubleFromQuotedString(
+  inline double VevaciousRunner::doubleFromQuotedString(
                                               std::string const& quotedString )
   {
-    return slhaDoubleMaker.doubleToString( BOL::StringParser::stringToDouble(
+    return BOL::StringParser::stringToDouble(
                          BOL::StringParser::trimFromFrontAndBack( quotedString,
-                                                                  "\'\"" ) ) );
+                                                                  "\'\"" ) );
+  }
+
+  inline std::string
+  VevaciousRunner::writeVevaciousResultsBlockLine( int const firstIndex,
+                                                   int const secondIndex,
+                                                   double const floatValue,
+                                         std::string const& givenString,
+                                 bool const properFormatRatherThanSspReadable )
+  {
+    std::string returnString( "  " );
+    returnString.append( slhaIndexMaker.intToString( firstIndex ) );
+    returnString.append( "  " );
+    returnString.append( slhaIndexMaker.intToString( secondIndex ) );
+    returnString.append( "    " );
+    returnString.append( slhaIndexMaker.doubleToString( floatValue ) );
+    if( !properFormatRatherThanSspReadable )
+    {
+      returnString.append( " # " );
+    }
+    returnString.append( "    " );
+    returnString.append( givenString );
+    return returnString;
   }
 
   inline std::string VevaciousRunner::prepareToRunPythonCommand(

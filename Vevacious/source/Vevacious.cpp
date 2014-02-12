@@ -93,6 +93,39 @@ int main( int argumentCount,
   double setupFinishTime( secondsSince( startTimeval ) );
   std::cout
   << std::endl
+  <<
+  "   @@@...@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ \n"
+  "   @@@@@@.@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ \n"
+  "   @@@@@@?.@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ \n"
+  "   @@@@@@@.@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ \n"
+  "   @@@@@@@..@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ \n"
+  "   @@@@@@@..@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ \n"
+  "   @@@@@@@~ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@ \n"
+  "   @@@@@@@?.?@@@@@@@@@@@@@@@@@@@@@@.~@@@@ \n"
+  "   @@@@@@@@..@@@@@@@@@@@@@@@@@@@@..@@@@@@ \n"
+  "   @@@@@@@@..@@@@@@@@@@@@@@@@@@@,.@@@@@@@ \n"
+  "   @@@@@@@@..@@@@@@@@@@@@@@@@@@@.+@@@@@@@ \n"
+  "   @@@@@@@@..@@@@@@@@@@@@@@@@@@@ @@@@@@@@ \n"
+  "   @@@@@@@@ .@@@@@@@@@@@@@@@@@@. @@@@@@@@ \n"
+  "   @@@@@@@@..~@@@@@@@@@@@@@@@@@..@@@@@@@@ \n"
+  "   @@@@@@@@.  @@@@@@@@@@@@@@@@@..@@@@@@@@ \n"
+  "   @@@@@@@@. .@@@@@@@@@@@@@@@@@..@@@@@@@@ \n"
+  "   @@@@@@@@.  ~@@@@@@@@@@@@@@@. .@@@@@@@@ \n"
+  "   @@@@@@@@?. .@@@@@@@@@@@@@@@. @@@@@@@@@ \n"
+  "   @@@@@@@@@.  .@@@@@@@@@@@@@.  @@@@@@@@@ \n"
+  "   @@@@@@@@@.. .@@@@@@@@@@@@@. .@@@@@@@@@ \n"
+  "   @@@@@@@@@@.  .@@@@###@@@@.  @@@@@@@@@@ \n"
+  "   @@@@@@@@@@@.  .@@#####@@....@@@@@@@@@@ \n"
+  "   @@@@@@@@@@@,.  ..@###@@....@@@@@@@@@@@ \n"
+  "   @@@@@@@@@@@@,.  ..,@@.   .@@@@@@@@@@@@ \n"
+  "__   _______   ____ _  ___ _  ___  _   _ ___ \n"
+  "\\ \\ / / _ \\ \\ / / _` |/ __| |/ _ \\| | | / __|\n"
+  " \\ V /  __/\\ V / (_| | (__| | (_) | |_| \\__ \\\n"
+  "  \\_/ \\___| \\_/ \\__,_|\\___|_|\\___/ \\__,_|___/\n"
+  "                                             \n"
+  "\n"
+  "\n"
+  "\n"
   << "Setting up the VevaciousRunner object took " << setupFinishTime
   << " seconds.";
   std::cout << std::endl;
@@ -162,34 +195,6 @@ int main( int argumentCount,
   std::string mainPythonFilename( argumentParser.fromTag( "python_main",
                                                           "./Vevacious.py" ) );
 
-  // actually, unfortunately this doesn't work because fork()ing seems to lose
-  // the PYTHONPATH.
-  /**
-  int deformationPatience( BOL::StringParser::stringToInt(
-                                argumentParser.fromTag( "deformation_patience",
-                                                        "-1" ) ) );
-  bool finishedOnTime( vevaciousRunner.runPython( mainPythonFilename,
-                                                  deformationPatience ) );
-  if( !finishedOnTime )
-  {
-    std::cout
-    << std::endl
-    << "Warning! Calculation taking too long: killing Python program and"
-    << " running again, but without allowing CosmoTransitions to deform the"
-    << " path in VEV-space from the false vacuum to the true vacuum.";
-    std::cout << std::endl;
-
-    vevaciousRunner.setLifetimeForDeformedPath( -1.0 );
-    vevaciousRunner.prepareParameterDependentPython( slhaFilename );
-    vevaciousRunner.runPython( mainPythonFilename );
-    vevaciousRunner.setLifetimeForDeformedPath( argumentParser.fromTag(
-                                                               "deformed_time",
-                                                                     "0.1" ) );
-  }
-  **/
-
-  // ... so we just have to use the version that doesn't try to kill the Python
-  // program no matter how long it takes.
   vevaciousRunner.runPython( mainPythonFilename );
 
   double minimizingFinishTime( secondsSince( startTimeval ) );
