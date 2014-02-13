@@ -148,6 +148,11 @@
 
 
 CHANGELOG:
+ * 13th February 2014: version 1.1.00beta2
+ - Fixed default Vevacious.py to properly report thermal exclusion if found
+   during direct path thermal action calculation.
+ - Updated bin/Vevacious.py example to the default created by 1.1.00beta2.
+
  * 11th February 2014: version 1.1.00beta1
  ~ Major update!
  - Added functionality to calculate survival probability against tunneling to

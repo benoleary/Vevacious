@@ -15,7 +15,7 @@
 # (B.O'L. would like to apologize about the state of this file: ideally it
 # would be a lot neater, and respect modern programming practices. However,
 # it ended up easier to try to keep all this in one file. Maybe a later
-# version will tidy it up properly, maybe splitting it into separate 
+# version will tidy it up properly, maybe splitting it into separate
 # files...)
 #
 #
@@ -27,597 +27,547 @@ import minuit
 import VevaciousParameterDependent as VPD
 import VevaciousTreeLevelExtrema as VTE
 
-warningMessages = []
-namesOfVevs = VPD.namesOfVevs
-numberOfVevs = len( namesOfVevs )
-stepSize = ( 1.0 / VPD.energyScale )
-rollingToleranceSquared = ( VPD.rollingTolerance * VPD.rollingTolerance )
 
-effectivePotentialFunction = VPD.TreeLevelPotential
-effectivePotentialFunction = VPD.LoopCorrectedPotential
-# one could replace VPD.LoopCorrectedPotential
-# with VPD.TreeLevelPotential for a
-# tree-level analysis, for example.
+treeLevelExtrema = VTE.pointsToTry
+vcs = VPD.Vevacious(
+                EffectivePotential = VPD.LoopAndThermalCorrectedPotential )
+# Various settings can be changed here: e.g. to use the tree-level
+# potential for minimizing and tunneling, one could use
+# EffectivePotential = VPD.TreeLevelPotential
+# Even a custom potential function can be inserted here, as long as it
+# takes the correct arguments.
+vcs.allowedRunningTime = 3600.0
+# Allowing an hour of running time is maybe excessive...
 
-potentialAtVevOrigin = ( VPD.energyScaleFourth
-                         * VPD.FunctionFromDictionary( effectivePotentialFunction,
-                            VPD.vevOrigin ) )
+# WriteExtrema is not important for deciding whether a parameter point is
+# metastable, but it helps with debugging.
+vcs.WriteExtrema( treeLevelExtrema, "Vevacious_tree-level_extrema.txt" )
 
-# MINUIT's hesse() function assumes that it is already at a
-# minimum, but we need to check whether it actually stopped at a
-# saddle point, so we need to work out the Hessian matrix ourselves.
-def NumericalHessian( inputFunction, vevValues ):
-    returnHessian = [ [ 0.0 for vevIndexOne in range( numberOfVevs ) ]
-                                 for vevIndexTwo in range( numberOfVevs ) ]
-    for vevIndexOne in range( numberOfVevs ):
-        firstPoint = vevValues.copy()
-        firstStepSize = stepSize
-        firstPoint[ namesOfVevs[ vevIndexOne ] ] -= firstStepSize
-        firstDifference = ( VPD.FunctionFromDictionary( inputFunction,
-                                                        vevValues )
-                            - VPD.FunctionFromDictionary( inputFunction,
-                                                          firstPoint ) )
-        for vevIndexTwo in range( vevIndexOne, numberOfVevs ):
-            secondPoint = vevValues.copy()
-            secondStepSize = stepSize
-            secondPoint[ namesOfVevs[ vevIndexTwo ] ] += secondStepSize
-            doubleOffset = secondPoint.copy()
-            doubleOffset[ namesOfVevs[ vevIndexOne ] ] -= firstStepSize
-            returnHessian[ vevIndexOne ][ vevIndexTwo
-                         ] = ( ( VPD.FunctionFromDictionary( inputFunction,
-                                                             secondPoint )
-                               - VPD.FunctionFromDictionary( inputFunction,
-                                                             doubleOffset )
-                                 - firstDifference )
-                               / ( firstStepSize * secondStepSize ) )
-            returnHessian[ vevIndexTwo ][ vevIndexOne
-                         ] = returnHessian[ vevIndexOne ][ vevIndexTwo ]
-    return returnHessian
+# RollExtrema includes the automatic nudging off saddle points according to
+# vcs.nudgeList.
+# It also sorts the minima and sets vcs.panicVacuum and vcs.globalMinimum,
+# and vcs.dsbVacuumIsMetastable.
+vcs.RollExtrema( treeLevelExtrema )
+print( "DSB vacuum: " + vcs.ExtremumAsMathematica( vcs.dsbVacuum ) )
 
-pointsToTry = VTE.pointsToTry
-if ( 0 >= len( pointsToTry ) ):
-    warningMessage = "no tree-level extrema found!"
-    warningMessages.append( warningMessage )
-    print( warningMessage )
+# WriteMinima is also not important for deciding whether a parameter point
+# is metastable, but it helps with debugging.
+vcs.WriteMinima( "Vevacious_loop-corrected_minima.txt" )
 
-foundMinima = []
-foundSaddles = []
-
-minuitObject = minuit.Minuit( effectivePotentialFunction )
-# There is a possibility of MINUIT trying to roll off to infinity but
-# generating an overflow error in calculating the potential before throwing
-# an exception. Here limits are set on the VEVs of one hundred times
-# the energy scale, which is probably way beyond where the potential should
-# be trusted anyway.
-for vevVariable in minuitObject.values:
-    minuitObject.limits[ vevVariable ] = ( -100.0, 100.0 )
+quantumTunnelingActionType = "not_set_error"
+quantumStabilityVerdict = "not_set_error"
+thermalStabilityVerdict = "not_set_error"
+finalQuantumAction = None
+exclusionTemperature = None
+exclusionTemperatureString = "not_set_error"
+quantumTunnelingTimeInUniverseAgesString = "not_set_error"
+thermalTunnelingSurvivalProbabilityString = "not_set_error"
 
 
-def VevsHaveCorrectSigns( vevValues ):
-#    print( "checking signs of " + VPD.UserVevsAsMathematica( vevValues ) )
-    returnBool = True
-    for positiveVev in VPD.vevsTakenPositive:
-        if ( -stepSize > vevValues[ positiveVev ] ):
-            returnBool = False
-#    print( "returning " + str( returnBool ) )
-    return returnBool
+if ( not vcs.dsbVacuumIsMetastable ):
+    print( "DSB vacuum is stable (as far as the model file allows)." )
+    quantumTunnelingActionType = "unnecessary"
+    quantumStabilityVerdict = "stable"
+    thermalStabilityVerdict = "stable"
+    exclusionTemperatureString = "unnecessary"
+    quantumTunnelingTimeInUniverseAgesString = "-1.0"
+    thermalTunnelingSurvivalProbabilityString = "1.0"
+else:
+# The deepest minimum found by vcs.RollExtrema is recorded as
+# vcs.globalMinimum and it may happen to correspond to the DSB minimum.
+# If there were minima found which are deeper than the DSB minimum, the one
+# closest to the DSB minimum (or reflections of it in any field value, as
+# the potential may be invariant under a set of sign flips of the fields)
+# is recorded as the panic vacuum, in vcs.panicVacuum. The panic vacuum
+# does not necessarily correspond to vcs.globalMinimum. Strictly, all
+# minima should be checked for tunneling, but it is computationally
+# expensive, and it seems that for points of phenomenological interest, the
+# bubble wall is the dominant term so the closest minima are more likely to
+# have the lowest actions.
+    print( "Panic vacuum: "
+           + vcs.ExtremumAsMathematica( vcs.panicVacuum ) )
+    print( "Global minimum found: "
+           + vcs.ExtremumAsMathematica( vcs.globalMinimum )
+           + "\n\n" )
+    quantumStabilityVerdict = "long-lived"
+    thermalStabilityVerdict = "high_survival_probability"
+# First, a direct path between the minima is taken to get an upper bound on
+# the bounce action.
+    vcs.SetTemperature( 0.0 )
+    currentQuantumAction = vcs.CalculateAction(
+                                               falseVacuum = vcs.dsbVacuum,
+                                              trueVacuum = vcs.panicVacuum,
+                                                deformPath = False,
+                                                thermalNotQuantum = False )
+    print( "Direct path zero-temperature 4-dimensional action is "
+           + str( currentQuantumAction )           + "\n\n" )
+    exclusionTemperature = 0.0
+    quantumTunnelingActionType = "direct_path"
+    thermalTunnelingSurvivalProbabilityString = "not_calculated"
+    if ( currentQuantumAction > vcs.quantumActionThreshold ):
+# If the parameter point is not excluded by the naive straight path at zero
+# temperature, then we check thermal tunneling by direct paths to see if
+# a direct path can exclude the point, & to get an estimate of what
+# temperature to use for a full calculation with path deformation.
+        print( "Upper bound on zero-temperature full effective action by"
+               + " direct path is too high to exclude point, so trying"
+               + " direct paths at non-zero temperatures." )
+        currentThermalAction = vcs.CalculateAction(
+                                               falseVacuum = vcs.dsbVacuum,
+                                              trueVacuum = vcs.panicVacuum,
+                                                    deformPath = False,
+                                                 thermalNotQuantum = True )
+        print( "[3-dimensional action at T = 0.0 is "
+               + str( currentThermalAction ) + "]" )
+        thermallyExcluded = False
+        temperaturesWithThermalActions = []
+        thermalMinimaWithTemperatures = []
+# We try to take a shortcut by parameterizing the thermal action as a
+# polynomial in the temperature, so that we can estimate the most
+# constraining temperature for a final proper calculation. Of course, if
+# any thermal action calculated in the process already excludes the
+# parameter point, the rest of the calculation will be skipped.
+# We take the zero-temperature path for the constant part:
+        temperaturesWithThermalActions.append( [ 0.0,
+                                               currentThermalAction ] )
+        thermalMinimaWithTemperatures.append(
+                                            { "dsbVacuum": vcs.dsbVacuum,
+                                          "panicVacuum": vcs.panicVacuum,
+                                              "temperatureValue": 0.0 } )
+# Next we estimate at what temperature tunneling to the panic vacuum
+# becomes impossible. As a 1st guess, we take the temperature such that the
+# SM thermal corrections at zero VEVs would equal the difference:
+        potentialDifference = ( vcs.dsbVacuum[  "PotentialValue" ]
+                                - vcs.panicVacuum[  "PotentialValue" ] )
+# The corrections are ( T^4 / ( 2 pi^2 ) ) * sum of J functions, and the
+# values of the J functions are about 2 for massless bosonic & fermionic
+# degrees of freedom, & there are ~100 degrees of freedom in the SM. Hence
+# we take the coefficient of T^4  to be 100 / ( 2 pi^2 ) ~= 5
+        criticalTemperatureGuess = math.pow( ( potentialDifference / 5.0 ),
+                                             0.25 )
+# We aim to have a pair of temperatures, one above the critical
+# temperature, the other below (rather than hunting for the exact critical
+# temperature, which is not so important for our purposes). If the initial
+# guess was below the critical temperature, we start doubling the
+# temperature, recording the previous temperature each time. If it was
+# above, we start halving the temperature, recording the previous
+# temperature each time.
+        print( "Searching for critical temperature.\n\n" )
 
-def SteepestDescent( vevValues ):
-    eigensystemOfHessian = numpy.linalg.eigh( NumericalHessian(
-                                                effectivePotentialFunction,
-                                                              vevValues ) )
-    mostNegativeEigenvalueValue = 0.0
-    mostNegativeEigenvalueIndex = 0
-    for eigenvalueIndex in range( len( eigensystemOfHessian[ 0 ] ) ):
-        if ( mostNegativeEigenvalueValue > eigensystemOfHessian[ 0 ][
-                                                       eigenvalueIndex ] ):
-            mostNegativeEigenvalueValue = eigensystemOfHessian[ 0 ][
-                                                          eigenvalueIndex ]
-            mostNegativeEigenvalueIndex = eigenvalueIndex
-    return [ mostNegativeEigenvalueValue,
-             eigensystemOfHessian[ 1 ][ :, mostNegativeEigenvalueIndex ] ]
+        def RollVacuaAtTemperature( temperatureGuess ):
+            print( "Trying " + str( temperatureGuess ) + " GeV.\n" )
+            vcs.SetTemperature( temperatureGuess )
+            print( "DSB vacuum:" )
+            newThermalDsbVacuum = vcs.TryToMinimize( vcs.dsbVacuum[
+                                                        "FieldValues" ] )
+            print( "Panic vacuum:" )
+            newThermalPanicVacuum = vcs.TryToMinimize( vcs.panicVacuum[
+                                                        "FieldValues" ] )
+            return [ newThermalDsbVacuum, newThermalPanicVacuum ]
 
-def TryToMinimize( vevValues ):
-#    print( "trying to minimize" + VPD.UserVevsAsMathematica( vevValues ) )
-    global minuitObject
-    global foundMinima
-    global foundSaddles
-    try:
-        minuitObject.values = vevValues.copy()
-        minuitObject.migrad()
-        foundExtremum = { 'potentialDepth': minuitObject.fval,
-                          'depthError': abs( minuitObject.edm ),
-                          'vevValues': minuitObject.values.copy() }
-        candidateDescent = SteepestDescent( minuitObject.values )
-        if ( 0.0 > candidateDescent[ 0 ] ):
-            foundSaddles.append( [ foundExtremum,
-                                   list( candidateDescent[ 1 ] ) ] )
-        else:
-            foundMinima.append( foundExtremum )
-    except minuit.MinuitError as minuitError:
-        warningMessage = ( "PyMinuit had problems starting at "
-                           + VPD.UserVevsAsMathematica( vevValues )
-                           + " [minuit.MinuitError: "
-                           + str( minuitError )
-                           + "]. PyMinuit stopped at "
-                          + VPD.UserVevsAsMathematica( minuitObject.values )
-                           + " with relative depth "
-               + str( ( VPD.energyScaleFourth
-                        * VPD.FunctionFromDictionary( VPD.LoopCorrectedPotential,
-                                                    minuitObject.values ) )
-                      - potentialAtVevOrigin )
-                            + " at one-loop level and "
-                 + str( VPD.energyScaleFourth
-                        * VPD.FunctionFromDictionary( VPD.TreeLevelPotential,
-                                                    minuitObject.values ) )
-                            + " at tree level."
-               + " Minuit's estimate of how much deeper it should go is "
-                 + str( VPD.energyScaleFourth
-                        * minuitObject.edm ) )
-        warningMessages.append( warningMessage )
-        print( warningMessage )
+        minimumSeparationSquared = ( (0.1)**2
+                                     * numpy.sum( (vcs.dsbArray)**2 ) )
 
-def DisplacePoint( pointDictionary, displacementList, scaleFactor ):
-    returnDictionary = pointDictionary.copy()
-    for vevIndex in range( numberOfVevs ):
-        returnDictionary[ namesOfVevs[ vevIndex ] ] += ( scaleFactor
-                                           * displacementList[ vevIndex ] )
-    return returnDictionary
+        def MinimaAreDistinct( firstMinimum, secondMinimum ):
+            firstArray = VPD.FieldDictionaryToArray( firstMinimum[
+                                                        "FieldValues" ] )
+            secondArray = VPD.FieldDictionaryToArray( secondMinimum[
+                                                        "FieldValues" ] )
+            firstLengthSquared = numpy.sum( firstArray**2 )
+            secondLengthSquared = numpy.sum( secondArray**2 )
+            shorterLengthSquared = firstLengthSquared
+            if ( firstLengthSquared > secondLengthSquared ):
+                shorterLengthSquared = secondLengthSquared
+            if ( shorterLengthSquared < minimumSeparationSquared ):
+                shorterLengthSquared = minimumSeparationSquared
+            differenceLengthSquared = numpy.sum( ( firstArray
+                                                   - secondArray )**2 )
+            return ( differenceLengthSquared > ( (0.2)**2
+                                                 * shorterLengthSquared ) )
+
+        def TunnelingPossible( falseVacuum, trueVacuum ):
+            return ( MinimaAreDistinct( falseVacuum, trueVacuum )
+                     and
+                     ( falseVacuum[ "PotentialValue" ] > trueVacuum[
+                                                   "PotentialValue" ] ) )
+
+        thermalDsbVacuum, thermalPanicVacuum = RollVacuaAtTemperature(
+                                                 criticalTemperatureGuess )
+        while not TunnelingPossible( thermalDsbVacuum,
+                                     thermalPanicVacuum ):
+            criticalTemperatureGuess = ( 0.5 * criticalTemperatureGuess )
+            thermalDsbVacuum, thermalPanicVacuum = RollVacuaAtTemperature(
+                                                 criticalTemperatureGuess )
+# At this point, criticalTemperatureGuess is definitely below the critical
+# temperature. Now we look for the critical temperature from below:
+        while TunnelingPossible( thermalDsbVacuum, thermalPanicVacuum ):
+            thermalMinimaWithTemperatures.append(
+                                            { "dsbVacuum": vcs.dsbVacuum,
+                                          "panicVacuum": vcs.panicVacuum,
+                         "temperatureValue": criticalTemperatureGuess } )
+            criticalTemperatureGuess = ( 2.0 * criticalTemperatureGuess )
+            thermalDsbVacuum, thermalPanicVacuum = RollVacuaAtTemperature(
+                                                 criticalTemperatureGuess )
+# At this point, highestTemperatureTunneling[ "temperatureValue" ] should
+# be between 0.5 & 1.0 times the critical temperature.
+        criticalTemperatureGuess = ( 0.5 * math.sqrt( 2.0 )
+                                     * criticalTemperatureGuess )
+        thermalDsbVacuum, thermalPanicVacuum =  RollVacuaAtTemperature(
+                                                 criticalTemperatureGuess )
+        if TunnelingPossible( thermalDsbVacuum, thermalPanicVacuum ):
+            thermalMinimaWithTemperatures.append(
+                                            { "dsbVacuum": vcs.dsbVacuum,
+                                          "panicVacuum": vcs.panicVacuum,
+                         "temperatureValue": criticalTemperatureGuess } )
+# At this point,
+# thermalActionsWithTemperatures[ -1 ][ "temperatureValue" ]
+# should be within a factor of the square root of two times the critical
+# temperature.
+        highestTemperature = thermalMinimaWithTemperatures[ -1 ][
+                                                     "temperatureValue" ]
+        trialTemperatures = [ 0.5 * highestTemperature,
+                              1.0 * highestTemperature ]
+        thermalDsbVacuum = vcs.dsbVacuum
+        thermalPanicVacuum = vcs.panicVacuum
+# The thermal action is calculated for a discrete set of temperatures,
+# which must be ordered from lowest to highest.
+        for trialTemperature in trialTemperatures:
+            vcs.SetTemperature( trialTemperature )
+            thermalDsbVacuum = vcs.TryToMinimize( thermalDsbVacuum[
+                                                        "FieldValues" ] )
+            thermalPanicVacuum = vcs.TryToMinimize( thermalPanicVacuum[
+                                                        "FieldValues" ] )
+            currentThermalAction = vcs.CalculateAction(
+                                            falseVacuum = thermalDsbVacuum,
+                                           trueVacuum = thermalPanicVacuum,
+                                                        deformPath = False,
+                                                 thermalNotQuantum = True )
+            if ( currentThermalAction < vcs.thermalActionThreshold ):
+# If the action at a given temperature is low enough that the DSB vacuum
+# (or the symmetric vacuum that becomes the DSB vacuum through a 2nd-order
+# phase transition) is unlikely to have survived the time when the Universe
+# was at about that temperature, no further calculation is made.
+                print( "Parameter point is excluded by thermal tunneling"
+                       + " at temperature "
+                       + str( trialTemperature )
+                       + " GeV." )
+                thermallyExcluded = True
+                exclusionTemperature = trialTemperature
+                thermalTunnelingSurvivalProbabilityString = str(
+                                   vcs.ThermalTunnelingSurvivalProbability(
+                                                      exclusionTemperature,
+                                                   currentThermalAction ) )
+                print( "Thermal tunneling survival probability = "
+                       + thermalTunnelingSurvivalProbabilityString )
+
+            print( "\nDirect path 3-dimensional action at temperature "
+                   + str( trialTemperature )
+                   + " GeV is "
+                   + str( currentThermalAction )
+                   + " GeV.\n\n" )
+            temperaturesWithThermalActions.append( [ trialTemperature,
+                                                   currentThermalAction ] )
+# End of loop over trialTemperatures
+
+        if not thermallyExcluded:
+# If the parameter point was not excluded, we attempt to minimize the
+# costly calculation of the deformed action by guessing the optimal
+# temperature so that we only deform the path for that temperature. The
+# inverse of the action is fitted to a quadratic polynomial in the
+# temperature and then this is used for an analytic calculation of the
+# survival probability from the highest temperature in the list down to the
+# lowest.
+# Fitting a (T/Q)^2 + b (T/Q) + c to the inverses of the actions at
+# T/Q = 0.0, 0.5, and 1.0 leads to:
+            inverseActionAtZero = ( 1.0
+                               / temperaturesWithThermalActions[ 0 ][ 1 ] )
+            inverseActionAtHalf = ( 1.0
+                               / temperaturesWithThermalActions[ 1 ][ 1 ] )
+            inverseActionAtOne = ( 1.0
+                               / temperaturesWithThermalActions[ 2 ][ 1 ] )
+            quadraticCoefficient = ( ( 2.0 * ( inverseActionAtZero
+                                            - ( 2.0 * inverseActionAtHalf )
+                                             + inverseActionAtOne ) )
+                                     / ( highestTemperature
+                                         * highestTemperature ) )
+            linearCoefficient = ( ( ( 4.0 * inverseActionAtHalf )
+                                    - ( 3.0 * inverseActionAtZero )
+                                    - inverseActionAtOne )
+                                  / highestTemperature )
+            constantTerm = inverseActionAtZero
+
+            print( "(1/S_3) parameterized as ("
+                   + str( quadraticCoefficient )
+                   + ") T^2 + ("
+                   + str( linearCoefficient )
+                   + ") T + ("
+                   + str( constantTerm )
+                   + ")\n\n" )
+
+            def LowestAction( givenTemperaturesWithActions ):
+# The addition of 1.0 to the temperatures is to prevent division by zero.
+                lowRatio = ( givenTemperaturesWithActions[ 0 ][ 1 ]
+                       / ( givenTemperaturesWithActions[ 0 ][ 0 ] + 1.0 ) )
+                middleRatio = ( givenTemperaturesWithActions[ 1 ][ 1 ]
+                       / ( givenTemperaturesWithActions[ 1 ][ 0 ] + 1.0 ) )
+                highRatio = ( givenTemperaturesWithActions[ 2 ][ 1 ]
+                       / ( givenTemperaturesWithActions[ 2 ][ 0 ] + 1.0 ) )
+                if ( ( highRatio < middleRatio )
+                     and
+                     ( highRatio < lowRatio ) ):
+                    return [ givenTemperaturesWithActions[ 2 ][ 0 ],
+                                   givenTemperaturesWithActions[ 2 ][ 1 ] ]
+                elif ( middleRatio < lowRatio ):
+                    return [ givenTemperaturesWithActions[ 1 ][ 0 ],
+                                   givenTemperaturesWithActions[ 1 ][ 1 ] ]
+                else:
+                    return [ givenTemperaturesWithActions[ 0 ][ 0 ],
+                                   givenTemperaturesWithActions[ 0 ][ 1 ] ]
+
+            if ( ( constantTerm <= 0.0 )
+                or
+                ( quadraticCoefficient >= 0.0 ) ):
+                print ( "Quadratic fit to temperature dependence of"
+                        + " inverse of thermal action not going to work,"
+                        + " as coefficients came out giving"
+                        + " unextrapolatable results. Choosing"
+                        + " temperature with lowest explicitly"
+                        + " calculated action." )
+                exclusionTemperature, currentAction = LowestAction(
+                                           temperaturesWithThermalActions )
+            else:
+# Taking [decay width per horizon]
+# = [horizon volume] * [solitonic coefficient] * exp(-[thermal action]/T)
+# at temperature T, where [horizon volume] = ( M_Plank / T^2 )^3, & taking
+# [solitonic coefficient] to be T^4,
+# the survival probability per horizon = exp( -[time at T] / [decay time] )
+# = exp( -[decay width per horizon] * ( M_Plank / T^2 ) )
+# which exponents for N horizons to
+# exp( -N [decay width per horizon] * ( M_Plank / T^2 ) )
+# and [decay width per horizon] = M_Plank^3 T^(-2) exp(-[thermal action]/T)
+# We minimize [decay width per horizon] / ( M_Plank / T^2 ) as
+# exp( x( T ) ) is minimized when x( T ) is minimized, to see if the
+# parameter point is excluded by thermal tunneling.
+                inversePlanckFourVolume = (VPD.reducedPlanckMass)**4
+                def ThermalActionOverT( T ):
+                    return ( 1.0 / ( ( ( quadraticCoefficient * T * T )
+                                     + ( linearCoefficient * T )
+                                     + constantTerm ) * T ) )
+
+                def ScaledDecayWithPerHorizonOverTimeAtTPlusLogarithm( T ):
+                    return ( ThermalActionOverT( T )
+                             + ( 4.0 * math.log( T ) ) )
+
+                temperatureFitMinuit = minuit.Minuit( ThermalActionOverT )
+                temperatureFitMinuit.values[ 'T'
+                               ] = temperaturesWithThermalActions[ 1 ][ 0 ]
+                try:
+                    temperatureFitMinuit.migrad()
+                    exclusionTemperature = temperatureFitMinuit.values[
+                                                                    'T' ]
+                    print( "Estimate based just on S_3/T of temperature"
+                           + " with lowest survival probability is "
+                           + str( exclusionTemperature )
+                           + " GeV.\n\n" )
+                    try:
+                        temperatureFitMinuit = minuit.Minuit(
+                        ScaledDecayWithPerHorizonOverTimeAtTPlusLogarithm )
+                        temperatureFitMinuit.values[ 'T'
+                                                   ] = exclusionTemperature
+                        temperatureFitMinuit.migrad()
+                        exclusionTemperature = temperatureFitMinuit.values[
+                                                                    'T' ]
+                        print( "Estimate based on -T^-4 exp( S_3 / T )"
+                               + " of temperature with lowest survival"
+                               + " probability is "
+                               + str( exclusionTemperature )
+                               + " GeV.\n\n" )
+                    except minuit.MinuitError as minuitError:
+                        print( "PyMinuit threw an exception when trying"
+                               + " to minimize the thermal survival"
+                               + " probability. The thermal action"
+                               + " estimated from minimizing just S_3/T"
+                               + " will now be used." )
+                    except Exception as unexpectedException:
+                        print( "Some lower-level exception happened:\n"
+                               + str( unexpectedException )
+                               + "\nwhile PyMinuit was trying to"
+                               + " minimize the thermal survival"
+                               + " probability. The thermal action"
+                               + " estimated from minimizing just S_3/T"
+                               + " will now be used." )
+                    vcs.SetTemperature( exclusionTemperature )
+                    thermalDsbVacuum = vcs.TryToMinimize( thermalDsbVacuum[
+                                                        "FieldValues" ] )
+                    thermalPanicVacuum = vcs.TryToMinimize(
+                                    thermalPanicVacuum[ "FieldValues" ] )
+                    currentThermalAction = vcs.CalculateAction(
+                                            falseVacuum = thermalDsbVacuum,
+                                           trueVacuum = thermalPanicVacuum,
+                                                        deformPath = False,
+                                                 thermalNotQuantum = True )
+                    print( "\n\nCalculated thermal action = "
+                           + str( currentThermalAction )
+                           + " GeV." )
+                    print( "Estimated thermal action  = "
+                           + str( exclusionTemperature
+                                  * ( temperatureFitMinuit.fval
+                                      - ( 4.0
+                                 * math.log( exclusionTemperature ) ) ) )
+                           + " GeV.\n\n" )
+
+                except minuit.MinuitError as minuitError:
+                    print( "PyMinuit threw an exception when trying to"
+                           + " minimize the thermal survival"
+                           + " probability. The lowest explicitly"
+                           + " calculated thermal action will now be"
+                           + " used." )
+                    [ exclusionTemperature,
+                      currentThermalAction ] = LowestAction(
+                                           temperaturesWithThermalActions )
+
+                except Exception as unexpectedException:
+                    print( "Some lower-level exception happened:\n"
+                           + str( unexpectedException )
+                           + "\nwhile PyMinuit was trying to"
+                           + " minimize the thermal survival"
+                           + " probability. The thermal action"
+                           + " estimated from minimizing just S_3/T"
+                           + " will now be used." )
+                thermalMinimaWithTemperatures.append(
+                                         { "dsbVacuum": thermalDsbVacuum,
+                                       "panicVacuum": thermalPanicVacuum,
+                             "temperatureValue": exclusionTemperature } )
+# End of fitting the thermal action.
+
+    exclusionTemperatureString = "unnecessary"
+    quantumTunnelingTimeInUniverseAgesString = "-1.0"
+
+    if ( not vcs.AllowedRunningTimeExceeded() ):
+# Here we continue to check the zero-temperature quantum tunneling (if the
+# direct path at zero temperature did not already exclude the point):
+        vcs.SetTemperature( 0.0 )
+        currentQuantumAction = vcs.CalculateAction(
+                                               falseVacuum = vcs.dsbVacuum,
+                                              trueVacuum = vcs.panicVacuum,
+                                                    deformPath = True,
+                                                 thermalNotQuantum = False,
+                                                    maxiter2 = 3 )
+# maxiter2 is a keyword argument which gets passed along to
+# the CosmoTransitions fullTunneling object when it calls self.run(), which
+# controls how many iterations of the outer loop of the deformation happen.
+        quantumTunnelingActionType = "deformed_path"
+        print( "Final deformed path zero-temperature 4-dimensional"
+               + " action is "
+               + str( currentQuantumAction )
+               + " units of h-bar.\n\n" )
+        quantumTunnelingTimeInInverseGev = (
+                                      vcs.QuantumTunnelingTimeInInverseGev(
+                                                   currentQuantumAction ) )
+        print( "Zero-temperature tunneling time in 1/GeV = "
+              + str( quantumTunnelingTimeInInverseGev ) )
+        print( "Age of known Universe in 1/Gev = "
+               + str( vcs.ageOfKnownUniverseInInverseGev ) )
+        quantumTunnelingTimeInUniverseAges = (
+                                           quantumTunnelingTimeInInverseGev
+                                     / vcs.ageOfKnownUniverseInInverseGev )
+        print( "Tunneling time in Universe-ages = "
+              + str( quantumTunnelingTimeInUniverseAges ) )
+        quantumTunnelingTimeInSeconds = str(
+                                            vcs.ageOfKnownUniverseInSeconds
+                                     * quantumTunnelingTimeInUniverseAges )
+        print( "Zero-temperature tunneling time estimate is "
+               + quantumTunnelingTimeInSeconds
+               + " seconds (age of known Universe = "
+               + str( vcs.ageOfKnownUniverseInSeconds )
+               + " seconds).\n\n" )
+        if ( currentQuantumAction < vcs.quantumActionThreshold ):
+            quantumStabilityVerdict = "short-lived"
+        elif ( not ( thermallyExcluded
+                     or
+                     vcs.AllowedRunningTimeExceeded() ) ):
+# If the parameter point was not excluded just by quantum tunneling, we
+# calculate whether fully deformed thermal tunneling excludes it.
+            exclusionTemperature = thermalMinimaWithTemperatures[ -1 ][
+                                                     "temperatureValue" ]
+            thermalDsbVacuum = thermalMinimaWithTemperatures[ -1 ][
+                                                            "dsbVacuum" ]
+            thermalPanicVacuum = thermalMinimaWithTemperatures[ -1 ][
+                                                          "panicVacuum" ]
+            vcs.SetTemperature( exclusionTemperature )
+            print( "Deforming tunneling path at temperature "
+                   + str( exclusionTemperature )
+                   + " GeV." )
+            print( "At this temperature, the threshold ratio of"
+                   + " 3-dimensional action to temperature is "
+                   + str( vcs.thermalActionThreshold
+                          / exclusionTemperature )
+                   + ", hence the threshold 3-dimensional action is "
+                   + str( vcs.thermalActionThreshold )
+                   + " GeV.\n\n" )
+            currentThermalAction = vcs.CalculateAction(
+                                            falseVacuum = thermalDsbVacuum,
+                                           trueVacuum = thermalPanicVacuum,
+                                                        deformPath = True,
+                                                  thermalNotQuantum = True,
+                                                        maxiter2 = 3 )
+            print( "Final 3-dimensional action  at this temperature = "
+                   + str( currentThermalAction )
+                   + " GeV.\n\n" )
+            if ( currentThermalAction < vcs.thermalActionThreshold ):
+                thermalStabilityVerdict = "low_survival_probability"
+
+        exclusionTemperatureString = str( exclusionTemperature )
+        print( "Temperature for basing thermal tunneling exclusion = "
+               + exclusionTemperatureString
+               + " GeV.\n\n" )
+
+    quantumTunnelingTimeInUniverseAgesString = str(
+                                       quantumTunnelingTimeInUniverseAges )
+    thermalTunnelingSurvivalProbabilityString = str(
+                                   vcs.ThermalTunnelingSurvivalProbability(
+                                                      exclusionTemperature,
+                                                   currentThermalAction ) )
 
 
-# the global minimum of the tree-level potential is also recorded, in case
-# loop corrections move around basins of attraction too far.
-globalTreeMinimum = pointsToTry[ 0 ]
-for vevKey in globalTreeMinimum.keys():
-    globalTreeMinimum[ vevKey ] = 0.0
-globalTreeMinimumDepth = VPD.FunctionFromDictionary( VPD.TreeLevelPotential,
-                                                        globalTreeMinimum )
-for vevValueSet in pointsToTry:
-    if ( VevsHaveCorrectSigns( vevValueSet ) ):
-        TryToMinimize( vevValueSet )
-        treeLevelDepth = VPD.FunctionFromDictionary( VPD.TreeLevelPotential,
-                                             vevValueSet )
-        if ( treeLevelDepth < globalTreeMinimumDepth ):
-            globalTreeMinimum = vevValueSet.copy()
-            globalTreeMinimumDepth = treeLevelDepth
-
-for saddleSplitNudge in VPD.saddleSplitNudges:
-    if ( 0 < len( foundSaddles ) ):
-        print( "PyMinuit had to be nudged off "
-               + str( len( foundSaddles ) ) + " saddle point(s)." )
-        pointsToTry = []
-        for saddlePoint in foundSaddles:
-            pointsToTry.append( DisplacePoint(
-                                         saddlePoint[ 0 ][ 'vevValues' ],
-                                                       saddlePoint[ 1 ], 
-                                                       saddleSplitNudge ) )
-            pointsToTry.append( DisplacePoint(
-                                         saddlePoint[ 0 ][ 'vevValues' ],
-                                                       saddlePoint[ 1 ], 
-                                                      -saddleSplitNudge ) )
-        foundSaddles = []
-        for vevValueSet in pointsToTry:
-            if ( VevsHaveCorrectSigns( vevValueSet ) ):
-                TryToMinimize( vevValueSet )
-
-globalMinimumCandidates = foundMinima
-
-# This bit of code adds in any remaining saddle points to
-# globalMinimumCandidates as well as setting up warning messages:
-if ( 0 != len( foundSaddles ) ):
-    warningMessage = ( str( len( foundSaddles ) )
-                       + " extremum/a with at least one descending or"
-                     + " flat direction remained after all nudging:" )
-    for saddlePoint in foundSaddles:
-        warningMessage += "\n " + VPD.UserVevsAsMathematica(
-                                        saddlePoint[ 0 ][ 'vevValues' ] )
-        globalMinimumCandidates.append( saddlePoint[ 0 ] )
-    warningMessages.append( warningMessage )
-    print( warningMessage )
-
-# If the input vacuum is the global minimum, actionValue is set to -1.0.
-# Non-negative values of actionValue indicate the current upper bound on
-# the action after the last approximation. It starts stupidly high
-# (the current age of the Universe corresponds to an action of about 400)
-# so that the first requested bounding estimate will be calculated.
-actionNeedsToBeCalculated = False
-stabilityVerdict = "error"
-actionValue = 1000000.0
-actionType = "error"
-tunnelingTime = -2.0
-
-if ( 0 >= len( globalMinimumCandidates ) ):
-    warningMessage = "no 1-loop-level extrema found!"
-    warningMessages.append( warningMessage )
-    print( warningMessage )
-
-# The result is assumed long-lived metastable unless found otherwise.
-stabilityVerdict = "long-lived"
-givenInputAsArray = VPD.VevDictionaryToArray( VPD.inputVevsPoint )
-minuitObject.values = VPD.inputVevsPoint.copy()
-foundSaddles = []
-try:
-    minuitObject.migrad()
-    candidateDescent = SteepestDescent( minuitObject.values )
-    if ( 0.0 > candidateDescent[ 0 ] ):
-        warningMessage = (
-                     "Input VEVs seem to correspond to a saddle point!" )
-        warningMessages.append( warningMessage )
-        print( warningMessage )
-except minuit.MinuitError as minuitError:
-    warningMessage = ( "PyMinuit had problems starting at input VEVs! "
-                     + VPD.UserVevsAsMathematica( VPD.inputVevsPoint )
-                       + " [minuit.MinuitError: "
-                       + str( minuitError )
-                       + "]. PyMinuit stopped at "
-                       + VPD.UserVevsAsMathematica( minuitObject.values )
-                       + " with relative depth "
-               + str( ( VPD.energyScaleFourth
-                        * VPD.FunctionFromDictionary( VPD.LoopCorrectedPotential,
-                                                    minuitObject.values ) )
-                      - potentialAtVevOrigin )
-                            + " at one-loop level and "
-                 + str( VPD.energyScaleFourth
-                        * VPD.FunctionFromDictionary( VPD.TreeLevelPotential,
-                                                    minuitObject.values ) )
-                        + " at tree level."
-               + " Minuit's estimate of how much deeper it should go is "
-                 + str( VPD.energyScaleFourth
-                        * minuitObject.edm ) )
-    warningMessages.append( warningMessage )
-    print( warningMessage )
-rolledInputAsDictionary = minuitObject.values.copy()
-# Occasionally degenerate minima with different signs, that are equivalent
-# under a gauge transformation, appear, & by the nature of the algorithm,
-# MINUIT might roll closer to the sign-flipped minimum than how close it
-# rolls to the input minimum. In such cases, the (extremely long) tunneling
-# time to the gauge-equivalent minimum would be calculated. To avoid this,
-# the input minimum is conservatively taken to have a depth equal to that
-# found by MINUIT minus twice MINUIT's error.
-rolledInputDepth = minuitObject.fval - abs( 2.0 * minuitObject.edm )
-# The input VEV point is taken as the global minimum to begin with:
-globalMinimumPointAsDictionary = rolledInputAsDictionary.copy()
-globalMinimumDepthError = abs( minuitObject.edm )
-globalMinimumDepthValue = rolledInputDepth
-rolledInputAsArray = VPD.VevDictionaryToArray( rolledInputAsDictionary )
-rollDistanceSquared = numpy.sum( ( rolledInputAsArray
-                                   - givenInputAsArray )**2 )
-if ( ( rollingToleranceSquared * numpy.sum( givenInputAsArray**2 ) )
-     < rollDistanceSquared ):
-    warningMessage = (
-                  "PyMinuit rolled quite far from the input VEVs! (from "
-             + str( VPD.UserVevsAsMathematica( VPD.inputVevsPoint ) ) + " to "
-             + str( VPD.UserVevsAsMathematica( minuitObject.values ) ) + ")" )
-    warningMessages.append( warningMessage )
-    print( warningMessage )
-rolledInputLengthSquared = numpy.sum( rolledInputAsArray**2 )
-
-outputFile = open( "./Vevacious_loop-corrected_results.txt", "w" )
-
-for globalMinimumCandidate in globalMinimumCandidates:
-    outputFile.write( str( globalMinimumCandidate[ 'potentialDepth' ]
-                           * VPD.energyScaleFourth ) + ", "
-                      + VPD.UserVevsAsMathematica(
-                      globalMinimumCandidate[ 'vevValues' ] ) + "\n" )
-    if ( globalMinimumDepthValue
-         > globalMinimumCandidate[ 'potentialDepth' ] ):
-        actionNeedsToBeCalculated = True
-        globalMinimumPointAsDictionary = globalMinimumCandidate[
-                                                     'vevValues' ].copy()
-        globalMinimumDepthValue = globalMinimumCandidate[
-                                                       'potentialDepth' ]
-        globalMinimumDepthError = globalMinimumCandidate[ 'depthError' ]
-
-outputFile.close()
-
-numericallyDegenerateCandidates = []
-for globalMinimumCandidate in globalMinimumCandidates:
-    if ( ( globalMinimumCandidate[ 'depthError' ]
-           + globalMinimumDepthError )
-         > ( globalMinimumCandidate[ 'potentialDepth' ]
-             - globalMinimumDepthValue ) ):
-       numericallyDegenerateCandidates.append(
-                                            globalMinimumCandidate.copy() )
-
-shortestDistanceSquared = -1.0
-for closeEnoughMinimum in numericallyDegenerateCandidates:
-    if ( rolledInputDepth > closeEnoughMinimum[ 'potentialDepth' ] ):
-        closeEnoughMinimumAsArray = VPD.VevDictionaryToArray(
-                                      closeEnoughMinimum[ 'vevValues' ] )
-        distanceSquaredToInput = numpy.sum( ( closeEnoughMinimumAsArray
-                                              - rolledInputAsArray )**2 )
-# shortestDistanceSquared is negative before the 1st
-# candidate minimum has been checked for its distance from the input
-# VEVs, so this 1st "if" ensures that the 1st candidate minimum
-# is taken as the best minimum so far automatically.
-        if ( shortestDistanceSquared < 0.0 ):
-            shortestDistanceSquared = ( distanceSquaredToInput + 1.0 )
-        if ( distanceSquaredToInput < shortestDistanceSquared ):
-            shortestDistanceSquared = distanceSquaredToInput
-            globalMinimumPointAsDictionary = closeEnoughMinimum[
-                                                     'vevValues' ].copy()
-
-globalMinimumPointAsArray = VPD.VevDictionaryToArray(
-                                           globalMinimumPointAsDictionary )
-
-# if the global minimum is sufficiently far away from the input VEVs that
-# it is unlikely that is was just that MINUIT did not roll exactly to where
-# there should have been a minimum at the input VEVs...
-distanceSquaredFromInputToGlobalMinimum = numpy.sum( (
-                      globalMinimumPointAsArray - rolledInputAsArray )**2 )
-
-# this is a check that there wasn't a weird expansion of the basin of
-# attraction of the loop input minimum to include the tree minimum that
-# should have rolled to an undesired loop minimum that moved, with its
-# basin of attraction, quite far away.
-if ( ( rollingToleranceSquared * rolledInputLengthSquared )
-     > distanceSquaredFromInputToGlobalMinimum ):
-    globalTreeMinimumAsArray = VPD.VevDictionaryToArray( globalTreeMinimum )
-    if ( ( rollingToleranceSquared * rolledInputLengthSquared )
-         < numpy.sum( ( globalTreeMinimumAsArray
-                        - rolledInputAsArray )**2 ) ):
-        warningMessage = ( "Initially judged stable at 1-loop level, but"
-                          + " (possibly) metastable at tree level!"
-                          + " Adding scaled tree-level global minimum as"
-                          + " an extra PyMinuit starting point." )
-        warningMessages.append( warningMessage )
-        print( warningMessage )
-        for vevKey in globalTreeMinimum.keys():
-            globalTreeMinimum[ vevKey ] = ( 2.0
-                                            * globalTreeMinimum[ vevKey ] )
-        minuitObject.values = globalTreeMinimum.copy()
-        try:
-            minuitObject.migrad()
-        except minuit.MinuitError as minuitError:
-            warningMessage = ( "PyMinuit had problems starting at"
-                               + " doubled VEVs of tree-level global"
-                               + " minimum! "
-                               + VPD.UserVevsAsMathematica( VPD.inputVevsPoint )
-                               + " [minuit.MinuitError: "
-                               + str( minuitError )
-                               + "]. PyMinuit stopped at "
-                          + VPD.UserVevsAsMathematica( minuitObject.values )
-                               + " with relative depth "
-               + str( ( VPD.energyScaleFourth
-                        * VPD.FunctionFromDictionary( VPD.LoopCorrectedPotential,
-                                                    minuitObject.values ) )
-                      - potentialAtVevOrigin )
-                               + " at one-loop level and "
-                 + str( VPD.energyScaleFourth
-                        * VPD.FunctionFromDictionary( VPD.TreeLevelPotential,
-                                                    minuitObject.values ) )
-                               + " at tree level."
-               + " Minuit's estimate of how much deeper it should go is "
-                 + str( VPD.energyScaleFourth
-                        * minuitObject.edm ) )
-            warningMessages.append( warningMessage )
-            print( warningMessage )
-        globalMinimumPointAsDictionary = minuitObject.values.copy()
-        globalMinimumPointAsArray = VPD.VevDictionaryToArray( minuitObject.values )
-        globalMinimumDepthValue = minuitObject.fval
-        distanceSquaredFromInputToGlobalMinimum = numpy.sum( (
-                      globalMinimumPointAsArray - rolledInputAsArray )**2 )
-        actionNeedsToBeCalculated = True
-        print( "scaled point rolled to "
-                       + VPD.UserVevsAsMathematica( minuitObject.values )
-               + " [distanceSquaredFromInputToGlobalMinimum = "
-               + str( distanceSquaredFromInputToGlobalMinimum )
-         + " ; ( rollingToleranceSquared * rolledInputLengthSquared ) = "
-            + str( ( rollingToleranceSquared * rolledInputLengthSquared ) )
-                       + "] with relative depth "
-               + str( ( VPD.energyScaleFourth
-                        * VPD.FunctionFromDictionary( VPD.LoopCorrectedPotential,
-                                                    minuitObject.values ) )
-                      - potentialAtVevOrigin ) )
-        if ( globalMinimumDepthValue >= rolledInputDepth ):
-            globalMinimumPointAsDictionary = rolledInputAsDictionary
-            globalMinimumPointAsArray = rolledInputAsArray
-            globalMinimumDepthValue = rolledInputDepth
-            distanceSquaredFromInputToGlobalMinimum = 0.0
-            actionNeedsToBeCalculated = False
-
-
-# The decay width per unit volume, following Sidney Coleman, is of the form
-# A exp( -[bounce action] ), where A is a solitonic solution that is
-# usually actually just estimated on dimensional grounds, as since the
-# action needs to be about 400 for a tunneling time of about 14 billion
-# years, so getting the action right to a per-cent is more important than
-# getting the A factor right within a factor of 3! Hence we just take A to
-# be the scale from the SLHA file to the fourth power, which should be
-# about the same size as the largest dimensionful Lagrangian parameter
-# entering the effective potential (to stabilize loop corrections), so
-# coincidentally should be the same order of magnitude as one would expect
-# the solitonic solutions to be. The user can modify this here, if they
-# feel that it should be something else, e.g. 0.1 times this value, or that
-# instead it should be of the order of the electroweak VEV of 246 GeV.
-# fourthRootOfSolitonicFactorA should be in units of GeV (as it is
-# A^(1/4)).
-fourthRootOfSolitonicFactorA = VPD.energyScaleFourth
-
-# The age of the known Universe is pretty close to exactly (10^(41))/GeV.
-ageOfTheKnownUniverseInInverseGev = 1.0E+41
-
-# The tunneling time calculation action thresholds are initially turned
-# off, but if positive lifetime thresholds were given, the action
-# thresholds get set correctly.
-directActionThreshold = -1
-deformedActionThreshold = -1
-# The tunneling time should be something like
-# (decay width / unit volume)^(1/4), which explains the factor of 4.0 in
-# the following thresholds on the bounce action.
-# (This is from:
-# Gamma_threshold / unit volume = t_threshold^(-4) = A exp( -B_threshold )
-# -B_threshold = ln( 1 / ( A t_threshold^4 ) )
-# B_threshold = 4 ln( A^(1/4) t_threshold )
-# hence the factor of 4 for the threshold actions.)
-if ( 0.0 < VPD.directLifetimeBound ):
-    directActionThreshold = ( 4.0 * math.log( VPD.directLifetimeBound
-                                        * ageOfTheKnownUniverseInInverseGev
-                                         * fourthRootOfSolitonicFactorA ) )
-if ( 0.0 < VPD.deformedLifetimeBound ):
-    deformedActionThreshold = ( 4.0 * math.log( VPD.deformedLifetimeBound
-                                        * ageOfTheKnownUniverseInInverseGev
-                                         * fourthRootOfSolitonicFactorA ) )
-
-
-# If the input vacuum is the global minimum, actionValue is set to -1.0.
-# Non-negative values of actionValue indicate the current upper bound on
-# the action after the last approximation. It starts stupidly high
-# (the current age of the Universe corresponds to an action of about 400,
-# for an A factor of (100 GeV)^4) so that the first requested bounding
-# estimate will be calculated.
-if ( ( rollingToleranceSquared * rolledInputLengthSquared )
-     >= distanceSquaredFromInputToGlobalMinimum ):
-    stabilityVerdict = "stable"
-    actionValue = -1.0
-    tunnelingTime = -1.0
-    actionType = "unnecessary"
-    actionNeedsToBeCalculated = False
-
-# The resolution of the tunneling path needs to be set
-# (low-ish by default for speed):
-tunnelingResolution = 50
-
-if ( actionNeedsToBeCalculated
-     and ( ( 0.0 < directActionThreshold )
-           or ( 0.0 < deformedActionThreshold ) ) ):
-    firstStepPoint = ( ( rolledInputAsArray
-                         * ( 1.0 - ( 1.0 / tunnelingResolution ) ) )
-                       + ( globalMinimumPointAsArray
-                           * ( 1.0 / tunnelingResolution ) ) )
-    firstStepDepth = VPD.FunctionFromArray( effectivePotentialFunction,
-                                                firstStepPoint )
-    if ( rolledInputDepth >= firstStepDepth ):
-        actionType = "barrier_smaller_than_resolution"
-        actionValue = 0.0
-        tunnelingTime = 0.0
-        stabilityVerdict = "short-lived"
-        actionNeedsToBeCalculated = False
-        warningMessage = ( "Energy barrier from input VEVs to global"
-                        + " minimum thinner than resolution of tunneling"
-                           + " path!" )
-        warningMessages.append( warningMessage )
-        print( warningMessage )
-
-if ( actionNeedsToBeCalculated
-     and ( ( 0.0 < directActionThreshold )
-           or ( 0.0 < deformedActionThreshold ) ) ):
-    import sys
-    sys.path.append( VPD.pathToCosmotransitions )
-    import pathDeformation as CPD
-
-    arrayOfArrays = numpy.array( [ globalMinimumPointAsArray.copy(),
-                                   rolledInputAsArray.copy() ] )
-
-    def PotentialFromArray( pointAsArray ):
-        return VPD.FunctionFromArray( effectivePotentialFunction,
-                                                             pointAsArray )
-
-    def PotentialFromMatrix( arrayOfArrays ):
-        if ( ( numberOfVevs, ) == arrayOfArrays.shape ):
-            return PotentialFromArray( arrayOfArrays )
-        elif ( ( len( arrayOfArrays ), numberOfVevs )
-               == arrayOfArrays.shape ):
-            returnArray = numpy.zeros( len( arrayOfArrays ) )
-            for whichIndex in range( len( arrayOfArrays ) ):
-                returnArray[ whichIndex ] = PotentialFromArray(
-                                              arrayOfArrays[ whichIndex ] )
-            return returnArray
-        else:
-            return None
-
-    def GradientFromArray( pointAsArray ):
-        potentialAtPoint = PotentialFromArray( pointAsArray )
-        gradientArray = numpy.zeros( len( pointAsArray ) )
-        for whichField in range( len( pointAsArray ) ):
-            displacedPoint = pointAsArray.copy()
-            displacedPoint[ whichField ] += stepSize
-            gradientArray[ whichField ] = (
-                                     ( PotentialFromArray( displacedPoint )
-                                       - potentialAtPoint ) / stepSize )
-        return gradientArray
-
-    def GradientFromMatrix( arrayOfArrays ):
-        if ( ( numberOfVevs, ) == arrayOfArrays.shape ):
-            return GradientFromArray( arrayOfArrays )
-        elif ( ( len( arrayOfArrays ), numberOfVevs )
-               == arrayOfArrays.shape ):
-            returnMatrix = arrayOfArrays.copy()
-            for whichIndex in range( len( arrayOfArrays ) ):
-                returnMatrix[ whichIndex ] = GradientFromArray(
-                                              arrayOfArrays[ whichIndex ] )
-            return returnMatrix
-        else:
-            return None
-
-    if ( ( 0.0 < directActionThreshold )
-         and ( actionValue > directActionThreshold ) ):
-        quickTunneler = CPD.fullTunneling( phi = arrayOfArrays,
-                                           V = PotentialFromMatrix,
-                                           dV = GradientFromMatrix,
-                                           alpha = 3,
-                                           npoints = tunnelingResolution,
-                                           quickTunneling = False )
-        quickTunneler.tunnel1D( xtol = 1e-4, phitol = 1e-6 )
-        actionValue = quickTunneler.findAction()
-        actionType = "direct_path_bound"
-        print( "direct action = " + str( actionValue ) )
-        if( actionValue < directActionThreshold ):
-            stabilityVerdict = "short-lived"
-            actionNeedsToBeCalculated = False
-
-    if ( actionNeedsToBeCalculated
-         and ( 0.0 < deformedActionThreshold )
-         and ( actionValue > deformedActionThreshold ) ):
-        fullTunneler = CPD.fullTunneling( phi = arrayOfArrays,
-                                           V = PotentialFromMatrix,
-                                           dV = GradientFromMatrix,
-                                           alpha = 3,
-                                           npoints = tunnelingResolution,
-                                           quickTunneling = False )
-# setting a maximum of 20 path deformation iterations before giving up on
-# finding the optimal path may seem defeatist, but I have rarely seen it
-# converge if it hasn't within the first few iterations. an action is still
-# calculated, though it may not be the minimum action possible.
-        fullTunneler.run( maxiter = 200 )
-        actionValue = fullTunneler.findAction()
-        actionType = "full_deformed_path"
-        print( "deformed action = " + str( actionValue ) )
-        if ( actionValue < deformedActionThreshold ):
-            stabilityVerdict = "short-lived"
-            actionNeedsToBeCalculated = False
-
-# No matter if there were serious errors or not, an output file is written:
+# Finally the output file is written:
+outputText = ( "  <reference version=\" 1.1.00beta1\""
+               + " citation=\" arXiv:1307.1477 (hep-ph)\" />\n"
+               + "  <stability> "
+               + quantumStabilityVerdict
+               + " </stability>\n"
+               + "  <quantum_stability> "
+               + quantumStabilityVerdict
+               + " </quantum_stability>\n"
+               + "  <thermal_stability> "
+               + thermalStabilityVerdict
+               + " </thermal_stability>\n"
+               + "  <global_minimum   relative_depth=\""
+               + str( vcs.panicVacuum[ "PotentialValue" ] )
+               + "\" "
+               + VPD.UserFieldsAsXml( vcs.panicVacuum[ "FieldValues" ] )
+               + " />\n  <input_minimum   relative_depth=\""
+               + str( vcs.dsbVacuum[ "PotentialValue" ] )
+               + "\" "
+               + VPD.UserFieldsAsXml( vcs.dsbVacuum[ "FieldValues" ] )
+               + " />\n  <lifetime  action_calculation=\""
+               + quantumTunnelingActionType
+               + "\" > "
+               + quantumTunnelingTimeInUniverseAgesString
+               + " </lifetime>\n"
+               + " <tunneling_temperature survival_probability=\""
+               + thermalTunnelingSurvivalProbabilityString
+               + "\" > "
+               + exclusionTemperatureString
+               + " </tunneling_temperature>" )
 outputFile = open( VPD.outputFile, "w" )
 outputFile.write( "<Vevacious_result>\n"
-                  + "  <reference version=\"1.0.11\" citation=\"arXiv:1307.1477 (hep-ph)\" />\n"
-             + "  <stability> " + stabilityVerdict + " </stability>\n"
-                  + "  <global_minimum   relative_depth=\""
-                      + str( ( globalMinimumDepthValue * VPD.energyScaleFourth ) - potentialAtVevOrigin ) + "\" "
-                      + VPD.UserVevsAsXml( globalMinimumPointAsDictionary )
-                      + " />\n  <input_minimum   relative_depth=\""
-                      + str( ( rolledInputDepth * VPD.energyScaleFourth ) - potentialAtVevOrigin ) + "\" "
-                      + VPD.UserVevsAsXml( rolledInputAsDictionary )
-                      + " />" )
-if ( 0.0 <= actionValue ):
-# We don't want an overflow error when calculating the tunneling time.
-    if ( 1000.0 < actionValue ):
-        actionValue = 1000.0
-# The tunneling time should be something like
-# (decay width / unit volume)^(1/4), which explains the factor of 0.25 in
-# the exponential here.
-    tunnelingTime = ( math.exp( 0.25 * actionValue )
-                      / ( ageOfTheKnownUniverseInInverseGev
-                          * fourthRootOfSolitonicFactorA ) )
-    if ( 1000000.0 < tunnelingTime ):
-        tunnelingTime = 1000000.0
-# The tunneling time is given in units of the current age of the known
-# Universe, and is capped at one million.
-outputFile.write( "\n  <lifetime  action_calculation=\"" + actionType
-                  + "\" > " + str( tunnelingTime ) + " </lifetime>" )
-# Each warning is printed as an XML element:
-for warningMessage in warningMessages:
-    outputFile.write( "\n  <warning>\n  " + warningMessage
+                  + outputText )# Each warning is printed as an XML element:
+for warningMessage in vcs.warningMessages:
+    outputFile.write( "\n  <warning>\n  "
+                      + warningMessage
                       + "\n  </warning>" )
 outputFile.write( "\n</Vevacious_result>\n" )
 outputFile.close()
+print( "Result summary (not recapping warnings):\n"       + outputText )
+
