@@ -148,6 +148,16 @@
 
 
 CHANGELOG:
+ * 14th February 2014: version 1.1.00beta3
+ - Fixed default Vevacious.py to properly exclude field configurations
+   that would be the DSB minimum but for numerical effects from the list of
+   possible panic vacua.
+ - Put function back in to limit MINUIT to a hypercube in field space in
+   default Vevacious.py code.
+ - Improved fit function for guess at temperature dependence of thermal action
+   by direct path in default Python code (now a quadratic divided by the square
+   of the difference from the best guess at the critical temperature).
+
  * 13th February 2014: version 1.1.00beta2
  - Fixed default Vevacious.py to properly report thermal exclusion if found
    during direct path thermal action calculation.
