@@ -148,6 +148,11 @@
 
 
 CHANGELOG:
+ * 17th February 2014: version 1.1.00beta4
+ - Default parameter-dependent Python now loads warning message list in
+   Vevacious object before trying to minimize the DSB minimum, to stop crashes
+   caused by trying to log errors from the minimization of the DSB minimum.
+
  * 14th February 2014: version 1.1.00beta3
  - Fixed default Vevacious.py to properly exclude field configurations
    that would be the DSB minimum but for numerical effects from the list of

@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta3" );
+  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta4" );
   std::string const
   VevaciousRunner::vevaciousDocumentation( "arXiv:1307.1477 (hep-ph)" );
   std::string const VevaciousRunner::defaultPythonFilename( "Vevacious.py" );
@@ -888,6 +888,7 @@ namespace Vevacious
 "                  currentTemperature = 0.0 ):\n"
 "        self.vevaciousVersion = \"" << vevaciousVersion << "\"\n"
 "        self.outputFile = \"./VevaciousResult.vout\"\n"
+"        self.warningMessages = []\n"
 "\n"
 "        self.EffectivePotential = EffectivePotential\n"
 "        self.potentialScaler = PotentialScaler( self.EffectivePotential,\n"
@@ -937,7 +938,6 @@ namespace Vevacious
 "                                      * self.ageOfKnownUniverseInInverseGev\n"
 "                                         * fourthRootOfSolitonicFactorA ) )\n"
 "        self.thermalActionThreshold = 1000.0\n"
-"        self.warningMessages = []\n"
 "        self.startingTime = time.clock()\n"
 "        self.allowedRunningTime = 100.0\n"
 "\n"
