@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta5" );
+  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta6" );
   std::string const
   VevaciousRunner::vevaciousDocumentation( "arXiv:1307.1477 (hep-ph)" );
   std::string const VevaciousRunner::defaultPythonFilename( "Vevacious.py" );
@@ -1679,7 +1679,7 @@ namespace Vevacious
 "quantumTunnelingActionType = \"not_set_error\"\n"
 "quantumStabilityVerdict = \"not_set_error\"\n"
 "thermalStabilityVerdict = \"not_set_error\"\n"
-"finalQuantumAction = None\n"
+"alreadyExcluded = False\n"
 "exclusionTemperature = None\n"
 "exclusionTemperatureString = \"not_set_error\"\n"
 "quantumTunnelingTimeInUniverseAgesString = \"not_set_error\"\n"
@@ -1731,8 +1731,11 @@ namespace Vevacious
 "    quantumTunnelingTimeInUniverseAgesString = str(\n"
 "               vcs.QuantumTunnelingTimeInInverseGev( currentQuantumAction )\n"
 "                                     / vcs.ageOfKnownUniverseInInverseGev )\n"
-"    if ( currentQuantumAction <= vcs.quantumActionThreshold ):\n"
+"    alreadyExcluded = ( currentQuantumAction\n"
+"                        <= vcs.quantumActionThreshold )\n"
+"    if alreadyExcluded:\n"
 "        quantumStabilityVerdict = \"short-lived\"\n"
+"        thermalStabilityVerdict = \"low_survival_probability\"\n"
 "    else:\n"
 "# If the parameter point is not excluded by the naive straight path at zero\n"
 "# temperature, then we check thermal tunneling by direct paths to see if\n"
@@ -1882,7 +1885,9 @@ namespace Vevacious
 "                                           trueVacuum = thermalPanicVacuum,\n"
 "                                                        deformPath = False,\n"
 "                                                 thermalNotQuantum = True )\n"
-"            if ( currentThermalAction < vcs.thermalActionThreshold ):\n"
+"            alreadyExcluded = ( currentThermalAction\n"
+"                                <= vcs.thermalActionThreshold )\n"
+"            if alreadyExcluded:\n"
 "# If the action at a given temperature is low enough that the DSB vacuum\n"
 "# (or the symmetric vacuum that becomes the DSB vacuum through a 2nd-order\n"
 "# phase transition) is unlikely to have survived the time when the Universe\n"
@@ -2040,7 +2045,9 @@ namespace Vevacious
 "                                  - ( 4.0\n"
 "                              * math.log( exclusionTemperature ) ) ) )\n"
 "                        + \" GeV.\\n\\n\" )\n"
-"                if ( currentThermalAction < vcs.thermalActionThreshold ):\n"
+"                alreadyExcluded = ( currentThermalAction\n"
+"                                    <= vcs.thermalActionThreshold )\n"
+"                if alreadyExcluded:\n"
 "                    thermalStabilityVerdict = \"low_survival_probability\"\n"
 "                    exclusionTemperatureString = str(\n"
 "                                                     exclusionTemperature )\n"
@@ -2083,7 +2090,9 @@ namespace Vevacious
 "# End of fitting the thermal action.\n"
 "\n"
 "\n"
-"    if ( not vcs.AllowedRunningTimeExceeded() ):\n"
+"    if not ( alreadyExcluded\n"
+"             or\n"
+"             vcs.AllowedRunningTimeExceeded() ):\n"
 "# Here we continue to check the zero-temperature quantum tunneling (if the\n"
 "# direct path at zero temperature did not already exclude the point):\n"
 "        vcs.SetTemperature( 0.0 )\n"

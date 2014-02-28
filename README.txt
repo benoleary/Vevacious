@@ -148,6 +148,10 @@
 
 
 CHANGELOG:
+ * 28th February 2014: version 1.1.00beta6
+ - Default parameter-dependent Python now correctly does not deform the path if
+   not necessary.
+
  * 28th February 2014: version 1.1.00beta5
  - Default parameter-dependent Python now correctly reports exclusions in
    output file (was correctly reporting to terminal, but results file was
