@@ -148,6 +148,11 @@
 
 
 CHANGELOG:
+ * 28th February 2014: version 1.1.00beta5
+ - Default parameter-dependent Python now correctly reports exclusions in
+   output file (was correctly reporting to terminal, but results file was
+   wrong for some cases).
+
  * 17th February 2014: version 1.1.00beta4
  - Default parameter-dependent Python now loads warning message list in
    Vevacious object before trying to minimize the DSB minimum, to stop crashes
