@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta6" );
+  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta7" );
   std::string const
   VevaciousRunner::vevaciousDocumentation( "arXiv:1307.1477 (hep-ph)" );
   std::string const VevaciousRunner::defaultPythonFilename( "Vevacious.py" );
@@ -1905,6 +1905,7 @@ namespace Vevacious
 "                                                   currentThermalAction ) )\n"
 "                print( \"Thermal tunneling survival probability = \"\n"
 "                       + thermalTunnelingSurvivalProbabilityString )\n"
+"                break\n"
 "\n"
 "            print( \"\\nDirect path 3-dimensional action at temperature \"\n"
 "                   + str( trialTemperature )\n"
