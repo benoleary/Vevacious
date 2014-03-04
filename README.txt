@@ -148,6 +148,17 @@
 
 
 CHANGELOG:
+ * 4th March 2014: version 1.1.00beta7
+ - Default Python now correctly stops if it finds that the point is thermally
+   excluded by a direct path when exploring the temperature dependence of the
+   direct-path thermal action.
+ - Default Python now also considers tunneling from the false vacuum to the
+   true vacuum at a given temperature impossible if the true vacuum is now less
+   than 0.1 times its length at zero temperature, as a workaround for PyMinuit
+   sometimes not rolling the DSB minimum close enough to the field origin when
+   it should, breaking the unpatched algorithm for deciding if tunneling is
+   still possible.
+
  * 28th February 2014: version 1.1.00beta6
  - Default parameter-dependent Python now correctly does not deform the path if
    not necessary.
