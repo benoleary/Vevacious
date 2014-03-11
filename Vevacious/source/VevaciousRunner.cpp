@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta7" );
+  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta8" );
   std::string const
   VevaciousRunner::vevaciousDocumentation( "arXiv:1307.1477 (hep-ph)" );
   std::string const VevaciousRunner::defaultPythonFilename( "Vevacious.py" );
@@ -862,6 +862,31 @@ namespace Vevacious
 "    thermalCorrection = 0.0\n"
 "    for massSquaredValue in massSquaredValues:\n"
 "        thermalCorrection += ThermalFunction( massSquaredValue.real,\n"
+"                                              temperatureSquared,\n"
+"                                              overallFactor )\n"
+"    return ( abs( overallFactor ) * thermalCorrection )\n"
+"\n"
+"\n"
+"def AbsThermalCorrections( massSquaredValues,\n"
+"                           overallFactor,\n"
+"                           temperatureSquared ):\n"
+"    thermalCorrection = 0.0\n"
+"    for massSquaredValue in massSquaredValues:\n"
+"        thermalCorrection += ThermalFunction( abs( massSquaredValue.real ),\n"
+"                                              temperatureSquared,\n"
+"                                              overallFactor )\n"
+"    return ( abs( overallFactor ) * thermalCorrection )\n"
+"\n"
+"\n"
+"def FloorThermalCorrections( massSquaredValues,\n"
+"                             overallFactor,\n"
+"                             temperatureSquared ):\n"
+"    thermalCorrection = 0.0\n"
+"    for massSquaredValue in massSquaredValues:\n"
+"        massSquared = massSquaredValue.real\n"
+"        if ( massSquared < 0.0 ):"
+"            massSquared = 0.0"
+"        thermalCorrection += ThermalFunction( massSquared,\n"
 "                                              temperatureSquared,\n"
 "                                              overallFactor )\n"
 "    return ( abs( overallFactor ) * thermalCorrection )\n"

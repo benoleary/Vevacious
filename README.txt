@@ -148,6 +148,11 @@
 
 
 CHANGELOG:
+ * 11th March 2014: version 1.1.00beta8
+ - Default Python now generates AbsLoopAndThermalCorrectedPotential and
+   FloorLoopAndThermalCorrectedPotential which use the absolute value or 0.0
+   for negative masses-squared respectively in the thermal corrections.
+
  * 4th March 2014: version 1.1.00beta7
  - Default Python now correctly stops if it finds that the point is thermally
    excluded by a direct path when exploring the temperature dependence of the
