@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta8" );
+  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta9" );
   std::string const
   VevaciousRunner::vevaciousDocumentation( "arXiv:1307.1477 (hep-ph)" );
   std::string const VevaciousRunner::defaultPythonFilename( "Vevacious.py" );
@@ -48,7 +48,10 @@ namespace Vevacious
                      1.0 ),
     rollingTolerance( 0.2 ),
     pathToCosmotransitions( "./" ),
-    lifetimeThreshold( 0.1 )
+    lifetimeThreshold( 0.1 ),
+    shouldTunnel( "True" ),
+    tunnelThermally( "True" ),
+    deformTunnelPaths( "True" )
   {
     BOL::AsciiXmlParser xmlParser;
     bool xmlOpened( xmlParser.openRootElementOfFile( modelFilename ) );
@@ -119,8 +122,24 @@ namespace Vevacious
                                                     "./CosmoTransitions/" ) ),
     lifetimeThreshold( BOL::StringParser::stringToDouble(
                                   argumentParser.fromTag( "lifetime_threshold",
-                                                               "0.1" ) ) )
+                                                               "0.1" ) ) ),
+    shouldTunnel( argumentParser.fromTag( "should_tunnel",
+                                          "True" ) ),
+    tunnelThermally( argumentParser.fromTag( "tunnel_thermally",
+                                             "True" ) ),
+    deformTunnelPaths( argumentParser.fromTag( "deform_tunnel_paths",
+                                               "True" ) )
   {
+    // debugging:
+    /**/std::cout << std::endl << "debugging:"
+    << std::endl
+    << "shouldTunnel = \"" << shouldTunnel << "\""
+    << std::endl
+    << "tunnelThermally = \"" << tunnelThermally << "\""
+    << std::endl
+    << "deformTunnelPaths = \"" << deformTunnelPaths << "\"";
+    std::cout << std::endl;/**/
+
     setMinuitNudgesOffSaddlePoints( argumentParser.fromTag( "saddle_nudges",
                                                             "1.0, 1.0" ) );
     std::string
@@ -965,6 +984,9 @@ namespace Vevacious
 "        self.thermalActionThreshold = 1000.0\n"
 "        self.startingTime = time.clock()\n"
 "        self.allowedRunningTime = 100.0\n"
+"        self.ShouldTunnel = " << shouldTunnel << "\n"
+"        self.ShouldTunnelThermally = " << tunnelThermally << "\n"
+"        self.ShouldDeformTunnelPaths = " << deformTunnelPaths << "\n"
 "\n"
 "\n"
 "    def SetFieldValueLimit( self, fieldValueLimit ):\n"
@@ -1711,7 +1733,7 @@ namespace Vevacious
 "thermalTunnelingSurvivalProbabilityString = \"not_set_error\"\n"
 "\n"
 "\n"
-"if ( not vcs.dsbVacuumIsMetastable ):\n"
+"if not vcs.dsbVacuumIsMetastable:\n"
 "    print( \"DSB vacuum is stable (as far as the model file allows).\" )\n"
 "    quantumTunnelingActionType = \"unnecessary\"\n"
 "    quantumStabilityVerdict = \"stable\"\n"
@@ -1736,11 +1758,19 @@ namespace Vevacious
 "    print( \"Global minimum found: \"\n"
 "           + vcs.ExtremumAsMathematica( vcs.globalMinimum )\n"
 "           + \"\\n\\n\" )\n"
-"    quantumTunnelingActionType = \"direct_path\"\n"
-"    quantumStabilityVerdict = \"long-lived\"\n"
-"    thermalStabilityVerdict = \"high_survival_probability\"\n"
+"    if not vcs.ShouldTunnel:\n"
+"        quantumTunnelingActionType = \"not_calculated\"\n"
+"        quantumStabilityVerdict = \"not_calculated\"\n"
+"        thermalStabilityVerdict = \"not_calculated\"\n"
+"    else:\n"
+"        quantumTunnelingActionType = \"direct_path\"\n"
+"        quantumStabilityVerdict = \"long-lived\"\n"
+"        thermalStabilityVerdict = \"high_survival_probability\"\n"
 "    thermalTunnelingSurvivalProbabilityString = \"not_calculated\"\n"
 "    exclusionTemperatureString = \"unnecessary\"\n"
+"\n"
+"\n"
+"if ( vcs.dsbVacuumIsMetastable and vcs.ShouldTunnel ):\n"
 "# First, a direct path between the minima is taken to get an upper bound on\n"
 "# the bounce action.\n"
 "    vcs.SetTemperature( 0.0 )\n"
@@ -1761,7 +1791,7 @@ namespace Vevacious
 "    if alreadyExcluded:\n"
 "        quantumStabilityVerdict = \"short-lived\"\n"
 "        thermalStabilityVerdict = \"low_survival_probability\"\n"
-"    else:\n"
+"    elif vcs.ShouldTunnelThermally:\n"
 "# If the parameter point is not excluded by the naive straight path at zero\n"
 "# temperature, then we check thermal tunneling by direct paths to see if\n"
 "# a direct path can exclude the point, & to get an estimate of what\n"
@@ -2127,9 +2157,10 @@ namespace Vevacious
 "# End of fitting the thermal action.\n"
 "\n"
 "\n"
-"    if not ( alreadyExcluded\n"
-"             or\n"
-"             vcs.AllowedRunningTimeExceeded() ):\n"
+"    if ( vcs.ShouldDeformTunnelPaths\n"
+"         and not ( alreadyExcluded\n"
+"                   or\n"
+"                   vcs.AllowedRunningTimeExceeded() ) ):\n"
 "# Here we continue to check the zero-temperature quantum tunneling (if the\n"
 "# direct path at zero temperature did not already exclude the point):\n"
 "        vcs.SetTemperature( 0.0 )\n"
@@ -2171,9 +2202,10 @@ namespace Vevacious
 "               + \" seconds).\\n\\n\" )\n"
 "        if ( currentQuantumAction < vcs.quantumActionThreshold ):\n"
 "            quantumStabilityVerdict = \"short-lived\"\n"
-"        elif ( not ( thermallyExcluded\n"
-"                     or\n"
-"                     vcs.AllowedRunningTimeExceeded() ) ):\n"
+"        elif ( vcs.ShouldTunnelThermally\n"
+"               and not ( thermallyExcluded\n"
+"                         or\n"
+"                         vcs.AllowedRunningTimeExceeded() ) ):\n"
 "# If the parameter point was not excluded just by quantum tunneling, we\n"
 "# calculate whether fully deformed thermal tunneling excludes it.\n"
 "            exclusionTemperature = thermalMinimaWithTemperatures[ -1 ][\n"
@@ -2216,7 +2248,7 @@ namespace Vevacious
 "\n"
 "\n"
 "# Finally the output file is written:\n"
-"outputText = ( \"  <reference version=\\\" " << vevaciousVersion << "\\\"\"\n"
+"outputText = ( \"  <reference version=\\\"" << vevaciousVersion << "\\\"\"\n"
 "               + \" citation=\\\" " << vevaciousDocumentation
 <<                                                             "\\\" />\\n\"\n"
 "               + \"  <stability> \"\n"

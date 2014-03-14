@@ -49,12 +49,7 @@ int main( int argumentCount,
 
   // set up runner for specific model
   Vevacious::VevaciousRunner
-  vevaciousRunner( argumentParser.fromTag( "model_file",
-                                          "./MyModel.vin" ),
-                   argumentParser.fromTag( "hom4ps2_dir",
-                                           "./HOM4PS2/" ),
-                   argumentParser.fromTag( "homotopy_type",
-                                           "1" ) );
+  vevaciousRunner( argumentParser );
 
   // this setting almost certainly has to be changed from the default ( "./" ):
   vevaciousRunner.setPathToCosmotransitions( argumentParser.fromTag( "ct_path",
@@ -66,12 +61,6 @@ int main( int argumentCount,
                                                        "./MyResult.vout" ) );
   vevaciousRunner.setResultsFilename( resultsFilename );
   BOL::UsefulStuff::runSystemCommand( "rm " + resultsFilename );
-  vevaciousRunner.setImaginaryPartTolerance( argumentParser.fromTag(
-                                                         "imaginary_tolerance",
-                                                               "0.0000001" ) );
-  vevaciousRunner.setMinuitNudgesOffSaddlePoints(
-                                       argumentParser.fromTag( "saddle_nudges",
-                                                               "1.0, 2.0" ) );
   std::string
   maxSaddleNudgesInput( argumentParser.fromTag( "max_saddle_nudges",
                                                 "" ) );
@@ -80,15 +69,6 @@ int main( int argumentCount,
     vevaciousRunner.setMaximumMinuitNudgesOffSaddlePoints(
                                                         maxSaddleNudgesInput );
   }
-  vevaciousRunner.setMinuitRollingTolerance( argumentParser.fromTag(
-                                                              "roll_tolerance",
-                                                                     "0.1" ) );
-  vevaciousRunner.setLifetimeThreshold( argumentParser.fromTag(
-                                                          "lifetime_threshold",
-                                                                "0.1" ) );
-  // negative arguments (as doubles or std::strings representing doubles) for
-  // setLifetimeForDirectPath or setLifetimeForDeformedPath means that the
-  // relevant tunneling time calculation will be skipped.
 
   double setupFinishTime( secondsSince( startTimeval ) );
   std::cout

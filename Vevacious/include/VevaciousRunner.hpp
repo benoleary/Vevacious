@@ -71,6 +71,15 @@ namespace Vevacious
     void setLifetimeThreshold( std::string const& lifetimeThreshold )
     { setLifetimeThreshold(
                     BOL::StringParser::stringToDouble( lifetimeThreshold ) ); }
+    void setShouldTunnel( bool const shouldTunnel )
+    { if( shouldTunnel ){ this->shouldTunnel = "True"; }
+      else{ this->shouldTunnel = "False"; } }
+    void setShouldTunnelThermally( bool const tunnelThermally )
+    { if( tunnelThermally ){ this->tunnelThermally = "True"; }
+      else{ this->tunnelThermally = "False"; } }
+    void setShouldDeformTunnelPaths( bool const deformTunnelPaths )
+    { if( deformTunnelPaths ){ this->deformTunnelPaths = "True"; }
+      else{ this->deformTunnelPaths = "False"; } }
     void appendTreeLevelExtrema( std::string const& slhaFilename,
                                  std::string const solutionsFilename
                                  = "VevaciousTreeLevelExtrema.py" );
@@ -128,6 +137,9 @@ namespace Vevacious
     double rollingTolerance;
     std::string pathToCosmotransitions;
     double lifetimeThreshold;
+    std::string shouldTunnel;
+    std::string tunnelThermally;
+    std::string deformTunnelPaths;
 
     void calculateTreeLevelExtrema( std::string const& slhaFilename );
     void writeDefaultPythonProgram() const;
