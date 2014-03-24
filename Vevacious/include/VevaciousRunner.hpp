@@ -71,6 +71,11 @@ namespace Vevacious
     void setLifetimeThreshold( std::string const& lifetimeThreshold )
     { setLifetimeThreshold(
                     BOL::StringParser::stringToDouble( lifetimeThreshold ) ); }
+    void setThermalSurvivalThreshold( double survivalThreshold )
+    { this->survivalThreshold = survivalThreshold; }
+    void setThermalSurvivalThreshold( std::string const& survivalThreshold )
+    { setThermalSurvivalThreshold(
+                    BOL::StringParser::stringToDouble( survivalThreshold ) ); }
     void setShouldTunnel( bool const shouldTunnel )
     { if( shouldTunnel ){ this->shouldTunnel = "True"; }
       else{ this->shouldTunnel = "False"; } }
@@ -137,6 +142,7 @@ namespace Vevacious
     double rollingTolerance;
     std::string pathToCosmotransitions;
     double lifetimeThreshold;
+    double survivalThreshold;
     std::string shouldTunnel;
     std::string tunnelThermally;
     std::string deformTunnelPaths;

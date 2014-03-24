@@ -86,29 +86,22 @@
   <roll_tolerance>
   0.1
   </roll_tolerance>
- 
-  <!-- direct_time, deformed_time: the fraction of the age of the
-       Universe (taken to be 10^41/GeV) which is considered to be long enough
-       that the calculation just performed is sufficient for determining the
-       stability of the parameter point's input vacuum. these are only relevant
-       if the input minimum was not the deepest minimum found.
-
-       1st the direct_time calculation is performed, and if the upper bound
-       the lifetime is above the given value for direct_time, then the
-       deformed_time calculation is performed. For example, if the upper bound
-       on the lifetime from the direct calculation was
-       0.0000143 * (10^41/GeV), and direct_time was 0.2, since 0.0000143 is
-       less than 0.2, the slower, fuller calculation of the lifetime are
-       skipped.  -->
-  <!-- direct_time: if positive, CosmoTransitions is used on a straight line
-       in VEV space between the true and false vacua to get an upper bound on
-       the lifetime. -->
-  <direct_time> 0.1 </direct_time>
-  <!-- deformed_time: if positive, CosmoTransitions is used, allowing it to
-       find the most efficient deformed path in VEV space between the true and
-       false vacua to get an estimate of the lifetime (not an upper bound in
-       this case). -->
-  <deformed_time> 0.1 </deformed_time>
+  
+  <!-- lifetime_threshold is the fraction of the age of the known Universe used
+       as a threshold for whether a parameter point is denoted as short-lived
+       or long-lived by comparison with its calculated tunneling time at zero
+       temperature. The default of 0.217 (about 3 gigayears) corresponds to a
+       survival probability of about 1% assuming a Poisson distribution. -->
+  <lifetime_threshold>
+  0.217
+  </lifetime_threshold>
+  
+  <!-- thermal_survival_threshold is the fraction used as a threshold for
+       whether a parameter point is denoted as having a low or high probability
+       to survive thermal tunneling. -->
+  <thermal_survival_threshold>
+  0.1
+  </thermal_survival_threshold>
 
 </Vevacious_defaults>
 
