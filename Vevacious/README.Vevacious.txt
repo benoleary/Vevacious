@@ -176,6 +176,24 @@
 
  
 CHANGELOG:
+ * 25th March 2014: version 1.1.00beta10
+ - Added setThermalSurvivalThreshold functions to VevaciousRunner class.
+ - Shifted a lot of code from default Vevacious.py to
+   VevaciousParameterDependent.py, mainly to do with finding the optimal
+   tunneling temperature.
+ - Python code to calculate the survival probability against thermal tunneling
+   has been improved: some silly bugs leading to misreporting of the result
+   have been fixed, and now the result "long-lived_but_thermally_excluded" is
+   reserved for exclusion by a cautious lower bound on the integrated decay
+   width, while failing to be excluded by this but still being excluded by the
+   old, aggressive algorithm is now "long-lived_but_maybe_thermally_excluded".
+   The number code reported in the SLHA block VEVACIOUSRESULTS is -2 for
+   excluded by the cautious calculation, and -3 for exclusion only by the
+   aggressive calculation while not being excluded by the cautious calculation.
+ - Default Vevacious.py now also decides the number code for the (0, 0) entry
+   of the SLHA block VEVACIOUSRESULTS, which is communicated back to
+   Vevacious.exe by an XML attribute.
+
  * 14th March 2014: version 1.1.00beta9
  - Added flags to turn off thermal calculations and path deformation more
    easily:
