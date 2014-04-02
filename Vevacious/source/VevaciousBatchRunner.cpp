@@ -27,7 +27,7 @@ int main( int argumentCount,
 {
   BOL::ArgumentParser argumentParser( argumentCount,
                                       argumentCharArrays,
-                                      "init",
+                                      "input",
                                       "VevaciousInitialization.xml" );
 
   BOL::FilePlaceholderManager placeholderManager( "",

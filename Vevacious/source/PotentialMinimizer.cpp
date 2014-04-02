@@ -260,7 +260,7 @@ namespace Vevacious
     {
       pythonCode << "0.0, ";
     }
-    pythonCode << " 0.0 )\n"
+    pythonCode << "0.0 )\n"
 "        self.temperatureValue = temperatureValue\n"
 "        \n"
 "    def ScaledFunctionFromScaledArguments( self, " << argumentsWithoutBrackets
