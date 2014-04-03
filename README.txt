@@ -176,6 +176,15 @@
 
 
 CHANGELOG:
+ * 3rd April 2014: version 1.1.00beta11
+ - Fixed bug in default Python code that was incorrectly exluding points based
+   on thermal fluctuations based on the dividing an action by the last
+   temperature in a list rather than on the temperature at which the action was
+   calculated.
+ - Fit of direct-path 3-dimensional action in default Python code improved:
+   the fit is only made to the action at temperatures above the evaporation
+   temperature of the DSB minimum.
+
  * 25th March 2014: version 1.1.00beta10
  - Added setThermalSurvivalThreshold functions to VevaciousRunner class.
  - Shifted a lot of code from default Vevacious.py to
