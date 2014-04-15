@@ -176,6 +176,15 @@
 
  
 CHANGELOG:
+ * 15th April 2014: version 1.1.00beta12
+ - Fixed very minor bug in default Python code that was incorrectly comparing
+   massSquaredMagnitude to ( 1.0E-6 * inverseScaleSquared ) instead of
+   ( 1.0E-6 / inverseScaleSquared ). It was not a problem in the sense that it
+   was a check to avoid division by zero and worked even though it was wrong.
+   It was however possibly calculating m^4 ln( m^2 / Q^2 ) for very small m
+   which would have been a negligible contribution to the corrections. Fixed
+   the comparison to just whether massSquaredMagnitude > 1.0 or not.
+
  * 3rd April 2014: version 1.1.00beta11
  - Fixed bug in default Python code that was incorrectly exluding points based
    on thermal fluctuations based on the dividing an action by the last

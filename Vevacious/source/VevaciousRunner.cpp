@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta11" );
+  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta12" );
   std::string const
   VevaciousRunner::vevaciousDocumentation( "arXiv:1307.1477 (hep-ph)" );
   std::string const VevaciousRunner::defaultPythonFilename( "Vevacious.py" );
@@ -509,7 +509,7 @@ namespace Vevacious
 "    summedCorrection = 0.0\n"
 "    for massSquaredValue in massSquaredValues:\n"
 "        massSquaredMagnitude = abs( massSquaredValue )\n"
-"        if( ( 1.0E-6 * inverseScaleSquared ) < massSquaredMagnitude ):\n"
+"        if( massSquaredMagnitude > 1.0 ):\n"
 "            summedCorrection += ( massSquaredMagnitude\n"
 "                                  * massSquaredMagnitude\n"
 "                                  * ( math.log( massSquaredMagnitude\n"
