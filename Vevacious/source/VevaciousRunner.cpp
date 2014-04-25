@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta12" );
+  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta13" );
   std::string const
   VevaciousRunner::vevaciousDocumentation( "arXiv:1307.1477 (hep-ph)" );
   std::string const VevaciousRunner::defaultPythonFilename( "Vevacious.py" );
@@ -981,7 +981,7 @@ namespace Vevacious
 "\n"
 "        self.ageOfKnownUniverseInSeconds = ageOfKnownUniverseInSeconds\n"
 "        self.ageOfKnownUniverseInInverseGev = ( ageOfKnownUniverseInSeconds\n"
-"                                                / 6.582119E-16 )\n"
+"                                                / 6.58211928E-25 )\n"
 "        self.fourthRootOfSolitonicFactorA = fourthRootOfSolitonicFactorA\n"
 "        self.tunnelPathResolutionInGev = tunnelPathResolutionInGev\n"
 "        self.currentQuantumAction = None\n"

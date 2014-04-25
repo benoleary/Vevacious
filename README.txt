@@ -176,6 +176,13 @@
 
 
 CHANGELOG:
+ * 25th April 2014: version 1.1.00beta13
+ - Fixed rather significant bug in the conversion from seconds to 1/GeV which
+   was used for calculating the lifetime of metastable points in the default
+   Python code: it was converting seconds to 1/eV, so was 9 orders of magnitude
+   out. Fortunately this is only a difference of about 20 out of the 400 or so
+   that is the threshold for acceptably long-lived...
+
  * 15th April 2014: version 1.1.00beta12
  - Fixed very minor bug in default Python code that was incorrectly comparing
    massSquaredMagnitude to ( 1.0E-6 * inverseScaleSquared ) instead of
