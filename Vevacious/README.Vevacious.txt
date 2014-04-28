@@ -122,9 +122,10 @@
     (CosmoTransitions was previously at http://chasm.ucsc.edu/cosmotransitions/
     but has since moved. Hosting on HepForge at some point in the future has
     been suggested, but as of 2013-08-29, it is not there.)
-    WARNING! CosmoTransitions v1.0.2 no longer works with the most recent
-    versions of SciPy and NumPy! Replacing "integrate.inf" with "numpy.inf"
-    in the CosmoTransitions code fixes this.
+    Version 2 of CosmoTransitions is hosted on Github:
+    https://github.com/clwainwright/CosmoTransitions
+    (link last checked 2014-04-28) and should also work with Vevacious 1.1 or
+    later.
  6) Download and compile the LesHouchesParserClasses (LHPC) C++ library. The
     files are available at
     http://www.hepforge.org/downloads/lhpc
@@ -176,6 +177,11 @@
 
  
 CHANGELOG:
+ * 28th April 2014: version 1.1.00beta14
+ - Added code to default Python to correctly identify if CosmoTransitions2 is
+   being used instead of version 1, and to write the code to calculate the
+   action in the correct form for version 2.
+
  * 25th April 2014: version 1.1.00beta13
  - Fixed rather significant bug in the conversion from seconds to 1/GeV which
    was used for calculating the lifetime of metastable points in the default
