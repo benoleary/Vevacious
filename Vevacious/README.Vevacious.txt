@@ -177,6 +177,12 @@
 
  
 CHANGELOG:
+ * 5th May 2014: version 1.1.00beta15
+ - Changed lnOfThermalIntegrationFactor in default Python to account for
+   incorrectly having used the reduced Planck mass instead of the full Planck
+   mass in some factors and to use the co-moving cosmic event horizon volume
+   instead of just the cube of the Hubble length.
+
  * 28th April 2014: version 1.1.00beta14
  - Added code to default Python to correctly identify if CosmoTransitions2 is
    being used instead of version 1, and to write the code to calculate the
