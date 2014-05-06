@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta15" );
+  std::string const VevaciousRunner::vevaciousVersion( "1.1.00beta16" );
   std::string const
   VevaciousRunner::vevaciousDocumentation( "arXiv:1307.1477 (hep-ph)" );
   std::string const VevaciousRunner::defaultPythonFilename( "Vevacious.py" );
@@ -282,7 +282,7 @@ namespace Vevacious
 "\n"
 "\n"
 "outputFile = \"" << resultsFilename << "\"\n"
-"lnOfThermalIntegrationFactor = 244.5525\n"
+"lnOfThermalIntegrationFactor = 244.53\n"
 "energyScale = " << sarahInterpreter.getSlhaScale() << "\n"
 "energyScaleFourth = ( energyScale**4 )\n"
 "inverseScale = ( 1.0 / energyScale )\n"
@@ -1011,15 +1011,15 @@ namespace Vevacious
 "# exp( -N * integral * [factor] ) ) can be written, from entropy\n"
 "# conservation and so on, as\n"
 "# exp( -N * integral of C T^(-2) exp(-S_3(T)/T) dT ) )\n"
-"# where C = M_Planck * [solitonic coefficient/T^4]\n"
+"# where C = [reduced Planck mass] * [solitonic coefficient/T^4]\n"
 "# * sqrt[45/(4 pi^3 g_star(T))] * [g_star^now/g_star(T)] * (T_now/H_now)^3\n"
 "# and we take g_star(T) to be 105.75 (what it is for the SM above\n"
 "# temperatures of m_top) and conservatively take it as constant from T = 0\n"
 "# to T_opt. Hence we have\n"
-"# exp( -1.6136E+106 GeV * integral of T^(-2) exp(-S_3(T)/T) dT ) )\n"
+"# exp( -1.581E+106 GeV * integral of T^(-2) exp(-S_3(T)/T) dT ) )\n"
 "# integrated from T = 0 to T_opt (as the contribution from higher\n"
 "# temperatures drops off very quickly).\n"
-"# 1.6136E+106 is exp( 244.5525 = lnOfThermalIntegrationFactor ) which is\n"
+"# 1.581E+106 is exp( 244.53 = lnOfThermalIntegrationFactor ) which is\n"
 "# in agreement with the value of 240 quoted in the CosmoTransitions manual\n"
 "# for an estimate of the threshold S_3(T)/T for T= 100 GeV.\n"
 "# Kusenko (and others in the literature, including Wainwright implicitly in\n"
@@ -1034,7 +1034,7 @@ namespace Vevacious
 "# exp( -S_3(T_opt)/T_opt ) / S_3(T_opt)\n"
 "# and exp( -S_3(T_opt)/T_opt ) / T_opt\n"
 "# For a threshold survival probability P,\n"
-"# 1.6136E+106 GeV * integral of T^(-2) exp(-S_3(T)/T) dT )\n"
+"# 1.581E+106 GeV * integral of T^(-2) exp(-S_3(T)/T) dT )\n"
 "# should be larger than ln(1/P). Hence we compare\n"
 "# (S_3(T_opt)/T_opt) + ln( x / GeV ) to\n"
 "# lnOfThermalIntegrationFactor - ln( ln(1/P) ) where x is either\n"

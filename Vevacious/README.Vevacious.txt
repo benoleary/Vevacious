@@ -177,6 +177,15 @@
 
  
 CHANGELOG:
+ * 6th May 2014: version 1.1.00beta16
+ - Changed lnOfThermalIntegrationFactor in default Python to account for
+   incorrectly having used the full Planck mass instead of the reduced Planck
+   mass which was correct in 1.1.00beta14, but the other, more important
+   factor from the co-moving cosmic event horizon volume was correct in
+   1.1.00beta15 and the actual difference is lnOfThermalIntegrationFactor
+   went from 238.553 (1.1.00beta14) to 244.5525 (1.1.00beta15) to
+   244.53 (1.1.00beta15).
+
  * 5th May 2014: version 1.1.00beta15
  - Changed lnOfThermalIntegrationFactor in default Python to account for
    incorrectly having used the reduced Planck mass instead of the full Planck
