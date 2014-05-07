@@ -177,6 +177,10 @@
 
  
 CHANGELOG:
+ * 7th May 2014: version 1.1.00
+ - Put up on HepForge as official release: now awaiting the inevitable
+   appearance of critical bugs...
+
  * 6th May 2014: version 1.1.00beta16
  - Changed lnOfThermalIntegrationFactor in default Python to account for
    incorrectly having used the full Planck mass instead of the reduced Planck
