@@ -177,9 +177,11 @@
 
 
 CHANGELOG:
- * 7th May 2014: version 1.1.00
+ * 21st May 2014: version 1.1.00
  - Put up on HepForge as official release: now awaiting the inevitable
    appearance of critical bugs...
+ - Rearranged example model and SLHA files into what I hope is a better folder
+   structure that will be misunderstood less.
 
  * 6th May 2014: version 1.1.00beta16
  - Changed lnOfThermalIntegrationFactor in default Python to account for
