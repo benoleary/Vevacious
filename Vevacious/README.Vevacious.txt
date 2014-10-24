@@ -177,6 +177,14 @@
 
  
 CHANGELOG:
+ * 24th October 2014: version 1.1.01
+ - First fix of a critical bug: fixed silly use of old variable name in warning
+   statement causing Python to crash. The whole calculation had run as
+   intended, but the warning about an exponent for thermal tunneling being
+   capped to stop an overflow error itself caused an error by trying to use a
+   variable that didn't exist. It now correctly prints the warning without
+   crashing the programme.
+
  * 21st May 2014: version 1.1.00
  - Put up on HepForge as official release: now awaiting the inevitable
    appearance of critical bugs...

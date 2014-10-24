@@ -2407,7 +2407,7 @@ namespace Vevacious
 "\n"
 "# Finally the output file is written:\n"
 "outputText = ( \"  <reference version=\\\"" << vevaciousVersion << "\\\"\"\n"
-"               + \" citation=\\\" " << vevaciousDocumentation
+"               + \" citation=\\\"" << vevaciousDocumentation
 <<                                                             "\\\" />\\n\"\n"
 "               + \"  <stability slha_summary_code=\\\"\"\n"
 "               + str( slhaSummaryCode )\n"
