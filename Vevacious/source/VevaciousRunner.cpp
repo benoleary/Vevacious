@@ -15,9 +15,9 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersion( "1.1.00" );
-  std::string const
-  VevaciousRunner::vevaciousDocumentation( "arXiv:1307.1477 (hep-ph)" );
+  std::string const VevaciousRunner::vevaciousVersion( "1.1.01" );
+  std::string const VevaciousRunner::vevaciousDocumentation(
+                                 "arXiv:1307.1477, arXiv:1405.7376 (hep-ph)" );
   std::string const VevaciousRunner::defaultPythonFilename( "Vevacious.py" );
 
 
@@ -1806,7 +1806,7 @@ namespace Vevacious
 "        if ( thermalExponent < -exponentCutOff ):\n"
 "            print( \"Warning! Thermal tunneling survival probability for\"\n"
 "                   \" a very large ratio (\"\n"
-"                   + str( actionOverTemperature )\n"
+"                   + str( currentAction / exclusionTemperature )\n"
 "                   + \") of 3-dimensional action (\"\n"
 "                   + str( currentAction )\n"
 "                   + \") to temperature (\"\n"
