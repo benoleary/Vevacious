@@ -177,6 +177,22 @@
 
 
 CHANGELOG:
+ * 25th October 2014: version 1.1.01
+ - First fix of a critical bug: fixed silly use of old variable name in warning
+   statement causing Python to crash. The whole calculation had run as
+   intended, but the warning about an exponent for thermal tunneling being
+   capped to stop an overflow error itself caused an error by trying to use a
+   variable that didn't exist. It now correctly prints the warning without
+   crashing the programme.
+ - Attempted fix of the second critical bug: The case of a DSB evaporation
+   temperature *higher* than the temperature at which the panic vacuum is
+   higher than the field origin was not correctly handled in 1.1.00 and the
+   lazy dimissal as low_survival_probability was both wrong in general and also
+   incorrectly handled (the optimal tunneling temperature was left at 0.0 and
+   the path deformation crashed because of a division by zero). This should now
+   be fixed, but I don't actually have a concrete example case to test it on.
+   Thus the bug is not yet confirmed to be fixed by this release.
+
  * 24th October 2014: version 1.1.01
  - First fix of a critical bug: fixed silly use of old variable name in warning
    statement causing Python to crash. The whole calculation had run as
