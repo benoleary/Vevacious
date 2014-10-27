@@ -177,6 +177,19 @@
 
  
 CHANGELOG:
+ * 27th October 2014: version 1.1.02
+ - Properly fixed case of DSB evaporation temperature being higher than panic
+   evaporation temperature, tested against "CNMSSM_wrong_neutral.slha.out"
+   using "SARAH-SPhenoNMSSM_RealHiggsAndSingletAndStauAndStopVevs.vin" from the
+   provided example files (the fix in 1.1.01 did not work).
+ - Also decided to change default range of PyMinuit to 20 times the scale,
+   up from 5 times the scale.
+ - Changed name of "SARAH-SPhenoNMSSM_RealHiggsAndSingletStauVevs.vin" to
+   "SARAH-SPhenoNMSSM_RealHiggsAndSingletAndStauVevs.vin" and of
+   "SARAH-SPhenoNMSSM_RealHiggsAndSingletStauAndStopVevs.vin" to
+   "SARAH-SPhenoNMSSM_RealHiggsAndSingletAndStauAndStopVevs.vin" for
+   consistency, likewise the "pure_SLHA2_NMSSM..." versions.
+
  * 25th October 2014: version 1.1.01
  - First fix of a critical bug: fixed silly use of old variable name in warning
    statement causing Python to crash. The whole calculation had run as

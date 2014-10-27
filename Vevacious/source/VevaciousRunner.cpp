@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersion( "1.1.01" );
+  std::string const VevaciousRunner::vevaciousVersion( "1.1.02" );
   std::string const VevaciousRunner::vevaciousDocumentation(
                                  "arXiv:1307.1477, arXiv:1405.7376 (hep-ph)" );
   std::string const VevaciousRunner::defaultPythonFilename( "Vevacious.py" );
@@ -1721,6 +1721,21 @@ namespace Vevacious
 "            return [ 1.0,\n"
 "                     False,\n"
 "                     \"1.0\" ]\n"
+"        elif ( len( temperaturesWithThermalActions ) is 1 ):\n"
+"            optimalTunnelingTemperature = temperaturesWithThermalActions[ 0\n"
+"                                                                     ][ 0 ]\n"
+"            thermalAction = temperaturesWithThermalActions[ 0 ][ 1 ]\n"
+"            print( \"Only one trial temperature allowed tunneling: \"\n"
+"                   + str( optimalTunnelingTemperature )\n"
+"                   + \" GeV. This will be taken as the estimate for the\"\n"
+"                   + \" optimal tunneling temperature.\" )\n"
+"            return [ optimalTunnelingTemperature,\n"
+"                     ( ( ( thermalAction / optimalTunnelingTemperature )\n"
+"                         + math.log( thermalAction ) )\n"
+"                       < self.thermalActionOverTemperatureComparison ),\n"
+"                     str( self.ThermalTunnelingSurvivalProbability(\n"
+"                                               optimalTunnelingTemperature,\n"
+"                                                        thermalAction ) ) ]\n"
 "        print( \"temperaturesWithThermalActions = \"\n"
 "               + str( temperaturesWithThermalActions ) )\n"
 "        actionArray = numpy.array( [ temperatureWithThermalAction[ 1 ]\n"
@@ -1822,9 +1837,9 @@ namespace Vevacious
 "                   + str( currentAction / exclusionTemperature )\n"
 "                   + \") of 3-dimensional action (\"\n"
 "                   + str( currentAction )\n"
-"                   + \") to temperature (\"\n"
+"                   + \" GeV) to temperature (\"\n"
 "                   + str( exclusionTemperature )\n"
-"                   + \") asked for, which would probably cause an\"\n"
+"                   + \" GeV) asked for, which would probably cause an\"\n"
 "                   + \" overflow in the evaluation of the exponent.\"\n"
 "                   + \" Returning a survival probability of 1.\" )\n"
 "            return 1.0\n"
@@ -2151,7 +2166,7 @@ namespace Vevacious
 "#vcs.shouldDoThermalCalculations = False\n"
 "vcs.allowedRunningTime = 3600.0\n"
 "# Allowing an hour of running time is maybe excessive...\n"
-"vcs.SetFieldValueLimit( 5.0 * VPD.energyScale )\n"
+"vcs.SetFieldValueLimit( 20.0 * VPD.energyScale )\n"
 "# MINUIT is now not allowed to roll outside a hypercube defined by all the\n"
 "# field values being less than five times the renormalization scale."
 "\n"
@@ -2291,7 +2306,7 @@ namespace Vevacious
 "                    fitNodes = 10\n"
 "            temperatureFitDifference = ( 0.9\n"
 "                                         * ( criticalTemperatureRange[ 0 ]\n"
-"                                            - dsbEvaporationTemperature ) )\n"
+"                                             - lowestFitTemperature ) )\n"
 "            temperaturesForFit = [ ( lowestFitTemperature\n"
 "                                     + ( ( stepIndex\n"
 "                                           * temperatureFitDifference )\n"
