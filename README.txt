@@ -36,7 +36,7 @@
  
  Vevacious is an implementation of the process of attempting to find the global
  minimum of a potential as decided upon by the collaboration of
- JosŽ Eliel Camargo (elielx@gmail.com),
+ Josï¿½ Eliel Camargo (elielx@gmail.com),
  Ben O'Leary (benjamin.oleary@gmail.com),
  Werner Porod (porod@physik.uni-wuerzburg.de), and
  Florian Staub (florian.staub@googlemail.com). This README file was written by
@@ -177,6 +177,13 @@
 
 
 CHANGELOG:
+ * 21st June 2015: version 1.1.03
+ - Fixed bug when PyMinuit throws an exception, that the starting point is
+   taken as a panic vacuum candidate without accounting for the shift by the
+   value of the loop corrections at the origin. It has a high chance of missing
+   a good panic vacuum candidate if PyMinuit had gone way outside the bounding
+   hypercube, but there does not seem to be an easy way around that. 
+
  * 27th October 2014: version 1.1.02
  - Properly fixed case of DSB evaporation temperature being higher than panic
    evaporation temperature, tested against "CNMSSM_wrong_neutral.slha.out"
