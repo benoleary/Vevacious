@@ -15,7 +15,7 @@
 
 namespace Vevacious
 {
-  std::string const VevaciousRunner::vevaciousVersion( "1.1.02" );
+  std::string const VevaciousRunner::vevaciousVersion( "1.1.03" );
   std::string const VevaciousRunner::vevaciousDocumentation(
                                  "arXiv:1307.1477, arXiv:1405.7376 (hep-ph)" );
   std::string const VevaciousRunner::defaultPythonFilename( "Vevacious.py" );
@@ -1132,8 +1132,8 @@ namespace Vevacious
 "            for fieldKey in endPointDictionary.keys():\n"
 "                if ( abs( endPointDictionary[ fieldKey ] )\n"
 "                                                  > self.FieldValueLimit ):\n"
-"                   hadToRescale = True\n"
-"                   scalingFactor = ( self.FieldValueLimit\n"
+"                    hadToRescale = True\n"
+"                    scalingFactor = ( self.FieldValueLimit\n"
 "                                  / abs( endPointDictionary[ fieldKey ] ) )\n"
 "                    for scalingKey in endPointDictionary.keys():\n"
 "                        endPointDictionary[ scalingKey ] *= scalingFactor\n"
