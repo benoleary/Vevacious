@@ -245,11 +245,24 @@ namespace Vevacious
 "class PotentialScaler:\n"
 "    \"\"\"\n"
 "    This class exists solely to provide a function that is a scaled version\n"
-"    of the function given to the constructor for PyMinuit, and a set of\n"
+"    of the function given to the constructor for MINUIT, and a set of\n"
 "    functions using arrays that the CosmoTransitions objects want to use.\n"
+"    Well, it also changes the function beyond a hypersurface of radiuszn"
+"    fieldLimit: within the hypersurface, the function is just scaled, but\n"
+"    outside, the function is taken to be the value it had on the surface at\n"
+"    the same angular co-ordinates, plus the square of the difference of the\n"
+"    square of the Euclidean length of the field configuration from the\n"
+"    square of fieldLimit. I.e., if the field configuration vector is longer\n"
+"    than fieldLimit, it is scaled to be of length fieldLimit, and then the\n"
+"    difference is its original length squared minus fieldLimit squared, and\n"
+"    this difference is itself squared and added to the value of the\n"
+"    potential evaluated at the scaled field configuration vector.\n"
 "    \"\"\"\n"
 "\n"
-"    def __init__( self, FunctionToScale, temperatureValue = 0.0 ):\n"
+"    def __init__( self,\n"
+"                  FunctionToScale,\n"
+"                  fieldLimit,\n"
+"                  temperatureValue = 0.0 ):\n"
 "        self.FunctionToScale = FunctionToScale\n"
 "        self.functionAtOrigin = FunctionToScale( ";
     std::vector< char > const&
@@ -261,11 +274,44 @@ namespace Vevacious
       pythonCode << "0.0, ";
     }
     pythonCode << "0.0 )\n"
+"        self.fieldLimitSquared = ( inverseScale * fieldLimit )**2\n"
 "        self.temperatureValue = temperatureValue\n"
-"        \n"
-"    def ScaledFunctionFromScaledArguments( self, " << argumentsWithoutBrackets
-<<                                                                      " ):\n"
-"        functionValue = ( self.FunctionToScale( ";
+"\n"
+"\n"
+"    def SetMaximumConfigurationLength( self, fieldLimit ):\n"
+"        self.fieldLimitSquared = ( inverseScale * fieldLimit )**2\n"
+"\n"
+"\n"
+"    def ScaledFunctionFromScaledArguments( self,\n"
+"                                      " << argumentsWithoutBrackets << " ):\n"
+"        configurationLengthSquared = ( ";
+    for( std::vector< char >::const_iterator
+         whichName( vevsOrderedBySolution.begin() );
+         vevsOrderedBySolution.end() > whichName;
+         ++whichName )
+    {
+      if( vevsOrderedBySolution.begin() != whichName )
+      {
+        pythonCode << " + ";
+      }
+      pythonCode << "( " << *whichName << " )**2";
+    }
+    pythonCode << " )\n"
+"        lengthSquaredBeyondCap = 0.0\n"
+"        if ( configurationLengthSquared > self.fieldLimitSquared ):\n"
+"            lengthSquaredBeyondCap = ( configurationLengthSquared\n"
+"                                       - self.fieldLimitSquared )\n"
+"            scalingRatio = math.sqrt( self.fieldLimitSquared\n"
+"                                      / configurationLengthSquared )\n";
+    for( std::vector< char >::const_iterator
+         whichName( vevsOrderedBySolution.begin() );
+         vevsOrderedBySolution.end() > whichName;
+         ++whichName )
+    {
+      pythonCode << "            " << *whichName << " = ( scalingRatio * "
+      << *whichName << " )\n";
+    }
+    pythonCode << "        functionValue = ( self.FunctionToScale( ";
     for( std::vector< char >::const_iterator
          whichName( vevsOrderedBySolution.begin() );
          vevsOrderedBySolution.end() > whichName;
@@ -276,7 +322,8 @@ namespace Vevacious
       << " * energyScale ),\n                                                ";
     }
     pythonCode << "temperatureValue = self.temperatureValue )\n"
-"                          - self.functionAtOrigin )\n"
+"                          - self.functionAtOrigin\n"
+"                          + lengthSquaredBeyondCap**2 )\n"
 "        return ( inverseScaleFourthed\n"
 "                 * functionValue )\n"
 "\n"

@@ -37,6 +37,15 @@
   0.000001
   </imaginary_tolerance>
 
+  <!-- python_wrapper is which Python wrapper for MINUIT to use. originally
+       Vevacious required PyMinuit specifically, but now IMinuit can be used
+       instead, which is probably preferable, as PyMinuit has been abandoned by
+       its author. the choice here is either PYMINUIT or IMINUIT, but is not
+       case-sensitive (e.g. iminuit or PyMinuit will also be accepted). -->
+  <python_wrapper>
+  PYMINUIT
+  </python_wrapper>
+
   <!-- model_file is where the loop-corrected potential stuff as written by
        SARAH is. absolute paths such as /home/vevacious/MyModel/MyModel.vin can
        be used. -->

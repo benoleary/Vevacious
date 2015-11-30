@@ -36,7 +36,8 @@ namespace Vevacious
 
     VevaciousRunner( std::string const& modelFilename,
                      std::string const& hom4ps2Directory,
-                     std::string const& homotopyType );
+                     std::string const& homotopyType,
+                     std::string const& pythonMinuitWrapper );
     VevaciousRunner( BOL::ArgumentParser& argumentParser );
     ~VevaciousRunner();
 
@@ -134,6 +135,7 @@ namespace Vevacious
     SarahInterpreter sarahInterpreter;
     TadpoleSolver tadpoleSolver;
     PotentialMinimizer potentialMinimizer;
+    std::string pythonMinuitWrapper;
     std::stringstream treeLevelExtrema;
     bool firstWriteOfExtrema;
     std::string resultsFilename;

@@ -105,16 +105,23 @@
  3) Ensure that Python is installed. PyMinuit requires at least version 2.4 or
     later. I shouldn't have to get into any specifics of how to install Python
     here... Internet search engines are your friends.
- 4) Download and install PyMinuit. The instructions are available at
-    http://code.google.com/p/pyminuit/wiki/HowToInstall
-    (link last checked 2013-08-29). The installation involves downloading and
-    compiling one of the C++ implementations of MINUIT (such as the standalone
-    version 1.7.9 or the CERN ROOT version, both available from
-    http://lcgapp.cern.ch/project/cls/work-packages/mathlibs/minuit/
-    (link last checked 2013-08-29)), then running the PyMinuit setup script
-    (giving the path where the C++ MINUIT code was _built_, *not* installed -
-    it needs the .o object files rather than the .a library file...). The
-    LD_LIBRARY_PATH and PYTHONPATH environment variables then need to be set.
+ 4) Download and install a Python wrapper for MINUIT. Currently only PyMinuit
+    and IMinuit are supported.
+    a) The instructions for PyMinuit were available at
+       http://code.google.com/p/pyminuit/wiki/HowToInstall
+       (link last checked 2015-11-30), but the project has been abandoned by
+       its author. The installation involves downloading and compiling one of
+       the C++ implementations of MINUIT (such as the standalone version 1.7.9
+       or the CERN ROOT version, both available from
+       http://lcgapp.cern.ch/project/cls/work-packages/mathlibs/minuit/
+       (link last checked 2013-08-29)), then running the PyMinuit setup script
+       (giving the path where the C++ MINUIT code was _built_, *not* installed
+       - it needs the .o object files rather than the .a library file...). The
+       LD_LIBRARY_PATH and PYTHONPATH environment variables then need to be
+       set.
+    b) The instructions for IMinuit are available at
+       https://pypi.python.org/pypi/iminuit (link last checked 2015-11-30), and
+       is a much easier install than that for PyMinuit.
  5) Download CosmoTransitions. The files are available at
     http://chasm.uchicago.edu/cosmotransitions/
     (link last checked 2013-08-29). The installation is as simple as unpacking
@@ -177,6 +184,14 @@
 
 
 CHANGELOG:
+ * 30th November 2015: version 1.2.00
+ - Adapted to use IMinuit as an alternative to PyMinuit. Slight change then in
+   bounding hypersurface for MINUIT: it is now "softly" bounded into a
+   hypersphere (not be putting limits on MINUIT directly, but by changing the
+   potential outside the hypersurface to just roll directly back towards the
+   field origin until it hits the hypersurface again) rather than restricting
+   MINUIT to a hypercube of the same length in each field.
+
  * 21st June 2015: version 1.1.03
  - Fixed bug when PyMinuit throws an exception, that the starting point is
    taken as a panic vacuum candidate without accounting for the shift by the
