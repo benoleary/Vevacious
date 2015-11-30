@@ -182,7 +182,7 @@
  The batch executable will probably crash if any other files or any
  subdirectories are in input_dir. Sorry.
 
-
+ 
 CHANGELOG:
  * 30th November 2015: version 1.2.00
  - Adapted to use IMinuit as an alternative to PyMinuit. Slight change then in
