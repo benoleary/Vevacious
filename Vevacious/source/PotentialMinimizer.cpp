@@ -325,7 +325,7 @@ namespace Vevacious
 "                          - self.functionAtOrigin\n"
 "                          + lengthSquaredBeyondCap**2 )\n"
 "        return ( inverseScaleFourthed\n"
-"                 * functionValue )\n"
+"                 * functionValue.real )\n"
 "\n"
 "    def PotentialFromArray( self, pointAsArray ):\n"
 "        return FunctionFromArray( self.FunctionToScale,\n"

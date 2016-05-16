@@ -184,6 +184,11 @@
 
  
 CHANGELOG:
+ * 16th May 2016: version 1.2.01
+ - Fixed bug where purely real potential value gets passed to MINUIT as a
+   complex number with value 0 for the imaginary part, so MINUIT would refuse
+   to run. 
+
  * 30th November 2015: version 1.2.00
  - Adapted to use IMinuit as an alternative to PyMinuit. Slight change then in
    bounding hypersurface for MINUIT: it is now "softly" bounded into a
